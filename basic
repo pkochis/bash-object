@@ -1,0 +1,99 @@
+#!/bin/bash
+
+################################################################################
+# This script is a part of "bash-object" project
+# https://github.com/pkochis/bash-object
+#
+# A1) Create "routines" object
+# A2) Create some routines for "routines" object:
+#      "obj-routines-delete" as "--delete"
+#      "obj_routines-list"   as "--list"
+#      "obj_routines-show"   as "--show"
+# A3) Remove some methods from "routines" object:
+#      "--methods-add"
+#      "--methods-remove"
+#      "--add-to"
+# B)  Remove "--create" methods from "root" object
+# C)  Create "objects" object
+# D)  Create other basic routines for "root" object:
+#      "obj-destroy"          as "--destroy"
+#      "obj-variables-create" as "--variables-create"
+#      "obj-variables-list"   as "--variables-list"
+#      "obj-variables-show"   as "--variables-show"
+#      "obj-variables-delete" as "--variables-delete"
+# E)  Create internal function for access variable: "objVariable"
+# Z) Reserved words: obj* this* root routines
+#
+# The "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+[[ -z ${obj_HOME} || -n ${objects["IDroutines"]} ]] && exit;  # prevents load
+
+# A1) Create "routines" object
+obj root --add-to routines;
+# A2) Create some routines for "routines" object:
+#     "obj-routines-delete" as "--delete"  "obj_routines-list" as "--list"  "obj_routine-show" as "--show"
+obj routines --create \
+ obj-routines-delete '{ local i;
+  for i in "$@"; do
+   unset -f objR${obj_routines["ID$i"]}; unset -v obj_routines["R${obj_routines["ID$i"]}"] obj_routines["ID$i"];
+  done;
+ }' \
+ obj-routines-list '{ local i;
+  for i in "${!obj_routines[@]}"; do [[ $i == R* ]] && echo "\"${obj_routines["$i"]}\""; done;
+ }' \
+ obj-routines-show '{ local i;
+  for i in "$@"; do
+   echo -e "\nRoutine \"$i\":"; [[ -n ${obj_routines["ID$1"]} ]] && type objR${obj_routines["ID$1"]}; echo "";
+  done;
+ }' \
+; obj routines --methods-add --delete obj-routines-delete --list obj-routines-list --show obj-routines-show
+# A3) Remove some methods from "routines" object: "--methods-add" "--methods-remove" "--add-to"
+obj routines --methods-remove --methods-add --methods-remove --add-to;
+
+# B) Remove "--create" methods from "root" object
+obj root --methods-remove --create;
+
+# C)  Create "objects" object
+obj root --add-to objects;
+obj routines --create objects-list '{ local i;
+ for i in "${!objects[@]}"; do [[ $i == ID* ]] && echo "\"${i#ID}\""; done;
+}' ; obj objects --methods-add "" objects-list;
+obj objects --methods-remove --methods-add --add-to --methods-remove;
+
+# D) Create other basic routines for "root" object:
+#    "obj-destroy" as "--destroy"  "obj-destroy" as "--destroy"  "obj-variables-create" as "--variables-create"
+#    "obj-variables-list" as "--variables-list"  "obj-variables-show" as "--variables-show"
+#    "obj-variables-delete" as "--variables-delete"
+obj routines --create \
+ object-destroy '{
+  local i; for i in "${this_variables[@]}"; do unset -v obj_v$i; done;
+  unset -v this_variables this_data objects["ID${this[0]}"];
+ }' \
+ obj-variables-create '{
+  while [[ -n $1 && -n $2 ]]; do
+   [[ -n ${this_variables["$2"]} ]] && {
+    obj_Error=("F" "${obj_routines["R${FUNCNAME#objR}"]}" "$((LINENO - 1))" "\"$2\" variable exist already" ); objError;
+   };
+  declare $1 obj_v$((++obj_C)); this_data+=(["A$2"]="$1") this_variables+=(["$2"]=${obj_C})
+   shift 2;
+  done;
+ }' \
+ obj-variables-list '{ local i;
+  for i in "${!this_variables[@]}"; do echo "${this_data["A$i"]} \"$i\""; done;
+ }' \
+ obj-variables-show '{ local i;
+  for i in "$@"; do echo -en "\nVariable \"$i\" "; declare -p obj_v${this_variables["$i"]}; echo ""; done;
+ }' \
+ obj-variables-delete '{ local i;
+  for i in "$@"; do unset -v obj_v${this_variables["$i"]} this_data["A$i"] this_variables["$i"]; done;
+ }' \
+; obj root --methods-add \
+   --destroy object-destroy --variables-create obj-variables-create \
+   --variables-list obj-variables-list --variables-show obj-variables-show \
+   --variables-delete obj-variables-delete \
+;
+
+# E) Create internal function for access variable: "objVariable"
+objVariable() { echo "obj_v${this_variables["$1"]}"; }; export -f objVariable;
+

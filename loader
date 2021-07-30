@@ -1,0 +1,30 @@
+#!/bin/bash
+
+################################################################################
+# This script is a part of "bash-object" project
+# https://github.com/pkochis/bash-object
+#
+# A) Get & set real name of obj's home directory
+# B) Load loader in memory 
+# Z) Reserved words: obj* this* root routines
+#
+# The "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+
+# A) Get real name of obj's home directory
+if [[ -z ${obj_HOME} ]]; then  # if not declared already BEGIN
+ obj_HOME="${BASH_SOURCE%/*}";  # try get parent
+ [[ ${obj_HOME} == ${BASH_SOURCE} ]] && obj_HOME=".";  # if missing parent
+ [[ -z ${obj_HOME} ]] && obj_HOME="/";  # if missing path
+ cd "${obj_HOME}"; obj_HOME="$PWD"; cd "$OLDPWD"; export obj_HOME;  #  get real name of parent
+fi;  # if not declared already END
+
+# B) Load loader in memory 
+objInit() {
+ declare -gA objects;  # define store for objects
+ [[ -n ${objects["ID_root"]} ]] && return;  # return if program was loaded
+
+ source "${obj_HOME}/init";
+ source "${obj_HOME}/basic";
+}; export -f objInit;  # save init function in memory
