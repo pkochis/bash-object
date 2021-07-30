@@ -17,7 +17,7 @@
 # E)  Simple error handler: "objError"
 # Z) Reserved words: obj* this* root routines
 #
-# The "bash-object" scripts are licensed under the GNU General Public License v3.0
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
 [[ -z ${obj_HOME} || -n ${objects["IDroot"]} ]] && exit;  # prevents load
