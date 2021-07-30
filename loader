@@ -8,7 +8,7 @@
 # B) Load loader in memory 
 # Z) Reserved words: obj* this* root routines
 #
-# The "bash-object" scripts are licensed under the GNU General Public License v3.0
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
 
