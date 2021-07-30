@@ -23,7 +23,7 @@ fi;  # if not declared already END
 # B) Load loader in memory 
 objInit() {
  declare -gA objects;  # define store for objects
- [[ -n ${objects["ID_root"]} ]] && return;  # return if program was loaded
+ [[ -n ${objects["IDroot"]} ]] && return;  # return if program was loaded
 
  source "${obj_HOME}/init";
  source "${obj_HOME}/basic";
