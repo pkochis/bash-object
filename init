@@ -1,71 +1,84 @@
 #!/bin/bash
 
 ################################################################################
-# This script is a part of "bash-object" project
+# Script name: init Version 0.6
+# This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
 #
 # A)  Create objects helper: "obj"
 #     Create "obj_data", "obj_variables" & "objR" dummies
 # B1) Create basic routine: "obj-routine-create" & add to "obj_routines" array
 # B2) Create basic routine: "obj-methods-add" & add to "obj_routines" array
 # B3) Create "root" object & add to "objects" array
-# B4) Add "obj-routine-create" as "--create" and
-#     "obj-methods-add" as "--methods-add" to root object
+# B4) Add "obj-methods-add" as "--methods-add" and
+#     "obj-routine-create" as "--create" to root object
 # C)  Create "object-add-to" as "--add-to",
 #     "obj-methods-remove" as "--methods-remove" and
 #     "obj_methods-list" as "--methods-list" for "root" object
 # E)  Simple error handler: "objError"
-# Z) Reserved words: obj* this* root routines
 #
-# "bash-object" scripts are licensed under the GNU General Public License v3.0
-# author: pal@kochis.hu
+# Reserved words: obj* this* root routines
 ################################################################################
-[[ -z ${obj_HOME} || -n ${objects["IDroot"]} ]] && exit;  # prevents load
+declare -gA obj_Main; [[ ${obj_Main["init"]} == "loaded" ]] && exit;  # prevents unwanted load
 
 # A) Create objects helper: "obj"
 obj() { declare -a this; this=("$1" "$2");
  declare -n this_data=obj_data${objects["ID$1"]} this_variables=obj_variables${objects["ID$1"]}; shift 2;
  objR${this_data["Run${this[1]}"]} "$@";
-}; export -f obj;
+};  # obj()
 # Create "obj_data", "obj_variables" & "objR" dummies
-declare -gA obj_data obj_variables; obj_data=() obj_variables=();
-objR() { obj_Error=("N" "\"obj\"" "3" "\"${this[0]}\" or \"${this[1]}\" not exists"); objError; }; export -f objR;
+declare -gA obj_data obj_variables; obj_data=() obj_variables=(); objR() { : ; };
 
 # B1) Create basic routine: "obj-routine-create" & add to "obj_routines" array
 declare -g obj_C; export obj_C; declare -gA obj_routines;
 obj_routines+=(["IDobj-routines-create"]=$((++obj_C)) ["R${obj_C}"]="obj-routines-create");
-eval "function objR${obj_C}" '{ 
+eval "function objR${obj_C}" '{ local param; [[ $1 == @(-f|--force|-s|--silent) ]] && param="$1" && shift;
  while [[ -n $1 && -n $2 ]]; do
-  [[ -n ${obj_routines["ID$1"]} ]] && {
-    obj_Error=("F" "${obj_routines["R${FUNCNAME#objR}"]}" "$((LINENO - 1))" "\"$1\" routine exist already" ); objError;
-   };
-  obj_routines+=(["ID$1"]=$((++obj_C)) ["R${obj_C}"]="$1");
-  eval function objR${obj_C} "$2"; export -f objR${obj_C};
-  shift 2;
+  [[ -z ${obj_routines["ID$1"]} ]] && {
+   obj_routines+=(["ID$1"]=$((++obj_C)) ["R${obj_C}"]="$1"); eval function objR${obj_C} "$2";  shift 2; continue; };
+  [[ $param == @(-f|--force) ]] && { eval function objR${obj_routines["ID$1"]} "$2"; shift 2; continue; };
+  [[ $param == @(-s|--silent) ]] && { shift 2; continue; };
+  declare -a obj_warning; obj_warning=("routine" "obj-routines-create" "$1"); objWarning "routine exists already"; shift 2; 
  done;
-}' ; export -f objR${obj_C};
+}' ; # routine: "obj-routines-create"
 
 # B2) Create basic routine: "obj-methods-add" & add to "obj_routines" array
-objR${obj_C} obj-methods-add '{ while [[ -n $2 ]]; do this_data+=(["Run$1"]="${obj_routines["ID$2"]}"); shift 2; done; }'; export -f objR${obj_C};
+objR${obj_C} obj-methods-add '{ local param; [[ $1 == @(-f|--force|-s|--silent) ]] && param="$1" && shift;
+ while [[ -n $2 ]]; do
+  [[ -z ${this_data["Run$1"]} || $param == @(-f|--force) ]] && {
+   this_data+=(["Run$1"]="${obj_routines["ID$2"]}"); shift 2; continue; };
+  [[ $param == @(-s|--silent) ]] && { shift 2; continue; };
+  declare -a obj_warning; obj_warning=("object" "${this[0]}" "$1"); objWarning "method exists already"; shift 2; 
+ done;
+}' ; # routine: "obj-methods-add"
 
 # B3) Create "root" object
 declare -gA objects; objects=(["IDroot"]="$((++obj_C))"); declare -gA obj_data${obj_C} obj_variables${obj_C};
 
-# B4) Add "obj-routine-create" as "--create" and "obj-methods-add" as "--methods-add" to root object
+# B4) Add "obj-methods-add" as "--methods-add" and "obj-routine-create" as "--create" to root object
 eval "obj_data${obj_C}+=([Run--methods-add]=${obj_routines[IDobj-methods-add]})";
-obj root --methods-add --create obj-routines-create --methods-add obj-methods-add;
+obj root --methods-add --create obj-routines-create;
 
 # C)  Create "object-add-to" as "--add-to" and "obj-methods-remove" as "--methods-remove" for "root" object
 obj root --create \
- object-add-to '{ [[ -z $1 ]] && return; local o i;
+ object-add-to '{ [[ -z $1 ]] && return; local o i param; [[ $1 == @(-f|--force|-s|--silent) ]] && param="$1" && shift;
   for o in "$@"; do
    [[ -z $o ]] && continue;
    [[ -z ${objects["ID$o"]} ]] && objects+=(["ID$1"]="$((++obj_C))");
    declare -gA obj_data${objects["ID$o"]} obj_variables${objects["ID$o"]};
    declare -n target_data=obj_data${objects["ID$o"]} target_variables=obj_variables${objects["ID$o"]};
-   for i in "${!this_data[@]}"; do target_data+=(["$i"]="${this_data["$i"]}"); done;
+   for i in "${!this_data[@]}"; do
+    [[ -z ${target_data["$i"]} || $param == @(-f|--force) ]] && { target_data+=(["$i"]="${this_data["$i"]}"); continue; };
+    [[ $i != Run* || $param == @(-s|--silent) ]] && continue;
+    declare -a obj_warning; obj_warning=("object" "$o" "${i#Run}"); objWarning "method exists already"; 
+   done;
    for i in "${!this_variables[@]}"; do
-    target_variables+=(["$i"]="$((++obj_C))"); declare ${target_data["A_$i"]} obj_v${obj_C};
+    [[ -z ${target_variables["$i"]} || $param == @(-f|--force) ]] && {
+     target_variables+=(["$i"]="$((++obj_C))"); declare ${target_data["A_$i"]} obj_v${obj_C}; continue; };
+    [[ $param == @(-s|--silent) ]] && continue;
+    declare -a obj_warning; obj_warning=("object" "$o" "$i"); objWarning "variable exists already"; 
    done;
   done;
  }' \
@@ -80,8 +93,7 @@ obj root --create \
  ; obj root --methods-add --add-to object-add-to --methods-remove obj-methods-remove --methods-list obj-methods-list;
 
 # E)  Simple error handler: "objError"
-objError() {
- [[ ${obj_Error[0]} == F ]] && echo -n "Fatal error " || echo -n "Error ";
- echo "in ${obj_Error[1]} at line ${obj_Error[2]}: ${obj_Error[3]}";
- [[ ${obj_Error[0]} == F ]] && { read -s -n1; exit 1; }; return 1;
-}; export -f objError;
+objWarning() { echo "Warning in ${obj_warning[0]} ${obj_warning[1]}: ${obj_warning[2]} $1"; };
+
+obj_Main+=(["init"]="loaded");
+

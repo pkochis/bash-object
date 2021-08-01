@@ -1,8 +1,11 @@
 #!/bin/bash
 
 ################################################################################
-# This script is a part of "bash-object" project
+# Script name: init Version 0.7
+# This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
 #
 # A1) Create "routines" object
 # A2) Create some routines for "routines" object:
@@ -22,12 +25,10 @@
 #      "obj-variables-show"   as "--variables-show"
 #      "obj-variables-delete" as "--variables-delete"
 # E)  Create internal function for access variable: "objVariable"
-# Z) Reserved words: obj* this* root routines
 #
-# "bash-object" scripts are licensed under the GNU General Public License v3.0
-# author: pal@kochis.hu
+# Reserved words: obj* this* root routines
 ################################################################################
-[[ -z ${obj_HOME} || -n ${objects["IDroutines"]} ]] && exit;  # prevents load
+declare -gA obj_Main; [[ ${obj_Main["basic"]} == "loaded" ]] && exit;  # prevents unwanted load
 
 # A1) Create "routines" object
 obj root --add-to routines;
@@ -70,13 +71,14 @@ obj routines --create \
   local i; for i in "${this_variables[@]}"; do unset -v obj_v$i; done;
   unset -v this_variables this_data objects["ID${this[0]}"];
  }' \
- obj-variables-create '{
+ obj-variables-create '{ local param; [[ $1 == @(-f|--force|-s|--silent) ]] && param="$1" && shift;
   while [[ -n $1 && -n $2 ]]; do
-   [[ -n ${this_variables["$2"]} ]] && {
-    obj_Error=("F" "${obj_routines["R${FUNCNAME#objR}"]}" "$((LINENO - 1))" "\"$2\" variable exist already" ); objError;
-   };
-  declare $1 obj_v$((++obj_C)); this_data+=(["A$2"]="$1") this_variables+=(["$2"]=${obj_C})
-   shift 2;
+   [[ -z ${this_variables["$2"]} ]] && {
+    declare $1 obj_v$((++obj_C)); this_variables+=(["$2"]=${obj_C}) this_data+=(["A$2"]="$1"); shift 2; continue; };
+   [[ $param == @(-f|--force) ]] && {
+    unset -v obj_v${this_variables[$2]}; declare $1 obj_v${this_variables[$2]}; this_data["A$2"]="$1"; shift 2; continue; };
+   [[ $param == @(-s|--silent) ]] && { shift 2; continue; };
+   declare -a obj_warning; obj_warning=("object" "${this[0]}" "$2"); objWarning "variable exists already"; shift 2; 
   done;
  }' \
  obj-variables-list '{ local i;
@@ -96,4 +98,6 @@ obj routines --create \
 
 # E) Create internal function for access variable: "objVariable"
 objVariable() { echo "obj_v${this_variables["$1"]}"; }; export -f objVariable;
+
+obj_Main+=(["basic"]="loaded");
 

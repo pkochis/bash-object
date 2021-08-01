@@ -1,30 +1,33 @@
 #!/bin/bash
 
 ################################################################################
-# This script is a part of "bash-object" project
+# Script name: loader Version 1.0
+# This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
-#
-# A) Get & set real name of obj's home directory
-# B) Load loader in memory 
-# Z) Reserved words: obj* this* root routines
-#
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
+#
+# A) Get & set real name of obj's home directory: obj_HOME
+# B) Load loader in memory: objInit 
+#
+# Reserved words: obj*
 ################################################################################
 
-# A) Get real name of obj's home directory
-if [[ -z ${obj_HOME} ]]; then  # if not declared already BEGIN
+# A) Get real name of obj's home directory: obj_HOME
+if [[ -z ${obj_HOME} ]]; then
  obj_HOME="${BASH_SOURCE%/*}";  # try get parent
  [[ ${obj_HOME} == ${BASH_SOURCE} ]] && obj_HOME=".";  # if missing parent
  [[ -z ${obj_HOME} ]] && obj_HOME="/";  # if missing path
- cd "${obj_HOME}"; obj_HOME="$PWD"; cd "$OLDPWD"; export obj_HOME;  #  get real name of parent
-fi;  # if not declared already END
+ cd "${obj_HOME}"; obj_HOME="$PWD"; cd "$OLDPWD";  #  get real name of parent
+fi; export obj_HOME;
 
-# B) Load loader in memory 
-objInit() {
- declare -gA objects;  # define store for objects
- [[ -n ${objects["IDroot"]} ]] && return;  # return if program was loaded
+# B) Load loader in memory: objInit
+if [[ $(type -t "objInit") != function ]]; then
+ objInit() {
+  declare -gA obj_Main;
+  [[ ${obj_Main["init"]} != "loaded" ]] && source "${obj_HOME}/init";
+  [[ ${obj_Main["basic"]} != "loaded" ]] && source "${obj_HOME}/basic";
+ }; export -f objInit;  # save init function in memory
+fi;
 
- source "${obj_HOME}/init";
- source "${obj_HOME}/basic";
-}; export -f objInit;  # save init function in memory
+declare -g obj_C; export obj_C;
