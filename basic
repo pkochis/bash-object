@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-# Script name: init Version 0.7
+# Script name: init Version 0.7.1
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -78,7 +78,7 @@ obj routines --create \
    [[ $param == @(-f|--force) ]] && {
     unset -v obj_v${this_variables[$2]}; declare $1 obj_v${this_variables[$2]}; this_data["A$2"]="$1"; shift 2; continue; };
    [[ $param == @(-s|--silent) ]] && { shift 2; continue; };
-   declare -a obj_warning; obj_warning=("object" "${this[0]}" "$2"); objWarning "variable exists already"; shift 2; 
+   declare -a obj_warning; obj_warning=("${this[0]}" "object" "$2"); objWarning "variable exists already"; shift 2; 
   done;
  }' \
  obj-variables-list '{ local i;
@@ -100,4 +100,3 @@ obj routines --create \
 objVariable() { echo "obj_v${this_variables["$1"]}"; }; export -f objVariable;
 
 obj_Main+=(["basic"]="loaded");
-

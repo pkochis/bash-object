@@ -1,6 +1,6 @@
 bash-object scripts
- Version 0.7.1 (2021/08/01)
+ Version 0.7.2 (2021/08/01)
 
  loader version: 1.0
- init version: 0.6
- basic version: 0.7
+ init version: 0.6.1
+ basic version: 0.7.1
