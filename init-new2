@@ -1,0 +1,93 @@
+#!/bin/bash
+
+################################################################################
+# Script name: init Version 0.7
+# This script is a part of "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+#
+# A) Handlers for routines:  objRCode objRInsert objRRemove
+# B) Handlers for methods:   objMCode objMInsert objMRemove
+# C) Handlers for variables: objVCode objVInsert objVRemove
+# D) Handler for call an object: obj
+# E) Object create routine: objR
+# F) Create root object: obj root --init ...
+# G) Handler for get real name of variable for routine's use: objVariable
+#
+# Reserved words: obj* this* root
+################################################################################
+# declare -gA obj_Main; [[ ${obj_Main["init"]} == "loaded" ]] && exit;  # prevents unwanted load
+
+# A) Handlers for routines
+objRCode() { declare -gA obj_routines; eval function objR$1 "$2"; export -f objR$1; ((obj_routines[N$1] < 1)) && obj_routines[N$1]=1; };
+objRInsert() { ((obj_routines[N$1]++)); };  # increment counter for routine
+objRRemove() { ((obj_routines[N$1] > 1)) && obj_routines[N$1]=$((obj_routines[N$1]--)) || {  # decrement counter for routine
+  unset -f objR$1; unset -v obj_routines[N$1]; };
+};  # destroy routine & remove counter for routine
+export -f objRCode objRInsert objRRemove;
+
+# B) Handlers for methods
+objMCreate() { objRCode $((++obj_C)) "$2"; this_methods["R$1"]=${obj_C}; };  # create new method & routine
+objMInsert() { this_methods["R$1"]="$(obj "$2" --get-routine "$3")"; objRInsert ${this_methods["R$1"]}; };  # insert a method from other object
+objMRemove() { objRRemove ${this_methods["R$1"]}; unset -v this_methods["R$1"]; };  # remove method & routine
+export -f objMCreate objMInsert objMRemove;
+
+# C) Handlers for variables
+objVCreate() { declare "$1" obj_v$((++obj_C)); this_variables["ID$2"]=${obj_C}; };  # create a variable with explicit attribute
+objVInsert() { local a; set -x
+ a=$(obj "$2" --get-variable-attrib "$3"); [[ "$a" == "--" ]] && a="-g"; declare $a obj_v$((++obj_C)); this_variables["ID$1"]=${obj_C};
+ set +x; };  # create variable
+objVremove() { unset -v obj_v${this_variables["ID$1"]} this_variables["ID$1"]; };  # remove variable
+export -f objVCreate objVInsert objVremove;
+
+# D) Handler for call an object
+obj() { declare -a this; this=("${objects["ID$1"]}" "$1" "$2"); shift 2;
+ declare -n this_methods=obj_methods$this this_variables=obj_variables$this;
+ objR${this_methods["R${this[2]}"]} "$@";
+}; export -f obj;
+declare -gA obj_methods obj_variables;
+
+# E) Object create routine
+objR() { [[ ${this[2]} != "--init" ]] && return; local i j o;
+ declare -gA objects; objects["ID${this[1]}"]=$((++obj_C)); this[0]="${obj_C}";  # create object
+ declare -gA obj_methods${obj_C} obj_variables${obj_C};  # create data arrays for object
+ declare -n this_methods=obj_methods${obj_C} this_variables=obj_variables${obj_C};  # pointers to data arrays
+ for i in "$@"; do case "$i" in
+  obj-GetObjects) shift; for o in "$@"; do [[ $1 == obj-* ]] && break; 
+   declare -n s=obj_methods${objects["ID$o"]}; for j in "${!s[@]}"; do objMInsert "${j#R}" "$o" "${j#R}"; done;
+   declare -n s=obj_variables${objects["ID$o"]}; for j in "${!s[@]}"; do objVInsert "${j#ID}" "$o" "${j#ID}"; done;
+  shift; done;;
+  obj-AddMethods) shift; while [[ -n $2 ]]; do [[ $1 == obj-* ]] && break; objMCreate "$1" "$2"; shift 2; done;;
+  obj-AddVariables) shift; while [[ -n $2 ]]; do [[ $1 == obj-* ]] && break; objVCreate "$1" "$2"; shift 2; done;;
+  obj-InsertMethods) o="$2"; shift 2; while (($# > 1)); do [[ $1 == obj-* ]] && break; objMInsert "$1" "$o" "$2"; shift 2; done;;
+  obj-InsertVariables) o="$2"; shift 2; while (($# > 1)); do [[ $1 == obj-* ]] && break; objVInsert "$1" "$o" "$2"; shift 2; done;;
+  obj-RemoveMethods) shift; for j in "$@"; do [[ $1 == obj-* ]] && break; objMRemove "$j"; shift; done;;
+  obj-RemoveVariables) shift; for j in "$@"; do [[ $1 == obj-* ]] && break; objVRemove "$j"; shift; done;;
+ esac; done;
+}; export -f objR;
+
+# F) Create root object 
+obj root --init \
+ obj-AddMethods \
+  --init-create-method '{ objRCode $((++obj_C)) "$2"; this_methods["R$1"]=${obj_C}; }' \
+  --get-routine '{ echo "${this_methods["R$1"]}"; }' \
+  --get-variable-attrib '{ local r a; r=obj_v${this_variables["ID$1"]}; a=$(declare -p $r 2> /dev/nul); a=${a#* }; echo ${a%% $r*}; }' \
+  --list-objects '{ local i; for i in "${!objects[@]}"; do echo "\"${i#ID}\""; done; }' \
+  --list-methods '{ local i; for i in "${!this_methods[@]}"; do echo "\"${i#R}\""; done; }' \
+  --list-variables '{ local i r a; for i in "${!this_variables[@]}"; do r=obj_v${this_variables["$i"]};
+    a=$(declare -p $r 2> /dev/nul); a=${a#* }; echo "${a%% $r*} \"${i#ID}\""; done;
+  }' \
+ obj-AddVariables \
+  -gA alma \
+;
+
+# G) Handler for get real name of variable: objVariable
+objVariable() { local i; i="obj_v${this_variables["ID$1"]}"; [[ $i != obj_v ]] && echo "$i"; }; export -f objVariable;
+
+obj t --init obj-GetObjects root
+obj t --list-objects
+obj t --list-methods
+obj t --list-variables
+obj root --list-variables
+# declare -p objects obj_methods1 obj_variables1
