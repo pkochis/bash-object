@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-# Script name: loader Version 0.8
+# Script name: loader Version 0.8.1
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -24,8 +24,8 @@ fi; export obj_HOME;
 # B) Load loader in memory: objInit
 if [[ $(type -t "objInit") != function ]]; then
  objInit() {
-  declare -g obj_C; export obj_C;
-  declare -gA objects;
-  [[ -z ${objects["IDroot"]} ]] && source "${obj_HOME}/init";
+  declare -gA objects; declare -g obj_C; export obj_C;
+  [[ $(type -t objRootInit) != function ]] && source "${obj_HOME}/init";  # load init functions
+  [[ -z ${objects["IDroot"]} ]] && objRootInit;  # create init variables & root object
  }; export -f objInit;  # save init function in memory
 fi;
