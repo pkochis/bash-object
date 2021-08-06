@@ -49,9 +49,7 @@
 # A) Handlers for routines
 objRInsert() { [[ -n $1 && $1 -gt 0 ]] && ((obj_r[N$1]++)); };
 objRRemove() { [[ -n $1 && $1 -gt 0 ]] && ((--obj_r[N$1] < 1)) && unset -v obj_r[N$1] && unset -f objR$1; return 0; };
-objRCode() { [[ -n $1 && $1 -gt 0 ]] && declare -gA obj_r && eval function objR$1 "$2" && {
- export -f objR$1 && ((obj_r[N$1] < 1)) && obj_r[N$1]=1; return 0; };
-};
+objRCode() { [[ -n $1 && $1 -gt 0 ]] && declare -gA obj_r && eval function objR$1 "$2" && { ((obj_r[N$1] < 1)) && obj_r[N$1]=1; export -f objR$1; }; };
 export -f objRInsert objRRemove objRCode;
 
 # B) Handlers for variables
