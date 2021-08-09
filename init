@@ -15,7 +15,7 @@
 #
 # Reserved words: obj* this* root empty
 ################################################################################
-# [[ $(type -t objRootInit) == function ]] && exit  # prevents unwanted load
+[[ $(type -t objRootInit) == function ]] && exit  # prevents unwanted load
 
 # A) Handlers for objects
 obj() {
