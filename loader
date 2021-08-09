@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-# Script name: loader Version 0.8.1
+# Script name: loader Version 0.8.2
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -16,16 +16,15 @@
 # A) Get real name of obj's home directory: obj_HOME
 if [[ -z ${obj_HOME} ]]; then
  obj_HOME="${BASH_SOURCE%/*}";  # try get parent
- [[ ${obj_HOME} == ${BASH_SOURCE} ]] && obj_HOME=".";  # if missing parent
- [[ -z ${obj_HOME} ]] && obj_HOME="/";  # if missing path
- cd "${obj_HOME}"; obj_HOME="$PWD"; cd "$OLDPWD";  #  get real name of parent
-fi; export obj_HOME;
+ [[ ${obj_HOME} == ${BASH_SOURCE} ]] && obj_HOME="."  # if missing parent
+ [[ -z ${obj_HOME} ]] && obj_HOME="/"  # if missing path
+ cd "${obj_HOME}"; obj_HOME="$PWD"; cd "$OLDPWD"  #  get real name of parent
+fi; export obj_HOME
 
 # B) Load loader in memory: objInit
 if [[ $(type -t "objInit") != function ]]; then
  objInit() {
-  declare -gA objects; declare -g obj_C; export obj_C;
-  [[ $(type -t objRootInit) != function ]] && source "${obj_HOME}/init";  # load init functions
-  [[ -z ${objects["IDroot"]} ]] && objRootInit;  # create init variables & root object
- }; export -f objInit;  # save init function in memory
-fi;
+  [[ $(type -t objRootInit) != function ]] && source "${obj_HOME}/init"  # load init functions
+  declare -gA objects; [[ -z ${objects["IDroot"]} ]] && objRootInit  # create init variables & root object
+ }; export -f objInit  # save init function in memory
+fi
