@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-# Script name: init Version 0.7.2
+# Script name: init, Version 0.8.3
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -19,11 +19,12 @@
 
 # A) Handlers for objects
 obj() {
- declare -a this; this=("${objects["ID$1"]:-1}" "${1:-"empty"}" "${2}"); shift 2
- declare -n this_methods=obj_methods$this this_variables=obj_variables$this
- objR${this_methods["IDP${this[2]}"]:-0} "$@";
+ declare -a this; this=("${objects["ID$1"]:-1}" "${1:-"empty"}" "${2}"); shift 2  # parse message 
+ declare -n this_methods=obj_methods$this this_variables=obj_variables$this  # load object
+ local i; for i in "${!this_variables[@]}"; do declare -n ${i#ID}=obj_v${this_variables["$i"]}; done  # pointers to variables
+ objR${this_methods["IDP${this[2]}"]:-0} "$@"  # run method
 }  # message handler: only public methods call is permitted
-objR0() { objError "The \"!A1!\" object or \"!A2!\" method in \"!A1!\" object is not exist" "${this[1]}" "${this[2]}"; }  # call error handler
+objR0() { objError "The !A1! object or !A2! method in !A1! object is not exist" "\"${this[1]}\"" "\"${this[2]}\""; }
 objInt() { local i="$1"; shift; objR${this_methods["ID$i"]} "$@"; }  # for internal use in object (public & nopublic methods)
 export -f obj objInt objR0
 
@@ -31,11 +32,11 @@ export -f obj objInt objR0
 objR1() {
  objects["ID${this[1]}"]=$((++obj_C)) this[0]=${obj_C}  # create ID for object
  declare -gA obj_methods${obj_C} obj_variables${obj_C}  # create object
- declare -n this_methods=obj_methods${obj_C} this_variables=obj_variables${obj_C}  # pointers to object
- local from=0; declare -n from_methods=obj_methods0 from_variables=obj_variables0; declare -a cline=(":")  # pointers to reference object & fake command
+ declare -n this_methods=obj_methods${obj_C} this_variables=obj_variables${obj_C}  # load object
+ local from=0; declare -n from_methods=obj_methods0 from_variables=obj_variables0; declare -a cline=(":")  # load fake reference object and command
 
  while (($# > 0)); do  # parse init command BEGIN
-  [[ $1 == obj-* ]] && { "${cline[@]}"; cline=("objR${obj_init["ID$1"]:-0}"); } || cline+=("$1"); shift
+  [[ $1 == obj-* ]] && { "${cline[@]}"; cline=("objR${obj_init["ID$1"]:-0}"); } || cline+=("$1"); shift  # create and run init command
  done  # parse init command END
  "${cline[@]}"  # run last init command
 }
@@ -44,24 +45,23 @@ export -f objR1
 # C) Create init routines and init root object
 objRootInit() {
  declare -g obj_Cmin obj_C; obj_Cmin=5; ((obj_C < obj_Cmin)) && obj_C=${obj_Cmin}; export obj_Cmin obj_C  # init general upcounter
- declare -gA objects obj_init obj_routines; declare -grA obj_methods0=() obj_variables0=() obj_methods1=(["IDP--init"]=1) obj_variables1=()  # basic datas
- local from=0  # reference: empty 
+ declare -gA objects obj_init obj_routines obj_methods0 obj_variables0 obj_methods1=(["IDP--init"]=1) obj_variables1  # basic datas
  
- unset -f objR${obj_init["obj-AddInitRoutines"]}  # remove AddInitRoutines if it was
+ unset -f objR${obj_init["obj-AddInitRoutines"]}  # remove code of AddInitRoutines if it was
  eval function objR$((++obj_C)) '{
   while [[ -n $1 && -n $2 ]]; do 
-   unset -f objR${obj_init["IDobj-$1"]}; eval function objR$((++obj_C)) "$2" && obj_init+=(["IDobj-$1"]="${obj_C}"); shift 2; done
- }'
- obj_init+=(["IDobj-AddInitRoutines"]="${obj_C}")  # first init routine is ready
+   unset -f objR${obj_init["IDobj-$1"]}; eval function objR$((++obj_C)) "$2" && obj_init+=(["IDobj-$1"]="${obj_C}") && export -f objR${obj_C}; shift 2; done
+ }'  # create code of AddInitRoutines
+ obj_init+=(["IDobj-AddInitRoutines"]="${obj_C}")  # give the AddInitRoutines name to code
 
  obj root --init \
   obj-AddInitRoutines \
    RemoveInitRoutines '{ local i; for i in "$@"; do unset -f objR${obj_init["IDobj-$i"]}; unset -v obj_init["IDobj-$i"]; done; }' \
    SetReference '{ from=${objects["ID$1"]:-0}; }' \
-   RemoveVariables '{ local i; for i in "$@"; do unset -v obj_v${this_variables["ID$i"]} this_variables["ID$i"]; done; }' \
+   RemoveVariables '{ local i; for i in "$@"; do unset -v obj_v${this_variables[ID$i]} this_variables[ID$i]; done; }' \
    AddVariables '{
-    while (($# > 1)); do
-     declare $1 "obj_v$((++obj_C))" && this_variables+=(["ID$2"]=${obj_C}) && [[ "$3" == "=" ]] && {
+    while [[ -n $1 && -n $2 ]]; do
+     declare $1 "obj_v$((++obj_C))" && this_variables+=([ID$2]=${obj_C}) && [[ "$3" == "=" ]] && {
       [[ $1 = @(*a*|*A*) ]] && eval "obj_v${obj_C}=$4" || eval "obj_v${obj_C}=\"$4\""
       shift 2
      }
@@ -70,18 +70,19 @@ objRootInit() {
    }' \
    GetVariables '{
     declare -n from_variables=obj_variables$from
-    local i a v; while (($# > 1)); do
-     a="$(declare -p obj_v${from_variables["ID$2"]})" && {
-      a="${a#declare }" v="${a#*=}" a="${a%% *}" a="${a/--/-}g"; [[ $a != *g* ]] && a="${a}g"
-      declare $a "obj_v$((++obj_C))" && this_variables+=(["ID$1"]=${obj_C}) && {
-       [[ $a = @(*a*|*A*) ]] && eval "obj_v${obj_C}=$v" || eval obj_v${obj_C}="$v"
+    local val att; while [[ -n $1 && -n $2 ]]; do
+     val="$(declare -p obj_v${from_variables[ID$2]})" && {
+      att="${val#declare }" att="${att%% *}" att="${att/--/-}g"; declare $att "obj_v$((++obj_C))" && {
+       this_variables+=([ID$1]=${obj_C}); [[ $val = *=* ]] && {
+        val="${val#*=}"; [[ $att = @(*a*|*A*) ]] && eval "obj_v${obj_C}=$val" || eval obj_v${obj_C}="$val"
+       }
       }
      }
      shift 2
     done
    }' \
-   RemoveMethods  '{ local i; for i in "$@"; do objRRemove ${this_methods["ID$i"]}; unset -v this_methods["ID$i"]; done; }' \
-   AddMethods '{ while (($# > 1)); do objRRemove ${this_methods["ID$i"]}; objRNew $((++obj_C)) "$2" && this_methods+=(["ID$1"]=${obj_C}); shift 2; done; }' \
+   RemoveMethods  '{ local m; for m in "$@"; do objRRemove ${this_methods["ID$m"]}; unset -v this_methods["ID$m"]; done; }' \
+   NewMethods '{ while [[ -n $2 ]]; do objRRemove ${this_methods["ID$1"]}; objRNew $((++obj_C)) "$2" && this_methods+=(["ID$1"]=${obj_C}); shift 2; done; }' \
    GetMethods '{
     declare -n from_methods=obj_methods$from
     local i; while (($# > 1)); do
@@ -92,22 +93,22 @@ objRootInit() {
     done
    }' \
    CopyReference '{
-    declare -n from_methods=obj_methods$from from_variables=obj_variables$from
-    local i; declare -a j=(); for i in "${!from_methods[@]}"; do j+=("${i#ID}" "${i#ID}"); done; objR${obj_init["IDobj-GetMethods"]} "${j[@]}"
+    declare -n from_methods=obj_methods$from from_variables=obj_variables$from; local i; declare -a j
+    j=(); for i in "${!from_methods[@]}"; do j+=("${i#ID}" "${i#ID}"); done; objR${obj_init["IDobj-GetMethods"]} "${j[@]}"
     j=(); for i in "${!from_variables[@]}"; do j+=("${i#ID}" "${i#ID}"); done; objR${obj_init["IDobj-GetVariables"]} "${j[@]}"
    }' \
   obj-RemoveInitRoutines AddInitRoutines RemoveInitRoutines \
-  obj-AddMethods \
+  obj-NewMethods \
    P--list-objects '{ local i; for i in "${!objects[@]}"; do [[ $i = *\ * ]] && echo \"${i#ID}\" || echo ${i#ID}; done; }' \
    P--list-methods '{ local i; for i in "${!this_methods[@]}"; do
     [[ $i != IDP* ]] && continue; [[ $i = *\ * ]] && echo \"${i#IDP}\" || echo ${i#IDP}; done
    }' \
-   N--variable '{ echo "obj_v${this_variables["ID$1"]}"; }' \
-   P--destroy '{
-    local i; for i in "${this_methods[@]}"; do objRRemove $i; done
+   P--destroy '{ local i
+    for i in "${this_methods[@]}"; do objRRemove $i; done
     for i in "${this_variables[@]}"; do unset -v obj_v$i; done
     unset -v this_methods this_variables objects["ID${this[1]}"]
-   }'
+   }' \
+   N--debug '{ local i; declare -p this obj_methods$this obj_variables$this; for i in "${this_variables[@]}"; do declare -p obj_v$i; done; }'
 }
 
 # D) Routine helpers
@@ -116,4 +117,5 @@ objRNew() { ((${1:-0} >= obj_Cmin)) && eval function objR$1 "$2" && ((++obj_rout
 objRAdd() { ((${1:-0} >= obj_Cmin)) && ((++obj_routines["N$1"])); }
 
 # E) Error helper
-objError() { local i t="$1"; declare -a a=("$@"); for ((i=1; i<${#a[@]}; i++)); do t="${t//!A${i}!/${a[$i]}}"; done; echo "$t"; }  # call error handler
+objError() { local i c=0 et="$1"; shift; for i in "$@"; do ((c++)); et="${et//!A${c}!/$i}"; done; echo "$et"; }
+export -f objError

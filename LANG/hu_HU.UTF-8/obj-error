@@ -1,0 +1,10 @@
+################################################################################
+# Hungarian dictionary file: obj-error, Version 0.8.3
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+
+From: The !A1! object or !A2! method in !A1! object is not exist
+To: A(z) !A1! objektum, vagy az objektum !A2! metódusa nem létezik

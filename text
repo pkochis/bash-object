@@ -1,0 +1,67 @@
+#!/bin/bash
+
+################################################################################
+# Script name: text, Version 0.8.3
+# This script is a part of "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+#
+# A) Create --textlines object
+# B) Create --translate object
+# C) Create --errortext object
+# D) Change error helper
+#
+# Reserved words: obj* this* root empty
+################################################################################
+[[ -n ${objects["ID--textlines"]} ]] && exit  # prevents unwanted load
+
+# A) Create --textlines object
+obj --textlines --init \
+ obj-SetReference root obj-CopyReference \
+ obj-AddVariables -g input -g output -ga lines -ga aux_lines \
+ obj-NewMethods \
+  Pinput '{ input="$1"; }' \
+  Poutput '{ output="$1"; }' \
+  Preset '{ lines=(); }' \
+  Pread '{ while IFS= read -r; do lines+=("$REPLY"); done < "$input"; }' \
+  Pwrite '{ echo -n > "$file_path" && { local i; for i in "${lines[@]}"; do echo "$i" >> "$output"; done; }; }' \
+  Plines '{ echo ${#lines[@]}; }' \
+  Pget-lines '{ local i; for i in "$@"; do echo "${lines[$i]}"; done; }' \
+  Pset-lines '{ while (($# > 0)); do lines[$1]="$2"; shift 2; done; }' \
+  Padd-lines '{ lines+=("$@"); }' \
+  Padd-lines-at-start '{ aux_lines=("${lines[@]}") lines=("$@" "${aux_lines[@]}"); }' \
+  Pdel-lines '{ local i; for i in "$@"; do unset -v lines[$i]; done; lines=("${lines[@]}"); }' \
+  Pinsert-lines '{
+   local i; aux_lines=("${lines[@]}"); lines=();
+   for ((i=0; i<=$1; i++)); do lines+=("${aux_lines[$i]}"); unset -v aux_lines[$i]; done;
+   shift; lines+=("$@" "${aux_lines[@]}")  
+  }'
+
+# B) Create --translate object
+obj --translate --init \
+ obj-SetReference root obj-CopyReference \
+ obj-AddVariables -g folder = "${obj_HOME}" -g language = "${LANG:-$LC_CTYPE}" -g dict_file -gA dictionary \
+ obj-NewMethods \
+  P= '{ echo "${dictionary["$1"]:-$1}"; }' \
+  Pset-folder '{ folder="$1"; }' \
+  Pset-language '{ language="$1"; }' \
+  Pset-file ' { dict_file="$1"; }' \
+  Preset '{ dictionary=(); }' \
+  Pload '{ local ix; [[ -e ${folder}/LANG/${language}/${dict_file} ]] && {
+    while IFS= read -r; do
+     [[ $REPLY == From:\ * ]] && ix="${REPLY#From: }"
+     [[ $REPLY == To:\ * ]] && dictionary+=(["$ix"]="${REPLY#To: }") ix=" "
+    done < "${folder}/LANG/${language}/${dict_file}";
+   }   
+  }'
+
+# C) Create --errortext object
+obj --errortext --destroy
+obj --errortext --init obj-SetReference --translate obj-CopyReference
+obj --errortext set-file obj-error
+obj --errortext load
+
+# D) Change error helper
+unset -f objError
+objError() { local i c=0 et="$(obj --errortext = "$1")"; shift; for i in "$@"; do ((c++)); et="${et//!A${c}!/$i}"; done; echo "$et"; }
