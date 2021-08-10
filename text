@@ -57,7 +57,6 @@ obj --translate --init \
   }'
 
 # C) Create --errortext object
-obj --errortext --destroy
 obj --errortext --init obj-SetReference --translate obj-CopyReference
 obj --errortext set-file obj-error
 obj --errortext load
