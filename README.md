@@ -1,12 +1,11 @@
 # bash-object
-The goal is create &amp; use objects in bash. All scrips are written in bash. Therefore you can use them everywhere, even in cygwin.
+The goal is to create and use objects in bash. The elements of a bash-object are written in bash. Therefore you can use them everywhere, even in cygwin.
 
 ## Version
-The current stable version is 0.8.3 (2021-08-10)
+The current stable version is 0.9 (2021-08-13)
 
 ## Usage
-You can use them in any bash-script: first call the **loader** and use the **objInit** command.  
-You can load the objInit in memory: add the following line to the **.bashrc** file:  
-`source <path-to>/loader`  
-In this case you can use only objInit command in scripts. It will load other parts if them was not loaded.
-
+You can use them in any bash script.  
+You can load the obj command into memory: in the **.bashrc** file, type the following line:  
+`source <path-to>/obj`  
+The obj command loads other parts of the bash-object if they have not been loaded.

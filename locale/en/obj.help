@@ -1,0 +1,50 @@
+################################################################################
+# English help file: obj.help, Version 0.9
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+For help on the obj file, use the following command:
+  obj --help obj-file
+
+
+obj:
+The obj command will create the bash-object environment if necessary,
+then passes the message to the called method of the object and exits.
+Without specifying an object, it exits after the environment is created.  
+
+Usage: obj <object> <public method> [parameters]
+  or:  obj
+
+
+objP:   Calls a public method from another method of the object
+objN:   Calls a non-public method from another method of the object
+
+Usage:
+  objP <public method> [parameters]
+  objN <non-public method> [parameters]
+
+
+Objects created in the environment:
+  --help        Displays help files
+  --list        Displays a list of objects
+  --textlines   Provides a simple way to handle text
+  --translate   Translates sentences based on a dictionary
+  root          General object 
+
+Special public methods:
+  --create         Creates the object. It exists only at the time
+                   of the object creation
+  --erase          Deletes the object
+  --list-methods   Displays all public methods of the object
+  default          If defined in the object and missing from the message
+                   the default method is executed
+
+Special non-public method:
+  --debug          Displays the internal datas of the object
+
+Use of help:
+  obj --help           Displays this text
+  obj --help list      Lists the help topics in English
+  obj --help <topic>   Displays the help for topic

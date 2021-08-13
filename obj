@@ -1,16 +1,16 @@
 #!/bin/bash
 
 ################################################################################
-# Script name: loader, Version 0.8.3
+# Script name: obj, Version 0.9
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 #
 # A) Get & set real name of obj's home directory: obj_HOME
-# B) Load loader in memory: objInit 
+# B) Loader and message handler
 #
-# Reserved words: obj*
+# Reserved words: obj* this* default --*
 ################################################################################
 
 # A) Get real name of obj's home directory: obj_HOME
@@ -21,11 +21,14 @@ if [[ -z ${obj_HOME} ]]; then
  cd "${obj_HOME}"; obj_HOME="$PWD"; cd "$OLDPWD"  #  get real name of parent
 fi; export obj_HOME
 
-# B) Load loader in memory: objInit
-if [[ $(type -t "objInit") != function ]]; then
- objInit() {
-  [[ $(type -t objRootInit) != function ]] && source "${obj_HOME}/init"  # load init functions
-  declare -gA objects; [[ -z ${objects["IDroot"]} ]] && objRootInit  # create init variables & root object
-  [[ -z ${objects["ID--textlines"]} ]] && source "${obj_HOME}/text"  # load text functions
- }; export -f objInit  # save init function in memory
-fi
+# B) Loader and message handler
+obj() {
+ (($# * ${#obj_variables0[@]} == 0)) && source "${obj_HOME}/init"  # load environment if it was missing
+ (($# > 0)) && {  # parse message BEGIN
+  declare -a this=("${objects["ID$1"]:-0}" "$1" "$2"); shift  # get ID of object
+  declare -n this_methods=obj_methods$this this_variables=obj_variables$this  # load object
+  local i; for i in "${!this_variables[@]}"; do declare -n ${i#ID}=obj_v${this_variables["$i"]}; done  # attach variables
+  [[ -n ${this_methods["IDP$1"]} || -z ${this_methods["IDPdefault"]} ]] && shift || this[2]="default"  # check existance of method
+  objP "${this[2]}" "$@"  # pass message to internal message handler
+ }  # parse message END
+}; export -f obj

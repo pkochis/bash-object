@@ -1,0 +1,43 @@
+################################################################################
+# Hungarian help file: object-create.help, Version 0.9
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+A --create metódus létrehozza az objektumot
+
+Használata: obj <objektum> --create [KAPCSOLÓ] [kulcsszó [paraméterek]]...
+
+Kapcsoló:
+  nodelete   A létrehozott objektumban nem jön létre az --erase metódus.
+
+Általános kulcsszavak:
+  objI_SetReference <referencia objektum> 
+       A megadott objektumot referenciának beállítja.
+  objI_CopyReference
+       A referencia objektum összes metódusát és összes változóját értékeikkel
+       együtt az új objektumba másolja. Ütközés esetén felülírja a régi adatot.
+
+Változókat kezelő kulcsszavak:
+  objI_RemoveVariables <változó>...
+       A felsorolt változókat törli.
+  objI_AddVariables <attribútum> <változó> [= <érték>]...
+       Létrehozza a változókat. Opcionálisan kezdeti értéket is megadhatunk itt.
+  objI_GetVariables <változó> <változó a referenciában>...
+       A referencia objektum változójának értékét átmásolja az új objektum
+       változójába. Ha nem létezik, létrehozza az új változót. Ütközés esetén
+       felülírja azt.
+
+Metódusokat kezelő kulcsszavak
+  objI_RemoveMethods <metódus>...
+       A felsorolt metódusokat eltávolítja az objektumból.
+  objI_NewMethods <metódus> '{ <kód>; }'...
+       Létrehozza a metódust. Ütközés esetén a régi metódust eltávolítja.
+  objI_GetMethods <metódus> <metódus a referenciában>...
+       A referencia objektum metódusát hozzáadja az új objektum metódusaihoz.
+       Ütközés esetén felülírja a már létezó metódust.
+
+A metódusok neveiben a következőképpen meg kell adni, hogy pulikus-e, vagy nem:
+  P<metódus neve>    publikus metódus
+  N<metódus neve>    nem publikus metódus

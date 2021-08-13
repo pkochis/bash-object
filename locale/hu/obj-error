@@ -1,0 +1,19 @@
+################################################################################
+# Hungarian dictionary file: obj-error, Version 0.9
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+
+From: The !A1! object does not exist
+To: A(z) !A1! objektum nem létezik
+
+From: The !A1! public method in !A2! object does not exist
+To: A(z) !A2! objektum publikus !A1! metódusa nem létezik
+
+From: The !A1! non-public method in !A2! object does not exist
+To: A(z) !A2! objektum !A1! belső metódusa nem létezik
+
+From: There is not help for !A1!
+To: Nincs súgó ehhez: !A1!

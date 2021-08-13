@@ -1,26 +1,38 @@
 #!/bin/bash
 
 ################################################################################
-# Script name: text, Version 0.8.3
+# Script name: basic-objects, Version 0.9
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 #
-# A) Create --textlines object
-# B) Create --translate object
-# C) Create --errortext object
-# D) Change error helper
-#
-# Reserved words: obj* this* root empty
+# A) create objects
+# B) Change error helper
 ################################################################################
-[[ -n ${objects["ID--textlines"]} ]] && exit  # prevents unwanted load
+[[ $(type -t objectCreate) != function ]] && exit  # prevents unwanted load
 
-# A) Create --textlines object
-obj --textlines --init \
- obj-SetReference root obj-CopyReference \
- obj-AddVariables -g input -g output -ga lines -ga aux_lines \
- obj-NewMethods \
+# A) Create objects
+
+# --list
+obj --list --create nodelete \
+ objI_NewMethods Pdefault '{ local i; for i in "${!objects[@]}"; do [[ $i = *\ * ]] && echo \"${i#ID}\" || echo ${i#ID}; done; }'
+
+# root
+obj root --create nodelete \
+ objI_NewMethods \
+  P--list-methods '{ local i;
+   for i in "${!this_methods[@]}"; do
+    case "$i" in IDP) echo "\"\"";; IDP*\ *) echo "\"${i#IDP}\"";; IDP*) echo "${i#IDP}";; esac;
+   done
+  }' \
+  N--debug '{ local i; declare -p this obj_methods$this obj_variables$this; for i in "${this_variables[@]}"; do declare -p obj_v$i; done; }'
+
+# --textlines
+obj --textlines --create \
+ objI_SetReference root objI_CopyReference \
+ objI_AddVariables -g input -g output -ga lines -ga aux_lines \
+ objI_NewMethods \
   Pinput '{ input="$1"; }' \
   Poutput '{ output="$1"; }' \
   Preset '{ lines=(); }' \
@@ -38,29 +50,39 @@ obj --textlines --init \
    shift; lines+=("$@" "${aux_lines[@]}")  
   }'
 
-# B) Create --translate object
-obj --translate --init \
- obj-SetReference root obj-CopyReference \
- obj-AddVariables -g folder = "${obj_HOME}" -g language = "${LANG:-$LC_CTYPE}" -g dict_file -gA dictionary \
- obj-NewMethods \
-  P= '{ echo "${dictionary["$1"]:-$1}"; }' \
-  Pset-folder '{ folder="$1"; }' \
-  Pset-language '{ language="$1"; }' \
-  Pset-file ' { dict_file="$1"; }' \
-  Preset '{ dictionary=(); }' \
-  Pload '{ local ix; [[ -e ${folder}/LANG/${language}/${dict_file} ]] && {
+# --translate
+obj --translate --create nodelete \
+ objI_SetReference root objI_CopyReference \
+ objI_AddVariables -g folder = "${obj_HOME}" -g language = "${LANG:-${LC_CTYPE:-en}}" -g source_file = obj-error -gA dictionary \
+ objI_NewMethods \
+  Pdefault '{ echo "${dictionary["$1"]:-$1}"; }' \
+  Nlanguage-file '{ local lf=""
+   [[ -e ${folder}/locale/${language%%_*}/$1 ]] && lf="${folder}/locale/${language%%_*}/$1"
+   [[ -z $lf && -e ${folder}/locale/en/$1 ]] && lf="${folder}/locale/en/$1"
+   [[ -e $lf ]] && echo "$lf"
+  }' \
+  Pload '{
+  local ix loadfile; loadfile="$(objN language-file "$source_file")" && {
     while IFS= read -r; do
-     [[ $REPLY == From:\ * ]] && ix="${REPLY#From: }"
-     [[ $REPLY == To:\ * ]] && dictionary+=(["$ix"]="${REPLY#To: }") ix=" "
-    done < "${folder}/LANG/${language}/${dict_file}";
-   }   
+     [[ $REPLY == From:\ * ]] && ix="${REPLY#From: }"; [[ $REPLY == To:\ * ]] && dictionary+=(["$ix"]="${REPLY#To: }") ix=" "
+    done < "${loadfile}";
+   } 
   }'
 
-# C) Create --errortext object
-obj --errortext --init obj-SetReference --translate obj-CopyReference
-obj --errortext set-file obj-error
-obj --errortext load
+# --help
+obj --help --create nodelete \
+ objI_SetReference root objI_CopyReference \
+ objI_AddVariables -g folder = "${obj_HOME}" -g language = "${LANG:-${LC_CTYPE:-en}}" \
+ objI_SetReference --translate objI_GetMethods Nlanguage-file Nlanguage-file \
+ objI_NewMethods Pdefault '{
+  [[ "$1" == "list" ]] && {
+   local i; cd "${folder}/locale/en"; for i in *.help; do [[ -e $i ]] && echo "${i%.help}"; done; cd "$OLDPWD"; return;
+  }
+  local help_item="${1:-obj}" help_file; help_file="$(objN language-file "${help_item}.help")" \
+   || { objError "There is not help for !A1!" "\"${help_item}\""; return; }
+  while IFS= read -r; do [[ $REPLY == \#* ]] && continue; echo "$REPLY"; done < "${help_file}";
+ }'
 
-# D) Change error helper
-unset -f objError
-objError() { local i c=0 et="$(obj --errortext = "$1")"; shift; for i in "$@"; do ((c++)); et="${et//!A${c}!/$i}"; done; echo "$et"; }
+# B) Change error helper
+obj --translate load; unset -f objError
+objError() { local i c=0 et="$(obj --translate default "$1")"; shift; for i in "$@"; do ((c++)); et="${et//!A${c}!/$i}"; done; echo "$et"; }
