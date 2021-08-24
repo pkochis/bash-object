@@ -1,88 +1,70 @@
 #!/bin/bash
 
 ################################################################################
-# Script name: basic-objects, Version 0.9
+# Script name: basic-objects, Version 0.9.5
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 #
-# A) create objects
-# B) Change error helper
+# A) Create root object
+# B) Create other objects
+# C) Change error helper
 ################################################################################
-[[ $(type -t objectCreate) != function ]] && exit  # prevents unwanted load
+[[ $(type -t objRcreate) != function ]] && exit  # prevents unwanted load
 
-# A) Create objects
-
-# --list
-obj --list --create nodelete \
- objI_NewMethods Pdefault '{ local i; for i in "${!objects[@]}"; do [[ $i = *\ * ]] && echo \"${i#ID}\" || echo ${i#ID}; done; }'
-
-# root
-obj root --create nodelete \
- objI_NewMethods \
+# A) Create root object
+objRhelp() { [[ -e ${obj_helpfile}.$1 ]] && source "${obj_helpfile}.$1" || source "${obj_helpfile}"; }
+objR_HelpInit() {
+ local helpfile=""
+ helpfile="$(obj root --localised-file "${1:-$PWD}" "${this[1]}.help")" && {
+  objR_AddVariables -g obj_helpfile = "$helpfile"; this_methods+=(["IDP--help"]="help")
+ }
+}  # objR_HelpInit()
+objR_RootInit() { [[ ${this[1]} != root ]] && return;
+ this_methods+=(["IDP--parent"]="Parent" ["IDP--error"]="Error")
+}  # objR_RootInit
+obj root --create objR_Nodelete objR_RootInit \
+ objR_NewMethods \
+  N--debug '{ local i; declare -p this obj_methods$this obj_variables$this; for i in "${this_variables[@]}"; do declare -p obj_v$i; done; }' \
+  P--localised-file '{
+   local language="${3:-${LANG:-${LC_CTYPE:-en}}}" ret=""
+   (($# > 1)) && {
+    [[ -e $1/locale/en/$2 ]] && ret="$1/locale/en/$2"; [[ -e $1/locale/${language%%_*}/$2 ]] && ret="$1/locale/${language%%_*}/$2"
+   }
+   echo "$ret"; [[ -n $ret ]]
+  }' \
   P--list-methods '{ local i;
    for i in "${!this_methods[@]}"; do
     case "$i" in IDP) echo "\"\"";; IDP*\ *) echo "\"${i#IDP}\"";; IDP*) echo "${i#IDP}";; esac;
    done
   }' \
-  N--debug '{ local i; declare -p this obj_methods$this obj_variables$this; for i in "${this_variables[@]}"; do declare -p obj_v$i; done; }'
+ objR_HelpInit "$obj_HOME"
 
-# --textlines
-obj --textlines --create \
- objI_SetReference root objI_CopyReference \
- objI_AddVariables -g input -g output -ga lines -ga aux_lines \
- objI_NewMethods \
-  Pinput '{ input="$1"; }' \
-  Poutput '{ output="$1"; }' \
-  Preset '{ lines=(); }' \
-  Pread '{ while IFS= read -r; do lines+=("$REPLY"); done < "$input"; }' \
-  Pwrite '{ echo -n > "$file_path" && { local i; for i in "${lines[@]}"; do echo "$i" >> "$output"; done; }; }' \
-  Plines '{ echo ${#lines[@]}; }' \
-  Pget-lines '{ local i; for i in "$@"; do echo "${lines[$i]}"; done; }' \
-  Pset-lines '{ while (($# > 0)); do lines[$1]="$2"; shift 2; done; }' \
-  Padd-lines '{ lines+=("$@"); }' \
-  Padd-lines-at-start '{ aux_lines=("${lines[@]}") lines=("$@" "${aux_lines[@]}"); }' \
-  Pdel-lines '{ local i; for i in "$@"; do unset -v lines[$i]; done; lines=("${lines[@]}"); }' \
-  Pinsert-lines '{
-   local i; aux_lines=("${lines[@]}"); lines=();
-   for ((i=0; i<=$1; i++)); do lines+=("${aux_lines[$i]}"); unset -v aux_lines[$i]; done;
-   shift; lines+=("$@" "${aux_lines[@]}")  
-  }'
 
-# --translate
-obj --translate --create nodelete \
- objI_SetReference root objI_CopyReference \
- objI_AddVariables -g folder = "${obj_HOME}" -g language = "${LANG:-${LC_CTYPE:-en}}" -g source_file = obj-error -gA dictionary \
- objI_NewMethods \
+# B) Create other objects
+
+# object-list
+obj object-list --create objR_Nodelete \
+ objR_NewMethods Pdefault '{ local i; for i in "${!objects[@]}"; do [[ $i = *\ * ]] && echo \"${i#ID}\" || echo ${i#ID}; done; }' \
+ 
+# obj-dictionary
+obj obj-dictionary --create objR_Nodelete objR_HelpInit "$obj_HOME" \
+ objR_SetReference root objR_GetMethods N--localised-file P--localised-file \
+ objR_AddVariables -g folder = "${obj_HOME}" -g source_file = obj-error -gA dictionary \
+ objR_NewMethods \
   Pdefault '{ echo "${dictionary["$1"]:-$1}"; }' \
-  Nlanguage-file '{ local lf=""
-   [[ -e ${folder}/locale/${language%%_*}/$1 ]] && lf="${folder}/locale/${language%%_*}/$1"
-   [[ -z $lf && -e ${folder}/locale/en/$1 ]] && lf="${folder}/locale/en/$1"
-   [[ -e $lf ]] && echo "$lf"
-  }' \
-  Pload '{
-  local ix loadfile; loadfile="$(objN language-file "$source_file")" && {
+  P--add-dictionary '{ local what=" "; [[ -e $1 ]] && {
     while IFS= read -r; do
-     [[ $REPLY == From:\ * ]] && ix="${REPLY#From: }"; [[ $REPLY == To:\ * ]] && dictionary+=(["$ix"]="${REPLY#To: }") ix=" "
-    done < "${loadfile}";
+     [[ $REPLY == From:\ * ]] && what="${REPLY#From: }"; [[ $REPLY == To:\ * ]] && { dictionary+=(["$what"]="${REPLY#To: }"); what=" "; }
+    done < "$1";
    } 
-  }'
+  }' \
+  P--add-local-dictionary '{ objP --add-dictionary "$(objN --localised-file "$folder" "$source_file")"; }' \
 
 # --help
-obj --help --create nodelete \
- objI_SetReference root objI_CopyReference \
- objI_AddVariables -g folder = "${obj_HOME}" -g language = "${LANG:-${LC_CTYPE:-en}}" \
- objI_SetReference --translate objI_GetMethods Nlanguage-file Nlanguage-file \
- objI_NewMethods Pdefault '{
-  [[ "$1" == "list" ]] && {
-   local i; cd "${folder}/locale/en"; for i in *.help; do [[ -e $i ]] && echo "${i%.help}"; done; cd "$OLDPWD"; return;
-  }
-  local help_item="${1:-obj}" help_file; help_file="$(objN language-file "${help_item}.help")" \
-   || { objError "There is not help for !A1!" "\"${help_item}\""; return; }
-  while IFS= read -r; do [[ $REPLY == \#* ]] && continue; echo "$REPLY"; done < "${help_file}";
- }'
+obj --help --create objR_Nodelete objR_HelpInit "$obj_HOME" objR_SetReference "--help" objR_GetMethods Pdefault P--help
 
-# B) Change error helper
-obj --translate load; unset -f objError
-objError() { local i c=0 et="$(obj --translate default "$1")"; shift; for i in "$@"; do ((c++)); et="${et//!A${c}!/$i}"; done; echo "$et"; }
+# C) Change error helper
+obj obj-dictionary --add-local-dictionary; unset -f objRError
+objRError() { local i c=0 et="$(obj obj-dictionary default "$1")"; shift; for i in "$@"; do ((c++)); et="${et//!A${c}!/$i}"; done; echo "$et"; }
