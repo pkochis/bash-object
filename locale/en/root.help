@@ -1,0 +1,30 @@
+################################################################################
+# English help file: root.help, Version 0.9.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Using the root object:
+  obj root <method>
+
+Public methods:
+  --error <text> [parameters]         Displays the specified error text
+  --help                              Displays this help text
+  --list-methods                      Lists the public methods
+  --localised-file <base-folder> <file> [<language>]
+                                      If the file exists in the language
+                                      directory, it returns its pathname.
+                                      If the file does not exist, it will check
+                                      in the English language directory.
+                                      If it does not exist, the mthod returns
+                                      with an error.
+  --parent [filename or folder name]  Parent directory of an existing file
+                                      or folder. If input parameter is
+                                      not specified, the name of the current
+                                      directory will be returned.
+
+Non-public method:
+  --debug                             Displays the internal datas of the object
+"

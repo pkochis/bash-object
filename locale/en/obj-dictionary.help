@@ -1,0 +1,51 @@
+################################################################################
+# English help file: obj-dictionary.help, Version 0.9.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Using the obj-dictionary object:
+  obj obj-dictionary <method>
+
+Public methods:
+  default <sentence>       Translates the sentence to the text stored
+                           in the dictionary.
+  --add-dictionary <file>  Adds the contents of the dictionary file to the
+                           dictionary of the object. In the case of a collision,
+                           the old text is overwritten by the new text.
+  --add-local-dictionary   Finds the required language file and passes it
+                           --add-dictionary method.
+  --help                   displays this help text
+
+Internal variables:
+  folder         --add-local-dictionary searches for the language file
+                 under this folder
+  source_file    The name of the file
+  dictionary     The dictionary block
+
+Notes:
+  The value of the internal variables can be specified when the object
+  is created.
+  --add-local-dictionary first searches for the file in the system language,
+  secondly in English. The location of the file is given in the folder under
+  locale language directories.
+  (English is in the en directory, Hungarian in the hu directory.)
+
+  The object ignores all lines in the file that are not in the beginning
+  the \"From: \" or \"To: \" text. Lines starting with \"From: \" contain
+  the sentences for translating. Lines starting with \"To: \" contain
+  the texts after translate.
+  
+  This object is used by the system, it is advisable to create another one
+  usung this as a reference and set the variables when creating it.
+
+
+Example:
+
+From: This should be translated
+To: To this text
+From: This is another sentence.
+To: This is translated to this other text.
+"

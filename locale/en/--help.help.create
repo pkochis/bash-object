@@ -1,0 +1,86 @@
+################################################################################
+# English help file: --create.help, Version 0.9.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+The --create method creates the object. It exists only for the creation.
+After the creation wiil be deleted.
+
+Usage: obj <new object> --create [SWITCH [parameters]]...
+
+General switches:
+  objR_Nodelete
+      The --erase method terminates the object. The objR_Nodelete option
+      does not create this method, so the object cannot be deleted
+      with the obj command.
+  objR_SetReference <object>
+      Sets the specified object as the reference.
+  objR_CopyReference
+      Copies all variables of the reference object with their current values
+      and all its methods are copied to the new object. In the event of
+      a conflict it overwrites the variables and methods.
+
+Variable switches:
+  objR_RemoveVariables <variable>...
+      Deletes the specified variables from the new object.
+  objR_AddVariables <attribute> <variable> [= <value>]...
+      Creates new variables (including arrays) with the specified  attributes
+      and names. Optionally, a value can be specified here.In case of name
+      conflict, it overwrites variables and arrays already created.
+  objR_GetVariables <variable> <reference variable>...
+      From the reference object, the variables and arrays specified
+      in the list with their current values will be copied to the new object
+      under the new name. In case of name conflict, it overwrites
+      the variables and arrays already created.
+
+Method switches:
+  objR_RemoveMethods <method>...
+      Removes the specified methods from the new object.
+  objR_NewMethods <method> '{ <code>; }'...
+      Creates new methods with the specified name and code.
+      In case of a name conflict, the old method will be detached
+      from the object and replaced by the new code.
+  objR_GetMethods
+      From the reference object, the methods specified is appended
+      to the object with the new name. In case of name conflict
+      the old method is detached from the object and replaced by the new one.
+
+Create help switch:
+  objR_HelpInit [<base folder>]
+      Creates the --help method for the object if the help file exists
+      in the system language, or in the English language. Location
+      of the help file is in the base folder in the language directories
+      under the locale folder. The help file is called <object>.help
+      If the base folder name is not specified, the current directory
+      will be used as the base folder.
+      Hungarian help file for the root object: ${obj_HOME}/locale/hu/root.help
+      English help file for the root object: ${obj_HOME}/locale/en/root.help
+
+Notes:
+  The --create method processes switches and their parameters step by step
+  from left to right, one after the other.
+
+  The variables (and arrays) are independent of each other, with
+  no relationship between them. It can only be implemented through the methods.
+  Each object has a unique, hidden name. The name we give is just
+  a reference to them.
+
+  The names we give must also respect the bash variable names conventions.
+
+  In the names of methods, both at creation and in the reference
+  must be specified as follows whether they are public or not:
+    P<method name> public method
+    N<method name> non-public method
+  The same code may belong to several public and non-public methods
+  at the same time, even in another object. 
+
+  If a method is detached from an object, its code is not deleted,
+  only if it is no longer used by any method of any object.
+
+  In the names of methods and objects can be more special characters
+  (even spaces) as in bash functions. In the case of using spaces,
+  always use quotation marks!
+"

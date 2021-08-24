@@ -1,0 +1,40 @@
+################################################################################
+# Hungarian help file: --help.help, Version 0.9.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Using the help:
+  obj --help              Displays this text
+  obj --help obj-file     Help for obj file
+  obj --help create       Help for creating objects
+  obj object-list         Displays a list of existing objects
+  obj <objektum> --help   Help for the object (if created)
+  obj root --help         Help for the root object
+
+Using the obj command:
+  obj [<object> <public method> [parameters]]
+
+  If the bash-object environment has not yet been created, it will create it,
+  then passes the message to the called method of the object and exits.
+  Without specifying an object, exits after the environment is created.
+
+Deletes the object:
+  obj <object> --erase
+
+Use the objP and objN commands:
+  objP <public method> [parameters]
+  objN <non-public method> [parameters]
+
+  objP calls a public method from another method of the object
+  objN calls a non-public method from another method of the object
+
+Notes:
+  If the obj command does not find the object, it returns an error message.
+  If the obj command does not find the method of the object,
+  it tries to use the default public method.
+  If the default public method does not exist either, the command
+  returns an error message.
+"

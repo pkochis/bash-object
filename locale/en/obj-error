@@ -1,5 +1,5 @@
 ################################################################################
-# English dictionary file: obj-error, Version 0.9
+# English dictionary file: obj-error, Version 0.9.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -14,6 +14,3 @@ To: The !A1! public method in !A2! object does not exist
 
 From: The !A1! non-public method in !A2! object does not exist
 To: The !A1! non-public method in !A2! object does not exist
-
-From: There is not help for !A1!
-To: There is not help for !A1!
