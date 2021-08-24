@@ -1,0 +1,47 @@
+################################################################################
+# Hungarian help file: obj-dictionary.help, Version 0.9.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Az obj-dictionary objektum használata:
+  obj obj-dictionary <metódus>
+
+Publikus metódusok:
+  default <mondat>         Lefordítja a mondatot a szótárban eltárolt szövegre.
+  --add-dictionary <fájl>  Hozzáadja a szótárfájl tartalmát az objektum
+                           szótárához. Ütközés esetén az új szöveg felülírja
+                           a régit.
+  --add-local-dictionary   Megkeresi a szükséges nyelvi fájlt és átadja
+                           --add-dictionary metódusnak.
+  --help                   Ez a súgó
+
+Belső változók:
+  folder         Az --add-local-dictionary e mappa alatt keresi a nyelvi fájlt
+  source_file    A fájl neve
+  dictionary     A szótártömb
+
+Megjegyzések:
+  A belső változók értékét az objektum létrehozásakor lehet megadni.
+  Az --add-local-dictionary fájlt először a rendszer nyelvén keresi,
+  másodsorban angol nyelven. A fájl helye a folder alatt a locale alatti
+  nyelvi könyvtárakban van. (Az angol nyelvű az en, a magyar a hu könyvtárban.)
+
+  Az objektum figyelmen kívül hagyja a fájl minden sorát, amely nem a \"From: \",
+  vagy a \"To: \" mintával kezdődik. A \"From: \"-al kezdődő sorok tartalmazzák
+  a lefordítandó mondatot, a \"To: \"-val kezdődőek pedig azt a szöveget,
+  amire kell fordítani.
+  
+  Ezt az objektumot a rendszer használja, célszerű létrehozni egy másikat ezt
+  referenciaként használva és a létrehozásakor beállítani a változókat.
+
+
+Példa:
+
+From: Ezt kell lefordítani
+To: Erre a szövegre
+From: Ez egy másik mondat.
+To: Ezt erre a másik szövegre fordítjuk.
+"

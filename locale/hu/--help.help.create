@@ -1,0 +1,86 @@
+################################################################################
+# Hungarian help file: --create.help, Version 0.9.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+A --create metódus létrehozza az objektumot. Csak az objektum létrehozásának
+idején és céljából létezik, utána törlődik.
+
+Használata: obj <új objektum> --create [KAPCSOLÓ [paraméterek]]...
+
+Általános kapcsolók:
+  objR_Nodelete
+      Az --erase metódus megszünteti az objektumot. Az objR_Nodelete kapcsoló
+      nem hozza létre ezt a metódust, így az objektumot nem lehet törölni
+      az obj paranccsal.
+  objR_SetReference <objektum>
+      A megadott objektumot beállítja referenciának.
+  objR_CopyReference
+      A referencia objektum minden változóját az aktuális értékükkel együtt
+      és minden metódusát bemásolja az új objektumba. Ütközés esetén felülírja
+      a már létrehozott változókat és metódusokat.
+
+Változókat kezelő kapcsolók:
+  objR_RemoveVariables <változó>...
+      A megadott változókat törli az új objektumból.
+  objR_AddVariables <attribútum> <változó> [= <érték>]...
+      Új változókat (ideértve a tömböket is) hoz létre a megadott
+      atribútumokkal és nevekkel. Opcionálisan érték is megadható itt.
+      Név ütközés esetén felülírja a már létrehozott változókat és tömböket.
+  objR_GetVariables <változó> <referencia változó>...
+      A referencia objektumból a lista szerint megadott változókat és tömböket
+      az aktuális értékükkel együtt az új néven bemásolja az új objektumba.
+      Név ütközés esetén felülírja a már létrehozott változókat és tömböket.
+
+Metódusokat kezelő kapcsolók:
+  objR_RemoveMethods <metódus>...
+      A megadott metódusokat eltávolítja az új objektumból.
+  objR_NewMethods <metódus> '{ <kód>; }'...
+      Új metódusokat hoz létre a megadott névvel és kóddal.
+      Név ütközés esetén a régi metódust leválasztja az objektumról
+      és helyébe az új kód kerül.
+  objR_GetMethods <metódus> <referencia metódus>
+      A referencia objektumból a lista szerint megadott metódusokat
+      az új néven hozzácsatolja az objektumhoz. Név ütközés esetén
+      a régi metódust leválasztja az objektumról és helyébe az új kerül.
+
+A súgót létrehozó kapcsoló:
+  objR_HelpInit [<bázis mappa>]
+      Létrehozza a --help metódust az objektum számára, ha létezik a rendszer
+      nyelvén az, vagy az angol nyelvű súgó. A súgó helye a bázis mappában
+      a locale mappa alatti nyelvi könyvtárakban van.
+      A súgó neve: <objektum>.help
+      Ha a bázis mappa neve nincs megadva, akkor az aktuális könyvtárat
+      tekinti bázis mappának.
+      A gyökér objektum magyar súgója: ${obj_HOME}/locale/hu/root.help
+      A gyökér objektum angol súgója: ${obj_HOME}/locale/en/root.help
+
+Megjegyzések:
+  A --create metódus balról jobbra haladva egymás után dolgozza fel
+  a kapcsolókat és paramétereiket.
+
+  A változók (és a tömbök) függetlenek egymástól, kapcsolatot közöttük
+  csak a metódusokon keresztül lehet megvalósítani. Az objektum minden
+  változójának egyedi, rejtett neve van. Az általunk megadott név
+  csak hivatkozás rájuk.
+
+  Az általunk megadott nevekben is be kell tartani a bash változónevekre
+  érvényes konvencióit.
+
+  A metódusok neveiben a létrehozáskor és a referenciában is
+  a következőképpen meg kell adni, hogy publikus-e, vagy nem:
+    P<metódus neve>    publikus metódus
+    N<metódus neve>    nem publikus metódus
+  Ugyanaz a kód tartozhat egyszerre több publikus és nem publikus
+  metódushoz is, akár másik objektumban is. 
+
+  Ha egy metódust leválasztunk egy objektumról, akkor annak kódja nem törlődik,
+  csak akkor, ha már egyetlen objektum egyetlen metódusa sem használja.
+
+  A metódusok és az objektumok neveiben több karaktert (akár szóközt is)
+  használhatunk, mint a bash függvényeiben.
+  Szóközök esetén mindig használjunk idézőjelet!
+"

@@ -1,0 +1,20 @@
+################################################################################
+# Hungarian help file: --help.help.obj-file, Version 0.9.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Az obj fájl futtatásakor beállítja az obj_HOME változót,
+betölti az obj parancsot és kilép.
+
+Az obj_HOME változót arra a könyvtárra állítja be, ahonnan a fájl betöltődött.
+Az obj parancs a memóriában marad, ha az obj fájlt a .bashrc fájlból
+hívjuk meg a következőképpen:
+  source \"<a fájl helye>/obj\"
+
+Az obj fájl nem indítja el az obj parancsot, csak létrehozza.
+Ekkor a felhasználói szkriptben az obj parancs első meghívása
+létrehozza a bash-object környezetét.
+"

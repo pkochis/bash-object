@@ -1,0 +1,29 @@
+################################################################################
+# Hungarian help file: root.help, Version 0.9.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+A root objektum használata:
+  obj root <metódus>
+
+Publikus metódusok:
+  --error <szöveg> [paraméterek]  A megadott hibaszöveget jeleníti meg
+  --help                          Ezt a súgót jeleníti meg
+  --list-methods                  Listázza a publikus metódusokat
+  --localised-file <bázis mappa> <fájl> [<nyelv>]
+                                  Ha a fájl létezik a nyelvi könyvtárban,
+                                  akkor annak úvonalával tér vissza. Ha a fájl
+                                  nem létezik, akkor az angol nyelvű fájl
+                                  útvonalával tér viszza, ha az sincs, akkor
+                                  hibával tér vissza.
+  --parent [fájl- vagy mappanév]  Létező fájl, vagy mappa szülőkönyvtárának
+                                  tényleges nevével tér vissza. Ha nincs megadva
+                                  a név, akkor az aktuális könyvtár tényleges
+                                  nevével tér vissza.
+
+Nem publikus metódus:
+  --debug                         Megjeleníti az objektum belső adatait
+"

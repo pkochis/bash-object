@@ -1,0 +1,39 @@
+################################################################################
+# Hungarian help file: --help.help, Version 0.9.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+A súgó használata:
+  obj --help              Ezt a szöveget jeleníti meg
+  obj --help obj-file     Az obj fájl súgója
+  obj --help create       Az objektumok létrehozásához tartozó súgó
+  obj object-list         A létező objektumok listáját jeleníti meg
+  obj <objektum> --help   Az objektum súgója (ha létre van hozva)
+  obj root --help         A gyökér objektum súgója
+
+Az obj parancs használata:
+  obj [<objektum> <publikus metódus> [paraméterek]]
+
+  Ha még nem jött létre a bash-object környezete, akkor létrehozza azt,
+  majd az üzenetet átadja az objektum meghívott metódusának és kilép.
+  Objektum megadása nélkül a környezet létrehozása után lép ki.
+
+Az objektum törlése:
+  obj <objektum> --erase
+
+Az objP és objN parancsok használata:
+  objP <publikus metódus> [paraméterek]
+  objN <nem publikus metódus> [paraméterek]
+
+  Az objP egy publikus metódust hív meg az objektum egy másik metódusából
+  Az objN egy nem publikus metódust hív meg az objektum egy másik metódusából
+
+Megjegyzések:
+  Ha az obj parancs nem találja az objektumot, hibaüzenettel tér vissza.
+  Ha az obj parancs nem találja az objektum metódusát, megpróbálja a default
+  publikus metódust végrehajtani.
+  Ha a default publikus metódus sem létezik, a parancs hibaüzenettel tér vissza.
+"
