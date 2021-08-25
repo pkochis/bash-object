@@ -1,5 +1,5 @@
 ################################################################################
-# Hungarian help file: --create.help, Version 0.9.5
+# Hungarian help file: --create.help, Version 0.9.6
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -30,6 +30,8 @@ Változókat kezelő kapcsolók:
       Új változókat (ideértve a tömböket is) hoz létre a megadott
       atribútumokkal és nevekkel. Opcionálisan érték is megadható itt.
       Név ütközés esetén felülírja a már létrehozott változókat és tömböket.
+      Tömbök esetében a zárójeleken kívül aposztrófot kell használnunk, így:
+      -ga|A <tömb> '(elem1 elem2...)'
   objR_GetVariables <változó> <referencia változó>...
       A referencia objektumból a lista szerint megadott változókat és tömböket
       az aktuális értékükkel együtt az új néven bemásolja az új objektumba.
