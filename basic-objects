@@ -7,24 +7,24 @@
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 #
-# A) Create root object
+# A) Create obj-general object
 # B) Create other objects
 # C) Change error helper
 ################################################################################
 [[ $(type -t objRcreate) != function ]] && exit  # prevents unwanted load
 
-# A) Create root object
+# A) Create obj-general object
 objRhelp() { [[ -e ${obj_helpfile}.$1 ]] && source "${obj_helpfile}.$1" || source "${obj_helpfile}"; }
 objR_HelpInit() {
  local helpfile=""
- helpfile="$(obj root --localised-file "${1:-$PWD}" "${this[1]}.help")" && {
+ helpfile="$(obj obj-general --localised-file "${1:-$PWD}" "${this[1]}.help")" && {
   objR_AddVariables -g obj_helpfile = "$helpfile"; this_methods+=(["IDP--help"]="help")
  }
 }  # objR_HelpInit()
-objR_RootInit() { [[ ${this[1]} != root ]] && return;
+objR_GeneralInit() { [[ ${this[1]} != obj-general ]] && return;
  this_methods+=(["IDP--parent"]="Parent" ["IDP--error"]="Error")
-}  # objR_RootInit
-obj root --create objR_Nodelete objR_RootInit \
+}  # objR_GeneralInit
+obj obj-general --create objR_Nodelete objR_GeneralInit \
  objR_NewMethods \
   N--debug '{ local i; declare -p this obj_methods$this obj_variables$this; for i in "${this_variables[@]}"; do declare -p obj_v$i; done; }' \
   P--localised-file '{
@@ -50,7 +50,7 @@ obj object-list --create objR_Nodelete \
  
 # obj-dictionary
 obj obj-dictionary --create objR_Nodelete objR_HelpInit "$obj_HOME" \
- objR_SetReference root objR_GetMethods N--localised-file P--localised-file \
+ objR_SetReference obj-general objR_GetMethods N--localised-file P--localised-file \
  objR_AddVariables -g folder = "${obj_HOME}" -g source_file = obj-error -gA dictionary \
  objR_NewMethods \
   Pdefault '{ echo "${dictionary["$1"]:-$1}"; }' \
