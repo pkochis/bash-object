@@ -1,13 +1,13 @@
 ################################################################################
-# English help file: root.help, Version 0.9.5
+# English help file: obj-general.help, Version 0.9.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
 printf "
-Using the root object:
-  obj root <method>
+Using the obj-general object:
+  obj obj-general <method>
 
 Public methods:
   --error <text> [parameters]         Displays the specified error text

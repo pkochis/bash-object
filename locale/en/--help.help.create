@@ -56,8 +56,11 @@ Create help switch:
       under the locale folder. The help file is called <object>.help
       If the base folder name is not specified, the current directory
       will be used as the base folder.
-      Hungarian help file for the root object: ${obj_HOME}/locale/hu/root.help
-      English help file for the root object: ${obj_HOME}/locale/en/root.help
+ 
+      Hungarian help file for the obj-general object:
+         ${obj_HOME}/locale/hu/obj-general.help
+      English help file for the obj-general object:
+         ${obj_HOME}/locale/en/obj-general.help
 
 Notes:
   The --create method processes switches and their parameters step by step

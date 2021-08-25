@@ -12,7 +12,7 @@ Using the help:
   obj --help create       Help for creating objects
   obj object-list         Displays a list of existing objects
   obj <objektum> --help   Help for the object (if created)
-  obj root --help         Help for the root object
+  obj obj-general --help  Help for obj-general object
 
 Using the obj command:
   obj [<object> <public method> [parameters]]
