@@ -11,6 +11,7 @@
 # B) Create other objects
 # C) Change error helper
 # D) Create obj-ini object
+# E) This helper prints one single quote
 ################################################################################
 [[ $(type -t objRcreate) != function ]] && exit  # prevents unwanted load
 
@@ -74,23 +75,23 @@ objRError() { local i c=0 et="$(obj obj-dictionary default "$1")"; shift; for i 
 
 # D) Create obj-ini object
 obj obj-ini --create objRNodelete objR_HelpInit "$obj_HOME" \
+ objR_AddVariables -g inidir \
  objR_NewMethods \
   "P--set-inidir" '{ cd "$1"; inidir="$PWD"; cd $OLDPWD; }' \
   "P--load" '{ [[ -e ${inidir}/${this[1]}.ini ]] && eval objN --loadvariables "$(< "${inidir}/${this[1]}.ini")"; }' \
-  "N--loadvariables" '{ while (($# > 1)); do [[ -n ${this_variables[ID$1]} ]] && eval "$1=$2"; shift 2; done; }' \
+  "N--loadvariables" '{ while (($# > 2)); do [[ -n ${this_variables[ID$1]} ]] && eval "$1=$3"; shift 2; done; }' \
   "P--save" '{
    [[ -d $inidir ]] && {
     local f="${inidir}/${this[1]}.ini" i val; echo -n "" > "$f"
     for i in "$@"; do
      [[ -z ${this_variables[ID$i]} ]] && continue
      val="$(declare -p obj_v${this_variables[ID$i]})"
-     echo -n "$i " >> "$f"; [[ ${val%%=*} != @(*a*|*A*) ]] && { echo "${val#*=} \\" >> "$f"; continue; }
+     echo -n "$i = " >> "$f"; [[ ${val%%=*} != @(*a*|*A*) ]] && { echo "${val#*=} \\" >> "$f"; continue; }
      objRPSQ >> "$f"; echo -n "${val#*=}" >> "$f"; objRPSQ >> "$f"; echo " \\" >> "$f"
     done  
    }
   }' \
- objR_AddVariables -g inidir -gA almalista = \
- objR_SetReference obj-general objR_GetMethods "Pd" "N--debug"
 
+# E) This helper prints one single quote
 objRPSQ() { echo -n "'"; }; export -f objRPSQ
   
