@@ -1,5 +1,5 @@
 ################################################################################
-# English help file: --create.help, Version 0.9.5
+# English help file: --create.help, Version 0.9.6
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -30,6 +30,8 @@ Variable switches:
       Creates new variables (including arrays) with the specified  attributes
       and names. Optionally, a value can be specified here.In case of name
       conflict, it overwrites variables and arrays already created.
+      For arrays, we must use apostrophes in addition to parentheses, so:
+      -ga|A <array> '(element1 element2...)'
   objR_GetVariables <variable> <reference variable>...
       From the reference object, the variables and arrays specified
       in the list with their current values will be copied to the new object

@@ -1,0 +1,25 @@
+################################################################################
+# Hungarian help file: obj-ini.help, Version 0.9.6
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Usage the obj-ini object:
+  obj obj-ini <method>
+
+Public methods:
+  --help                 Displays this help.
+  --load                 Overwrites the variables and arrays of the object
+                         with the values stored in the ini file.
+  --save <variable>...   Saves the specified variables (including arrays)
+                         of the object to the ini file.
+  --set-inidir <folder>  Sets the folder where the ini file is located.
+
+Non-public method:
+  --loadvariables        Called by the --load method.
+
+Notes:
+  The ini file name is <object>.ini
+"
