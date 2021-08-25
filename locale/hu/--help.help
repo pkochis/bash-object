@@ -12,7 +12,7 @@ A súgó használata:
   obj --help create       Az objektumok létrehozásához tartozó súgó
   obj object-list         A létező objektumok listáját jeleníti meg
   obj <objektum> --help   Az objektum súgója (ha létre van hozva)
-  obj root --help         A gyökér objektum súgója
+  obj obj-general --help  Az általános objektum súgója
 
 Az obj parancs használata:
   obj [<objektum> <publikus metódus> [paraméterek]]

@@ -55,8 +55,11 @@ A súgót létrehozó kapcsoló:
       A súgó neve: <objektum>.help
       Ha a bázis mappa neve nincs megadva, akkor az aktuális könyvtárat
       tekinti bázis mappának.
-      A gyökér objektum magyar súgója: ${obj_HOME}/locale/hu/root.help
-      A gyökér objektum angol súgója: ${obj_HOME}/locale/en/root.help
+
+      Az általános objektum magyar súgója:
+         ${obj_HOME}/locale/hu/obj-general.help
+      Az általános objektum angol súgója:
+         ${obj_HOME}/locale/en/obj-general.help
 
 Megjegyzések:
   A --create metódus balról jobbra haladva egymás után dolgozza fel
