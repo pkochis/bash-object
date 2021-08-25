@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-# Script name: basic-objects, Version 0.9.5
+# Script name: basic-objects, Version 0.9.6
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -10,8 +10,11 @@
 # A) Create obj-general object
 # B) Create other objects
 # C) Change error helper
+# D) Create obj-ini object
 ################################################################################
 [[ $(type -t objRcreate) != function ]] && exit  # prevents unwanted load
+
+# obj_STRONGQUOTE="'"; export obj_STRONGQUOTE
 
 # A) Create obj-general object
 objRhelp() { [[ -e ${obj_helpfile}.$1 ]] && source "${obj_helpfile}.$1" || source "${obj_helpfile}"; }
@@ -68,3 +71,26 @@ obj --help --create objR_Nodelete objR_HelpInit "$obj_HOME" objR_SetReference "-
 # C) Change error helper
 obj obj-dictionary --add-local-dictionary; unset -f objRError
 objRError() { local i c=0 et="$(obj obj-dictionary default "$1")"; shift; for i in "$@"; do ((c++)); et="${et//!A${c}!/$i}"; done; echo "$et"; }
+
+# D) Create obj-ini object
+obj obj-ini --create objRNodelete objR_HelpInit "$obj_HOME" \
+ objR_NewMethods \
+  "P--set-inidir" '{ cd "$1"; inidir="$PWD"; cd $OLDPWD; }' \
+  "P--load" '{ [[ -e ${inidir}/${this[1]}.ini ]] && eval objN --loadvariables "$(< "${inidir}/${this[1]}.ini")"; }' \
+  "N--loadvariables" '{ while (($# > 1)); do [[ -n ${this_variables[ID$1]} ]] && eval "$1=$2"; shift 2; done; }' \
+  "P--save" '{
+   [[ -d $inidir ]] && {
+    local f="${inidir}/${this[1]}.ini" i val; echo -n "" > "$f"
+    for i in "$@"; do
+     [[ -z ${this_variables[ID$i]} ]] && continue
+     val="$(declare -p obj_v${this_variables[ID$i]})"
+     echo -n "$i " >> "$f"; [[ ${val%%=*} != @(*a*|*A*) ]] && { echo "${val#*=} \\" >> "$f"; continue; }
+     objRPSQ >> "$f"; echo -n "${val#*=}" >> "$f"; objRPSQ >> "$f"; echo " \\" >> "$f"
+    done  
+   }
+  }' \
+ objR_AddVariables -g inidir -gA almalista = \
+ objR_SetReference obj-general objR_GetMethods "Pd" "N--debug"
+
+objRPSQ() { echo -n "'"; }; export -f objRPSQ
+  

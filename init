@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-# Script name: init, Version 0.9.5
+# Script name: init, Version 0.9.6
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -69,7 +69,8 @@ objR_AddVariables() {
  while [[ -n $1 && -n $2 ]]; do
   declare $1 "obj_v$((++obj_C))" && this_variables+=([ID$2]=${obj_C}) && [[ "$3" == "=" ]] && {
    [[ $1 = @(*a*|*A*) ]] && eval "obj_v${obj_C}=$4" || eval "obj_v${obj_C}=\"$4\""; shift 2
-  }; shift 2
+  };
+  shift 2
  done
 }  # objR_AddVariables()
 objR_GetVariables() {
@@ -91,7 +92,8 @@ objR_NewMethods() {
   objR_RoutineRemove ${this_methods["ID$1"]}; objR_RoutineNew $((++obj_C)) "$2" && this_methods+=(["ID$1"]=${obj_C}); shift 2
  done
 }  # objR_NewMethods()
-objR_GetMethods() { declare -n ref_methods=obj_methods$ref; local i; while (($# > 1)); do
+objR_GetMethods() { 
+ declare -n ref_methods=obj_methods$ref; local i; while (($# > 1)); do
   [[ ${this_methods["ID$1"]} != ${ref_methods["ID$2"]} ]] && {
    objR_RoutineRemove ${this_methods["ID$1"]}; objR_RoutineAdd ${ref_methods["ID$2"]}; this_methods["ID$1"]=${ref_methods["ID$2"]}
   }; shift 2
