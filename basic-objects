@@ -15,8 +15,6 @@
 ################################################################################
 [[ $(type -t objRcreate) != function ]] && exit  # prevents unwanted load
 
-# obj_STRONGQUOTE="'"; export obj_STRONGQUOTE
-
 # A) Create obj-general object
 objRhelp() { [[ -e ${obj_helpfile}.$1 ]] && source "${obj_helpfile}.$1" || source "${obj_helpfile}"; }
 objR_HelpInit() {
