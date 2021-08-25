@@ -49,8 +49,8 @@ Metódusokat kezelő kapcsolók:
 
 A súgót létrehozó kapcsoló:
   objR_HelpInit [<bázis mappa>]
-      Létrehozza a --help metódust az objektum számára, ha létezik a rendszer
-      nyelvén az, vagy az angol nyelvű súgó. A súgó helye a bázis mappában
+      Létrehozza a --help metódust az objektum számára, ha a súgó létezik
+      a rendszer nyelvén, vagy angol nyelven. A súgó helye a bázis mappában
       a locale mappa alatti nyelvi könyvtárakban van.
       A súgó neve: <objektum>.help
       Ha a bázis mappa neve nincs megadva, akkor az aktuális könyvtárat
