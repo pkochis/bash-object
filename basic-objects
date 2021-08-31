@@ -7,89 +7,90 @@
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 #
-# A) Create obj-general object
-# B) Create other objects
-# C) Change error helper
-# D) Create obj-ini object
-# E) This helper prints one single quote
+# A) Force erase object
+# B) Create obj-debug object
+# C) Create object-list object
+# D) Create obj-dictionary object
+# E) Change error helper
+# F) Create --help object
+# G) Create obj-backup-variables object
 ################################################################################
-[[ $(type -t objRcreate) != function ]] && exit  # prevents unwanted load
+[[ $(type -t objC_init) != function ]] && exit  # prevents unwanted load
 
-# A) Create obj-general object
-objRhelp() { [[ -e ${obj_helpfile}.$1 ]] && source "${obj_helpfile}.$1" || source "${obj_helpfile}"; }
-objR_HelpInit() {
- local helpfile=""
- helpfile="$(obj obj-general --localised-file "${1:-$PWD}" "${this[1]}.help")" && {
-  objR_AddVariables -g obj_helpfile = "$helpfile"; this_methods+=(["IDP--help"]="help")
- }
-}  # objR_HelpInit()
-objR_GeneralInit() { [[ ${this[1]} != obj-general ]] && return;
- this_methods+=(["IDP--parent"]="Parent" ["IDP--error"]="Error")
-}  # objR_GeneralInit
-obj obj-general --create objR_Nodelete objR_GeneralInit \
- objR_NewMethods \
-  N--debug '{ local i; declare -p this obj_methods$this obj_variables$this; for i in "${this_variables[@]}"; do declare -p obj_v$i; done; }' \
-  P--localised-file '{
-   local language="${3:-${LANG:-${LC_CTYPE:-en}}}" ret=""
-   (($# > 1)) && {
-    [[ -e $1/locale/en/$2 ]] && ret="$1/locale/en/$2"; [[ -e $1/locale/${language%%_*}/$2 ]] && ret="$1/locale/${language%%_*}/$2"
-   }
-   echo "$ret"; [[ -n $ret ]]
-  }' \
-  P--list-methods '{ local i;
-   for i in "${!this_methods[@]}"; do
-    case "$i" in IDP) echo "\"\"";; IDP*\ *) echo "\"${i#IDP}\"";; IDP*) echo "${i#IDP}";; esac;
+# A) Force erase object
+objRforceErase() { [[ "$2" != "--force" ]] && return; local o
+ o=${objects["ID$1"]}; ((${o:-0} < 12)) && return
+ eval "obj_methods$o+=([\"Mobj-erase\"]=deconstruct) obj_public$o+=([\"Mobj-erase\"]=deconstruct)"  # add obj-erase public method
+ obj "$1" obj-erase  # call deconstructor
+}
+
+# B) Create obj-debug object
+objRforceErase obj-debug --force
+obj obj-debug obj-create objC_noerase \
+ objC_public obj-public-methods '{ local i; for i in "${!this_public[@]}"; do [[ $i = *\ * ]] && echo \"${i:1}\" || echo ${i:1}; done; }' \
+ objC_public default '{
+  declare -p this
+  local i; for i in "${obj_meta[@]}"; do declare -p obj_${i}$this; done
+  for i in "${this_data[@]}"; do declare -p objV_$i; done
+ }'
+
+# C) Create object-list object
+objRforceErase object-list --force
+obj object-list obj-create objC_noerase \
+ objC_public default '{ local i; for i in "${!objects[@]}"; do [[ $i = *\ * ]] && echo \"${i#ID}\" || echo ${i#ID}; done; }'
+
+# D) Create obj-dictionary object
+objRforceErase obj-dictionary --force
+obj obj-dictionary obj-create objC_noerase \
+ objC_variable obj_folder -g = "${obj_HOME}" \
+ objC_variable obj_source_file -g = obj-error \
+ objC_variable obj_dictionary -gA \
+ objC_public default '{ echo "${obj_dictionary["$1"]:-$1}"; }' \
+ objC_private obj-add-dictionary '{
+  local what=" "; [[ -e $1 ]] && {
+   while IFS= read -r; do
+    [[ $REPLY == From:\ * ]] && what="${REPLY#From: }"; [[ $REPLY == To:\ * ]] && { obj_dictionary+=(["$what"]="${REPLY#To: }"); what=" "; }
+   done < "$1";
+  } 
+ }' \
+ objC_private obj-add-local-dictionary '{
+  [[ -d ${obj_folder} ]] && {
+   cd "${obj_folder}"; obj_folder="$PWD"; cd "$OLDPWD"
+   objI obj-add-dictionary "$(objLocalisedFile "${obj_folder}" "${obj_source_file}")"
+  } 
+ }' \
+ objC_init obj-add-local-dictionary
+
+# E) Change error helper
+objRerror() { local i c=0 et="$(obj obj-dictionary default "$1")"; shift; for i in "$@"; do ((c++)); et="${et//%A${c}%/$i}"; done; echo "$et"; }
+
+# F) Create --help object
+objRforceErase "--help" --force
+obj "--help" obj-create objC_noerase objC_defaulthelp
+
+# G) Create obj-backup-variables object
+objRforceErase obj-backup-variables --force
+obj obj-backup-variables obj-create objC_noerase \
+ objC_variable obj_backupdir -g = "" \
+ objC_variable obj_variables -ga = '()' \
+ objC_public obj-set-backupdir '{ cd "$1"; obj_backupdir="$PWD"; cd $OLDPWD; }' \
+ objC_public obj-set-filter '{ local i
+  obj_variables=(); [[ "$1" == "." ]] && for i in "${!this_data[@]}"; do obj_variables+=("${i:1}"); done || obj_variables=("$@")
+ }' \
+ objC_public obj-get-filter '{ echo "${obj_variables[@]}"; }' \
+ objC_public obj-restore '{ local i j
+  [[ -e ${obj_backupdir}/${this[1]}.vbak ]] && while IFS= read -r; do
+   for i in "${obj_variables[@]}"; do
+    [[ $REPLY == $i=* ]] && for j in "${!this_data[@]}"; do [[ $REPLY == ${j:1}=* ]] && eval "$REPLY"; done
    done
-  }' \
- objR_HelpInit "$obj_HOME"
-
-
-# B) Create other objects
-
-# object-list
-obj object-list --create objR_Nodelete \
- objR_NewMethods Pdefault '{ local i; for i in "${!objects[@]}"; do [[ $i = *\ * ]] && echo \"${i#ID}\" || echo ${i#ID}; done; }' \
- 
-# obj-dictionary
-obj obj-dictionary --create objR_Nodelete objR_HelpInit "$obj_HOME" \
- objR_SetReference obj-general objR_GetMethods N--localised-file P--localised-file \
- objR_AddVariables -g folder = "${obj_HOME}" -g source_file = obj-error -gA dictionary \
- objR_NewMethods \
-  Pdefault '{ echo "${dictionary["$1"]:-$1}"; }' \
-  P--add-dictionary '{ local what=" "; [[ -e $1 ]] && {
-    while IFS= read -r; do
-     [[ $REPLY == From:\ * ]] && what="${REPLY#From: }"; [[ $REPLY == To:\ * ]] && { dictionary+=(["$what"]="${REPLY#To: }"); what=" "; }
-    done < "$1";
-   } 
-  }' \
-  P--add-local-dictionary '{ objP --add-dictionary "$(objN --localised-file "$folder" "$source_file")"; }' \
-
-# --help
-obj --help --create objR_Nodelete objR_HelpInit "$obj_HOME" objR_SetReference "--help" objR_GetMethods Pdefault P--help
-
-# C) Change error helper
-obj obj-dictionary --add-local-dictionary; unset -f objRError
-objRError() { local i c=0 et="$(obj obj-dictionary default "$1")"; shift; for i in "$@"; do ((c++)); et="${et//!A${c}!/$i}"; done; echo "$et"; }
-
-# D) Create obj-ini object
-obj obj-ini --create objRNodelete objR_HelpInit "$obj_HOME" \
- objR_AddVariables -g inidir \
- objR_NewMethods \
-  "P--set-inidir" '{ cd "$1"; inidir="$PWD"; cd $OLDPWD; }' \
-  "P--load" '{ [[ -e ${inidir}/${this[1]}.ini ]] && eval objN --loadvariables "$(< "${inidir}/${this[1]}.ini")"; }' \
-  "N--loadvariables" '{ while (($# > 2)); do [[ -n ${this_variables[ID$1]} ]] && eval "$1=$3"; shift 2; done; }' \
-  "P--save" '{
-   [[ -d $inidir ]] && {
-    local f="${inidir}/${this[1]}.ini" i val; echo -n "" > "$f"
-    for i in "$@"; do
-     [[ -z ${this_variables[ID$i]} ]] && continue
-     val="$(declare -p obj_v${this_variables[ID$i]})"
-     echo -n "$i = " >> "$f"; [[ ${val%%=*} != @(*a*|*A*) ]] && { echo "${val#*=} \\" >> "$f"; continue; }
-     objRPSQ >> "$f"; echo -n "${val#*=}" >> "$f"; objRPSQ >> "$f"; echo " \\" >> "$f"
-    done  
-   }
-  }' \
-
-# E) This helper prints one single quote
-objRPSQ() { echo -n "'"; }; export -f objRPSQ
-  
+  done < "${obj_backupdir}/${this[1]}.vbak"
+ }' \
+ objC_public obj-backup '{
+  [[ -d $obj_backupdir ]] && {
+   local f="${obj_backupdir}/${this[1]}.vbak" i val; echo -n "" > "$f"
+   for i in "${obj_variables[@]}"; do
+    [[ -z ${this_data[V$i]} ]] && continue
+    w="$(declare -p objV_${this_data[V$i]})"; echo "$i=${w#*=}" >> "$f"
+   done  
+  }
+ }'

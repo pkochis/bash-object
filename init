@@ -1,0 +1,77 @@
+#!/bin/bash
+
+################################################################################
+# Script name: init, Version 0.9.6
+# This script is a part of "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+#
+# A) Set environment
+# B) Message handlers
+# C) First (hidden) object: obj-check
+# D) Create object
+# E) Call construct-items
+################################################################################
+[[ $(type -t obj) != function ]] && exit  # prevents unwanted run
+
+# A) Set environment
+declare -g obj_C; ((obj_C < 10)) && obj_C=12; export obj_C  # init general upcounter
+declare -gA objects obj_routines  # init the registers of objects and routines
+declare -ga obj_meta=(public methods data)  # metadata for all objects
+declare -gA obj_methods0=() obj_public0=() obj_data0=()  # init the zero object
+declare -ga obj_construct_end=()  # init last processes for constructor
+
+# B) Message handlers
+objRerror() { local i c=0 et="$1"; shift; for i in "$@"; do ((c++)); et="${et//%A${c}%/$i}"; done; echo "$et"; }
+obj() {
+ declare -a this=(${objects["ID${1}"]:-2} "${1}" "${2:-default}" "${2:-default}" "${2:-default}"); shift; shift  # get ID of object
+ local i; for i in "${obj_meta[@]}"; do declare -n this_$i=obj_${i}$this; done  # load object
+ for i in "${!this_data[@]}"; do declare -n ${i:1}=objV_${this_data[$i]}; done  # attach variables
+ objR${this_public["M${this[2]}"]:-check} "$@"
+}
+objI() { this[3]="${1:-default}" this[4]="${1:-default}"; shift; objR${this_methods["M${this[3]}"]:-checkI} "$@"; }
+objRcheck() {
+ ((${#this[1]} * ${#obj_meta[@]} > 0)) && { objRtryPublicDefault "$@"; return; }
+ source "${obj_INIT}" && ((${#this[1]} > 0)) && obj "${this[1]}" "${this[2]}" "$@"
+}
+objRcheckI() {
+ ((${#this[1]} * ${#obj_meta[@]} > 0)) && { objRtryDefault "$@"; return; }
+ source "${obj_INIT}" && ((${#this[1]} > 0)) && objI "${this[3]}" "$@"
+}
+objRtryPublicDefault() { this[2]=default this[3]=default; objR${this_public[Mdefault]:-noPublicMethod} "${this[4]}" "$@"; }
+objRtryDefault() { this[3]=default; objR${this_method[Mdefault]:-noMethod} "${this[4]}" "$@"; }
+objRnoPublicMethod() { objRerror "The %A1% public method in %A2% object does not exist" "\"$1\"" "\"${this[1]}\""; }
+objRnoMethod() { objRerror "The %A1% method in %A2% object does not exist" "\"$1\"" "\"${this[1]}\""; }
+export -f objRerror obj objI objRcheck objRcheckI objRtryPublicDefault objRtryDefault objRnoPublicMethod objRnoMethod
+
+# C) First (hidden) object: obj-check
+declare -gA obj_public2+=([Mdefault]=notObject ["Mobj-create"]=create) obj_methods2=([Mdefault]=notObject ["Mobj-create"]=create) obj_data2=()
+objRnotObject() { ((${#this[1]} > 0)) && objRerror "The %A1% object does not exist" "\"${this[1]}\"" || objRcheck; } 
+
+# D) Create object
+objRcreate() {
+ (($this != 2)) && return; local i  # protect this function
+ objects+=(["ID${this[1]}"]="$((++obj_C))"); this=${obj_C}  # create and switch to ID of new object
+ for i in "${obj_meta[@]}"; do declare -gA obj_${i}${obj_C}; declare -n this_${i}=obj_${i}${obj_C}; done  # init and switch to new object
+ objC_construct : "$@" objC_end objC_  # develop the new object
+}  # objRcreate
+
+objC_construct() {
+ [[ ${FUNCNAME[1]} != objRcreate ]] && return  # protect this function
+ declare -A obj_construct_flag=(); local ref=0; declare -a cline=()  # flags for objC_end; reference object; command-line helper
+ while (($# > 0)); do  # parse init command BEGIN
+  [[ $1 == objC_* ]] && { "${cline[@]}"; cline=(); }; cline+=("$1"); shift  # create and run init routines in the init command
+ done  # parse init command END
+}
+objC_reference() {
+ [[ ${FUNCNAME[1]} != objC_* ]] && return  # protect this function
+ ref=${objects["ID$1"]:-0}  # set reference (default is the zero object)
+}
+objC_end() {
+ [[ ${FUNCNAME[1]} != objC_construct ]] && return; local i  # protect this function
+ for i in "${obj_construct_end[@]}"; do objC_$i; done
+}
+
+# E) Call construct-items
+source "${obj_HOME}/construct-items"
