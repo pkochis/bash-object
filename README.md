@@ -2,7 +2,7 @@
 The goal is to create and use objects in bash. The elements of a bash-object are written in bash. Therefore you can use them everywhere, even in cygwin.
 
 ## Version
-The current stable version is 0.9.6 (2021-08-25)
+The current stable version is 1.0 (2021-08-31)
 
 ## Usage
 You can use them in any bash script.  
