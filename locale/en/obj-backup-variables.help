@@ -1,25 +1,36 @@
 ################################################################################
-# Hungarian help file: obj-ini.help, Version 0.9.6
+# English help file: obj-backup-variables.help, Version 1.0
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
 printf "
-Usage the obj-ini object:
-  obj obj-ini <method>
+Usage of the obj-backup-variables object:
+  obj obj-backup-variables <method> [<parameters>]
 
-Public methods:
-  --help                 Displays this help.
-  --load                 Overwrites the variables and arrays of the object
-                         with the values stored in the ini file.
-  --save <variable>...   Saves the specified variables (including arrays)
-                         of the object to the ini file.
-  --set-inidir <folder>  Sets the folder where the ini file is located.
+Methods:
+  --help                         Displays this help.
+  obj-backup                     Save variables to backup file.
+  obj-restore                    Restore variables from backup file.
+  obj-set-backupdir <folder>     Specify the backup folder.
+  obj-set-filter <variable>...   Specify the filter of variables.
+  obj-get-filter                 Read the filter of variables.
 
-Non-public method:
-  --loadvariables        Called by the --load method.
+Internal variables:
+  obj_backupdir
+  obj_variables
 
 Notes:
-  The ini file name is <object>.ini
+  a) The backup file name is: <object>.vbak
+  b) Enable all variables for backup:
+     obj obj-backup-variables obj-set-filter .
+     (Method with one dot.)
+  c) Disable all variables for backup:
+     obj obj-backup-variables obj-set-filter
+     (Method without parameters.)
+  d) If a variable in the filter list is not definied in the object,
+     it will be ignored.
+  e) If a variable in the backup file is not definied in the object,
+     it will be ignored.
 "

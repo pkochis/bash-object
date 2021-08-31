@@ -1,0 +1,50 @@
+################################################################################
+# English help file: --help.helpsystem, Version 1.0
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Usage: obj <object> --help [subhelp]
+
+Displays the help text or a text of subhelp.
+
+ When creating an object, the constructor adds the --help method to the object
+ if a localised help file exists for the object. If the object is created
+ in command line, or the help file does not exist, the --help method is
+ not created.
+
+Notes:
+ a) The --help method is created or deleted by the constructor. Our job is
+    to write the help files and place them in the appropriate folder.
+ b) The help file should be in the language directories under the "locale"
+    folder. The "locale" folder is in the same folder in which the script that
+    created the object.
+ c) If the constructor does not find the help file in the system language,
+    it will look for it in the "en" language library.
+ d) The name of the help file is the name of the object name and
+    the extension is \".help\".
+ e) The name of the sub-help file is the name of the sub-help with
+    a dot appended to the name of the object, and the extension is \".help\".
+ f) The subhelp file must be in the same folder where is the help file.
+ g) The help file is a script, the advised format is the following:
+    printf \"
+     help text
+    \"
+ h) If the help file exists, and the \"objC_defaulthelp\" option is used
+    when creating the object, the default method will execute the --help
+    method routine.
+
+Example:
+  The \"--help\" object location:
+    \"${obj_HOME}\"
+  The English help file of \"--help\" object:
+    \"$(objParentPath "$BASH_SOURCE")/--help.help\"
+  The English \"helpsystem\" subhelp file of \"--help\" object (this file):
+    \"$BASH_SOURCE\"
+  The Hungarian help file of \"--help\" object:
+    \"${obj_HOME}/locale/hu/--help.help\"
+  The Hungarian \"helpsystem\" subhelp file of \"--help\" object:
+    \"${obj_HOME}/locale/hu/--help.helpsystem.help\"
+"

@@ -1,30 +1,55 @@
 ################################################################################
-# English help file: obj-general.help, Version 0.9.6
+# English help file: --help.common, Version 1.0
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
 printf "
-Using the obj-general object:
-  obj obj-general <method>
+Objects:
+  --help                 Displays general helps for bash-object.
+  obj-backup-variables   Proto object for backup and restore internal variables.
+  obj-debug              Proto object for display some info of the object.
+  obj-dictionary         Translates a sentence to a stored text.
+  object-list            Displays all already created objects.
 
-Public methods:
-  --error <text> [parameters]         Displays the specified error text
-  --help                              Displays this help text
-  --list-methods                      Lists the public methods
-  --localised-file <base-folder> <file> [<language>]
-                                      If the file exists in the language
-                                      directory, it returns its pathname.
-                                      If the file does not exist, it will check
-                                      in the English language directory.
-                                      If it does not exist, the mthod returns
-                                      with an error.
-  --parent [filename or folder name]  Parent directory of an existing file
-                                      or folder. If input parameter is
-                                      not specified, the name of the current
-                                      directory will be returned.
+Methods:
+  --help                 Displays help and subhelps for the object.
+                         Constructor generates it if exists help file.
+  default                If the obj (or objI) command does not find the
+                         specified method, it will run this method if defined.
+  obj-create             Creates object. After creation it is disappeared.
+  obj-erase              Deletes object.
+  obj-public-methods     Displays all public methods of the object.
 
-Non-public method:
-  --debug                             Displays the internal datas of the object
+Routines:
+  objLocalisedFile <folder> <file> [<language>]
+                         It searches the localised file in the specified
+                         language, then in system language, finally in English.
+                         It returns with the path or error code.
+                         The file path is <folder>/locale/<language>/<file>
+  objParentPath <file or folder>
+                         If input is exists it returns a parent path of input.  
+
+Variables:
+  this[0]                For internal use
+  this[1]                The name of the object
+  this[2]                The name of the public method is called by obj command
+  this[3]                The name of the method is called by objI command
+  this[4]                For internal use
+
+Warnings:
+ a) The this variables are managed by the system. They are read by the routines.
+    They indicate which method of which object the routine is currently serving.
+    Do not overwrite!
+ b) Words starting with obj are built-in objects, methods, routines, variables
+    of the system and are reserved for future development. Do not create elements
+    with these names to avoid confusion!
+ c) The use of objects, methods and variables with empty names may lead
+    to unpredictable operation.
+ d) The --help method is created or deleted by the constructor. Our job is
+    to write the help files and place them in the appropriate folder.
+ e) You can assign any routine to the default method. If no method is specified,
+    or if the system cannot find it, the default method will be executed.
+    If there is no default method, an error message is returned.
 "

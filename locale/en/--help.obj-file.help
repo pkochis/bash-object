@@ -1,20 +1,21 @@
 ################################################################################
-# Hungarian help file: --help.help.obj-file, Version 0.9.6
+# English help file: --help.obj-file, Version 1.0
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
 printf "
-Az obj fájl futtatásakor beállítja az obj_HOME változót,
-betölti az obj parancsot és kilép.
+ The obj file sets the obj_HOME variable to the directory from which it was
+ loaded, then puts the obj command into memory and exits.
 
-Az obj_HOME változót arra a könyvtárra állítja be, ahonnan a fájl betöltődött.
-Az obj parancs a memóriában marad, ha az obj fájlt a .bashrc fájlból
-hívjuk meg a következőképpen:
-  source \"<a fájl helye>/obj\"
+ The obj command remains in memory if the obj file is loaded from \".bashrc\"
+ as follows:
+   \"<file location>/obj\"
 
-Az obj fájl nem indítja el az obj parancsot, csak létrehozza.
-Ekkor a felhasználói szkriptben az obj parancs első meghívása
-létrehozza a bash-object környezetét.
+ Without aparameters, the obj file does not start the obj command,
+ it just loads t into memory. Then the first call to the obj command in
+ the user script creates the bash-object environment.
+ 
+ The current location of the obj file is \"${obj_HOME}\"
 "
