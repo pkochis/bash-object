@@ -1,16 +1,15 @@
 ################################################################################
-# Hungarian dictionary file: obj-error, Version 1.0
+# Hungarian help file: object-list.help, Version 1.0
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
+printf "
+Az object-list objektum használata:
+  obj object-list [<metódus>]
 
-From: The %A1% object does not exist
-To: A(z) %A1% objektum nem létezik
-
-From: The %A1% public method in %A2% object does not exist
-To: A(z) %A2% objektum %A1% publikus metódusa nem létezik
-
-From: The %A1% method in %A2% object does not exist
-To: A(z) %A2% objektum %A1% metódusa nem létezik
+Metódusok:
+  --help                Megjeleníti ezt a súgót.
+  default               Megjeleníti az összes már létrehozott objektumot.
+"

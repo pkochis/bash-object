@@ -1,25 +1,36 @@
 ################################################################################
-# Hungarian help file: obj-ini.help, Version 0.9.6
+# Hungarian help file: obj-backup-variables.help, Version 1.0
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
 printf "
-Az obj-ini objektum használata:
-  obj obj-ini <metódus>
+Az obj-backup-variables objektum használata:
+  obj obj-backup-variables <metódus> [<paraméterek>]
 
-Publikus metódusok:
-  --help                Ezt a súgót jeleníti meg.
-  --load                Az ini fájlban tárolt értékekkel felülírja az objektum
-                        változóit és tömbjeit.
-  --save <változó>...   Az objektum megadott változóit (a tömböket is beleértve)
-                        elmenti az ini fájlba.
-  --set-inidir <mappa>  Beállítja azt a mappát, ahol az ini fájl található.
+Metódusok:
+  --help                         Megjeleníti ezt a súgót.
+  obj-backup                     A változókat elmenti a backup fájlba.
+  obj-restore                    A változókat betölti a backup fájlból.
+  obj-set-backupdir <mappa>      Beállítja a backup mappáját.
+  obj-set-filter <változó>...    Beállítja a váltózók szűrőjét.
+  obj-get-filter                 Lekérdezi a váltózók szűrőjét.
 
-Nem publikus metódus:
-  --loadvariables       A --load metódus hívja meg.
+Belső változók:
+  obj_backupdir
+  obj_variables
 
-Megjegyzés:
-  Az ini fájl neve: <objektum>.ini
+Megjegyzések:
+  a) A backup fájl neve: <objektum>.vbak
+  b) Az összes változó engedélyezése a backuphoz:
+     obj obj-backup-variables obj-set-filter .
+     (Metódus és egy pont.)
+  c) Az összes változó tiltása a backuphoz:
+     obj obj-backup-variables obj-set-filter
+     (Metódus paraméter nélkül.)
+  d) Ha a szűrőlistában szereplő változó nincs definiálva az objektumban,
+     akkor eldobja.
+  e) Ha a backup fájlban lévő változó nincs definiálva az objektumban,
+     akkor eldobja.
 "

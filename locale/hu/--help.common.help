@@ -1,29 +1,57 @@
 ################################################################################
-# Hungarian help file: obj-general.help, Version 0.9.6
+# Hungarian help file: --help.common, Version 1.0
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
 printf "
-Az obj-general objektum használata:
-  obj obj-general <metódus>
+Objektumok:
+  --help                 A bash-object általános súgóit jeleníti meg. 
+  obj-backup-variables   Prototípus objektum a belső változók mentéséhez
+                         és visszaállításához.
+  obj-debug              Prototípus objektum a az objektum belső információinak
+                         megjelenítéséhez.
+  obj-dictionary         Lefordít egy mondatot a tárolt szövegre.
+  object-list            Megjeleníti az összes már létrehozott objektumot.
 
-Publikus metódusok:
-  --error <szöveg> [paraméterek]  A megadott hibaszöveget jeleníti meg
-  --help                          Ezt a súgót jeleníti meg
-  --list-methods                  Listázza a publikus metódusokat
-  --localised-file <bázis mappa> <fájl> [<nyelv>]
-                                  Ha a fájl létezik a nyelvi könyvtárban,
-                                  akkor annak úvonalával tér vissza. Ha a fájl
-                                  nem létezik, akkor az angol nyelvű fájl
-                                  útvonalával tér viszza, ha az sincs, akkor
-                                  hibával tér vissza.
-  --parent [fájl- vagy mappanév]  Létező fájl, vagy mappa szülőkönyvtárának
-                                  tényleges nevével tér vissza. Ha nincs megadva
-                                  a név, akkor az aktuális könyvtár tényleges
-                                  nevével tér vissza.
+Metódusok:
+  --help                 Megjeleníti az objektum súgóját és segédleteit.
+                         A konstruktor generálja, ha létezik súgófájl.
+  default                Ha az obj (vagy objI) parancs nem találja a megadott
+                         metódust, ezt a metódust futtatja, ha definiáltuk.
+  obj-create             Létrehozza az objektumot. Ezután eltűnik.
+  obj-erase              Törli az objektumot.
+  obj-public-methods     Megjeleníti az objektum összes nyilvános metódusát.
 
-Nem publikus metódus:
-  --debug                         Megjeleníti az objektum belső adatait
+Rutinok:
+  objLocalisedFile <mappa> <fájl> [<nyelv>]
+                         Megkeresi a fájlt a megadott nyelven, ha nincs,
+                         a rendszer nyelvén, végül angolul.
+                         Elérési útvonalat vagy a hibakódot ad vissza.
+                         A fájl elérési útvonala: <mappa>/locale/<nyelv>/<fájl>
+  objParentPath <fájl vagy mappa>
+                         Ha a bemenet létezik, akkor a bemenet szülőkönyvtárát
+                         adja vissza.
+
+Változók:
+  this[0]                Belső használatra
+  this[1]                Az objektum neve
+  this[2]                Az obj parancs által hívott publikus metódus.
+  this[3]                Az objI parancs által hívott metódus.
+  this[4]                Belső használatra
+
+Figyelmeztetések:
+ a) A this változókat a rendszer kezeli. A rutinok olvassák. Azt jelzik, hogy
+    a rutin éppen melyik objektum melyik metódusát szolgálja ki. Ne írd felül!
+ b) Az obj kezdetű szavak a rendszer beépített objektumai, metódusai, rutinjai,
+    változói és a jövőbeli fejlesztések számára vannak fenntartva. A névütközés
+    elkerülése végett ilyen nevű elemeket ne hozzunk létre!
+ c) Az üres nevű objektumok, metódusok és változók használata kiszámíthatatlan
+    működéshez vezethet.
+ d) A --help metódust a konstruktor hozza létre, vagy törli. A mi dolgunk
+    a súgófájlok megírása és a megfelelő mappába helyezése csupán.
+ e) A default metódushoz hozzárendelhetünk bármilyen rutint. Ha nincs megadva
+    metódus, vagy a rendszer nem találja azt, akkor hajtja végre. Default metódus
+    hiányában hibaüzenetet ad.
 "

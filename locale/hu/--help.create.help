@@ -1,91 +1,67 @@
 ################################################################################
-# Hungarian help file: --create.help, Version 0.9.6
+# Hungarian help file: --help.create, Version 1.0
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
 printf "
-A --create metódus létrehozza az objektumot. Csak az objektum létrehozásának
-idején és céljából létezik, utána törlődik.
+Az obj-create metódus hozza létre az objektumot. Csak erre használható.
+Ha az objektum létrejött, törlődik.
 
-Használata: obj <új objektum> --create [KAPCSOLÓ [paraméterek]]...
+Használat: obj <új objektum> obj-create [KAPCSOLÓ [paraméterek] ...]
 
 Általános kapcsolók:
-  objR_Nodelete
-      Az --erase metódus megszünteti az objektumot. Az objR_Nodelete kapcsoló
-      nem hozza létre ezt a metódust, így az objektumot nem lehet törölni
-      az obj paranccsal.
-  objR_SetReference <objektum>
-      A megadott objektumot beállítja referenciának.
-  objR_CopyReference
-      A referencia objektum minden változóját az aktuális értékükkel együtt
-      és minden metódusát bemásolja az új objektumba. Ütközés esetén felülírja
-      a már létrehozott változókat és metódusokat.
+  objC_copyreference          Az összes metódust és változót az aktuális
+                              értékeikkel együtt átmásolja referenciaobjektumból
+                              az új objektumba.
+  objC_defaulthelp            Beállítja a default metódust a --help metódusra,
+                              ha az létrejött.
+  objC_init <parancs>         Ugyanaz, mint az objI parancs, de az objektum
+                              létrehozásakor használható.
+  objC_noerase                Nem hozza létre az obj-erase metódust.
+  objC_reference <objektum>   Beállítja a referencia objektumot.
 
-Változókat kezelő kapcsolók:
-  objR_RemoveVariables <változó>...
-      A megadott változókat törli az új objektumból.
-  objR_AddVariables <attribútum> <változó> [= <érték>]...
-      Új változókat (ideértve a tömböket is) hoz létre a megadott
-      atribútumokkal és nevekkel. Opcionálisan érték is megadható itt.
-      Név ütközés esetén felülírja a már létrehozott változókat és tömböket.
-      Tömbök esetében a zárójeleken kívül aposztrófot kell használnunk, így:
-      -ga|A <tömb> '(elem1 elem2...)'
-  objR_GetVariables <változó> <referencia változó>...
-      A referencia objektumból a lista szerint megadott változókat és tömböket
-      az aktuális értékükkel együtt az új néven bemásolja az új objektumba.
-      Név ütközés esetén felülírja a már létrehozott változókat és tömböket.
-
-Metódusokat kezelő kapcsolók:
-  objR_RemoveMethods <metódus>...
-      A megadott metódusokat eltávolítja az új objektumból.
-  objR_NewMethods <metódus> '{ <kód>; }'...
-      Új metódusokat hoz létre a megadott névvel és kóddal.
-      Név ütközés esetén a régi metódust leválasztja az objektumról
-      és helyébe az új kód kerül.
-  objR_GetMethods <metódus> <referencia metódus>
-      A referencia objektumból a lista szerint megadott metódusokat
-      az új néven hozzácsatolja az objektumhoz. Név ütközés esetén
-      a régi metódust leválasztja az objektumról és helyébe az új kerül.
-
-A súgót létrehozó kapcsoló:
-  objR_HelpInit [<bázis mappa>]
-      Létrehozza a --help metódust az objektum számára, ha a súgó létezik
-      a rendszer nyelvén, vagy angol nyelven. A súgó helye a bázis mappában
-      a locale mappa alatti nyelvi könyvtárakban van.
-      A súgó neve: <objektum>.help
-      Ha a bázis mappa neve nincs megadva, akkor az aktuális könyvtárat
-      tekinti bázis mappának.
-
-      Az általános objektum magyar súgója:
-         ${obj_HOME}/locale/hu/obj-general.help
-      Az általános objektum angol súgója:
-         ${obj_HOME}/locale/en/obj-general.help
+Kapcsolók metódusokhoz és változókhoz:
+  objC_delmethod <metódus>       Egy metódust eltávolít az új objektumból.
+  objC_delvariable <változó>     Egy változót vagy tömböt távolít el
+                                 az új objektumból.
+  objC_private <paraméterek>     Egy privát metódust állít be az új objektumhoz.
+  objC_public <paraméterek>      Egy publikus metódust állít be
+                                 az új objektumhoz.       
+  objC_variable <paraméterek>    Egy változót vagy tömböt állít be
+                                 az új objektumhoz.
 
 Megjegyzések:
-  A --create metódus balról jobbra haladva egymás után dolgozza fel
-  a kapcsolókat és paramétereiket.
-
-  A változók (és a tömbök) függetlenek egymástól, kapcsolatot közöttük
-  csak a metódusokon keresztül lehet megvalósítani. Az objektum minden
-  változójának egyedi, rejtett neve van. Az általunk megadott név
-  csak hivatkozás rájuk.
-
-  Az általunk megadott nevekben is be kell tartani a bash változónevekre
-  érvényes konvencióit.
-
-  A metódusok neveiben a létrehozáskor és a referenciában is
-  a következőképpen meg kell adni, hogy publikus-e, vagy nem:
-    P<metódus neve>    publikus metódus
-    N<metódus neve>    nem publikus metódus
-  Ugyanaz a kód tartozhat egyszerre több publikus és nem publikus
-  metódushoz is, akár másik objektumban is. 
-
-  Ha egy metódust leválasztunk egy objektumról, akkor annak kódja nem törlődik,
-  csak akkor, ha már egyetlen objektum egyetlen metódusa sem használja.
-
-  A metódusok és az objektumok neveiben több karaktert (akár szóközt is)
-  használhatunk, mint a bash függvényeiben.
-  Szóközök esetén mindig használjunk idézőjelet!
+ a) Új metódus létrehozása új kóddal:
+      objC_private <metódus> '{ <kód>; }'
+      objC_public  <metódus> '{ <kód>; }'
+ b) Meglévő kód használata új metódushoz:
+      objC_private <metódus> reference <referencia metódus>
+      objC_public  <metódus> reference <referencia metódus>
+ c) Új változó létrehozása:
+      objC_variable <változó> <attribútum> [= <érték>]
+ d) Új tömb vagy asszociatív tömb létrehozása:
+      objC_variable <tömb> <attribútum> [= '(<tömbelemek>)']
+ e) Egy változó, tömb, vagy asszociatív tömb másolása a referenciából:
+      objC_variable <változó> reference <referencia változó>
+ f) A referencia lehet egy másik objektum vagy akár az új objektum is.
+ g) Az obj-create metódus a kapcsolókat és a paramétereket balról jobbra
+    haladva, lépésről lépésre dolgozza fel.
+ h) Névkonfliktus esetén a régi értékek felülíródnak.   
+ i) A változók (és a tömbök) függetlenek egymástól, nincs kapcsolat közöttük.
+    Bármilyen kapcsolat csak a metódusokon keresztül valósítható meg.
+ j) Minden változónak egyedi, rejtett neve van. Az általunk adott név csak
+    ezekre a nevekre való hivatkozás.
+ k) Az általunk megadott változóneveknek a bash változókra vonatkozó
+    névhasználati konvencióit kell követniük.
+ l) Ugyanaz a kód egyidejúleg több nyilvános és privát metódushoz is
+    tartozhat, akár egy másik objektumhoz is.
+ m) Ha egy metódust leválasztunk egy objektumról, a kódja nem törlődik,
+    csak akkor, ha azt már nem használja egyetlen objektum egyetlen
+    metódusa sem.
+ n) A metódusok és objektumok nevei - néhány kivételtől eltekintve -
+    tartalmazhatnak speciális karaktereket. A szóközöket védjük
+    idézőjelekkel, vagy visszaperjellel!
+ o) Az alapértelmezett referencia az üres objektum.
 "

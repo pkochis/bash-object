@@ -1,0 +1,49 @@
+################################################################################
+# Hungarian help file: --help.helpsystem, Version 1.0
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Használat: obj <objektum> --help [al-súgó]
+
+Megjeleníti a súgószöveget vagy egy al-súgószöveget.
+
+ Objektum létrehozásakor a konstruktor hozzáadja az objektumhoz a --help
+ metódust, ha létezik az objektumhoz nyelvi súgófájl. Ha az objektumot
+ parancssorban hozzuk létre, vagy a súgófájl nem létezik, a --help metódus
+ nem jön létre.
+
+Megjegyzések:
+ a) A --help metódust a konstruktor hozza létre, vagy törli. A mi dolgunk
+    a súgófájlok megírása és a megfelelő mappába helyezése csupán.
+ b) A súgófájlnak a "locale" mappa alatti nyelvi könyvtárakban kell lennie.
+    A "locale" mappa ugyanabban a mappában van, amelyben az objektumot
+    létrehozó szkript van.
+ c) Ha a konstruktor nem találja a súgófájlt a rendszer nyelvén,
+    az "en" nyelvi könyvtárban fogja keresni.
+ d) A súgófájl neve az objektum neve, a kiterjesztése \".help\".
+ e) Az al-súgó fájl neve az objektum nevéhez ponttal hozzáfűzve az al-súgó
+    neve, a kiterjesztése: \".help\".
+ f) Az al-súgófájlnak ugyanabban a mappában kell lennie, ahol a súgófájl van.
+ g) A súgófájl egy szkript, a javasolt formátum a következő:
+    printf \"
+     súgószöveg
+    \"
+ h) Ha a súgófájl létezik, és az objektum létrehozása során használjuk
+    az \"objC_defaulthelp\" kapcsolót, a default metódus a --help metódus
+    rutinját fogja végrehajtani.
+
+Példa:
+  A \"--help\" objektum helye:
+    \"${obj_HOME}\"
+  A \"help\" objektum angol súgófájlja:
+    \"${obj_HOME}/locale/en/--help.help\"
+  A \"help\" objektum angol \"helpsystem\" al-súgófájlja:
+    \"${obj_HOME}/locale/en/--help.helpsystem.help\"
+  A \"help\" objektum magyar súgófájlja:
+    \"$(objParentPath "$BASH_SOURCE")/--help.help\"
+  A \"help\" objektum magyar \"helpsystem\" al-súgófájlja (ez a fájl):
+    \"$BASH_SOURCE\"
+"

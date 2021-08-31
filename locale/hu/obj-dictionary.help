@@ -1,5 +1,5 @@
 ################################################################################
-# Hungarian help file: obj-dictionary.help, Version 0.9.6
+# Hungarian help file: obj-dictionary.help, Version 1.0
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -7,41 +7,48 @@
 ################################################################################
 printf "
 Az obj-dictionary objektum használata:
-  obj obj-dictionary <metódus>
+  obj obj-dictionary --help                 Megjeleníti ezt a súgót.
+  obj obj-dictionary [default] [<mondat>]   Megjeleníti a lefordított szöveget.
 
-Publikus metódusok:
-  default <mondat>         Lefordítja a mondatot a szótárban eltárolt szövegre.
-  --add-dictionary <fájl>  Hozzáadja a szótárfájl tartalmát az objektum
-                           szótárához. Ütközés esetén az új szöveg felülírja
-                           a régit.
-  --add-local-dictionary   Megkeresi a szükséges nyelvi fájlt és átadja
-                           --add-dictionary metódusnak.
-  --help                   Ez a súgó
+Lefordítja az (angol) mondatot egy tárolt szövegre.
+
+Privát metódusok:
+  obj-add-dictionary
+  obj-add-local-dictionary
 
 Belső változók:
-  folder         Az --add-local-dictionary e mappa alatt keresi a nyelvi fájlt
-  source_file    A fájl neve
-  dictionary     A szótártömb
+  obj_folder              A keresési mappa
+  obj_source_file         A szótárfájl neve
+  obj_dictionary          A szövegek tömbje
 
 Megjegyzések:
-  A belső változók értékét az objektum létrehozásakor lehet megadni.
-  Az --add-local-dictionary fájlt először a rendszer nyelvén keresi,
-  másodsorban angol nyelven. A fájl helye a folder alatt a locale alatti
-  nyelvi könyvtárakban van. (Az angol nyelvű az en, a magyar a hu könyvtárban.)
+  a) Az obj_folder és az obj_source_file változók értékei az objektum
+     létrehozásakor adhatóak meg.
+  b) Amint létrejön az objektum, megkeresi a szótárfájlt és betölti.
+  c) Az objektum először a rendszer nyelvén keresi meg a szótárfájlt, majd
+     angol nyelven. A szótárfájlnak a "locale" mappa alatti nyelvi
+     könyvtárakban kell lennie. A "locale" mappa a keresési mappában van.
+  d) Az objektum figyelmen kívül hagyja a fájl minden olyan sorát, amely nem
+     a \"From: \" vagy \"To: \" szöveggel kezdődik. A \"From: \" kezdetű sorok
+     a fordítandó mondatokat tartalmazzák. A \"To: \" kezdetű sorok a fordítás
+     utáni szövegeket tartalmazzák.
+  e) Ezt az objektumot a rendszer használja, célszerű egy másikat létrehozni
+     és létrehozáskor beállítani a belső változókat.
 
-  Az objektum figyelmen kívül hagyja a fájl minden sorát, amely nem a \"From: \",
-  vagy a \"To: \" mintával kezdődik. A \"From: \"-al kezdődő sorok tartalmazzák
-  a lefordítandó mondatot, a \"To: \"-val kezdődőek pedig azt a szöveget,
-  amire kell fordítani.
-  
-  Ezt az objektumot a rendszer használja, célszerű létrehozni egy másikat ezt
-  referenciaként használva és a létrehozásakor beállítani a változókat.
-
-
-Példa:
-
-From: Ezt kell lefordítani
-To: Erre a szövegre
-From: Ez egy másik mondat.
-To: Ezt erre a másik szövegre fordítjuk.
+Példák:
+  a) Szótár fájlok teljes útvonala:
+     ${obj_HOME}/locale/hu/obj-error
+     ${obj_HOME}/locale/en/obj-error
+  b) Egy szótár fájl:
+     From: Ezt kell lefordítani
+     To: Erre a szövegre
+     From: Ez egy másik mondat.
+     To: Ez erre lesz fordítva.
+  c) Konstruktor parancs:
+     obj <szótárobjektum neve> obj-create \\
+      objC_reference obj-dictionary \\
+      objC_copyreference \\
+      objC_variable obj_folder -g = <keresési mappa> \\
+      objC_variable obj_source_file -g = <szótárfájl> \\
+      objC_init obj-add-local-dictionary
 "

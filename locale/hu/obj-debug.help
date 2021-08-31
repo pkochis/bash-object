@@ -1,0 +1,17 @@
+################################################################################
+# Hungarian help file: obj-debug.help, Version 1.0
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Az obj-debug objektum használata:
+  obj obj-debug [<metódus>]
+
+Methods:
+  --help                Megjeleníti ezt a súgót.
+  default               Megjeleníti a this, this_methods, this_public, this_data
+                        tömböket és az összes belső változót.
+  obj-public-methods    Megjeleníti az objektum összes nyilvános metódusát.
+"

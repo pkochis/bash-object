@@ -1,5 +1,5 @@
 ################################################################################
-# Hungarian help file: --help.help, Version 0.9.6
+# Hungarian help file: --help, Version 1.0
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -7,33 +7,44 @@
 ################################################################################
 printf "
 A súgó használata:
-  obj --help              Ezt a szöveget jeleníti meg
-  obj --help obj-file     Az obj fájl súgója
-  obj --help create       Az objektumok létrehozásához tartozó súgó
-  obj object-list         A létező objektumok listáját jeleníti meg
-  obj <objektum> --help   Az objektum súgója (ha létre van hozva)
-  obj obj-general --help  Az általános objektum súgója
+  obj --help                Megjeleníti ezt a szöveget
+  obj --help obj-file       Az obj file súgója
+  obj --help create         Súgó objektumok létrehozásához
+  obj --help helpsystem     A súgó alrendszer súgója
+  obj --help common         Néhány előre definiált objektum, metódus, rutin,
+                            változó
+  obj object-list           Megjeleníti az összes már létrehozott objektumot
+  obj <objektum> --help     Az objektum súgója (ha létrejött)
 
-Az obj parancs használata:
-  obj [<objektum> <publikus metódus> [paraméterek]]
+Az obj és objI parancsok használata:
+  obj                                                    1) Inicializálás
+  objI                                                   1) Inicializálás
+  obj <objektum> <publikus metódus> [paraméterek]        2) Általános használat
+  obj <objektum> obj-create <paraméterek>                3) Objektum létrehozása
+  obj <objektum> obj-erase                               4) Objektum törlése
+  objI <metódus> [paraméterek]                           5) Metódus belső hívása
 
-  Ha még nem jött létre a bash-object környezete, akkor létrehozza azt,
-  majd az üzenetet átadja az objektum meghívott metódusának és kilép.
-  Objektum megadása nélkül a környezet létrehozása után lép ki.
-
-Az objektum törlése:
-  obj <objektum> --erase
-
-Az objP és objN parancsok használata:
-  objP <publikus metódus> [paraméterek]
-  objN <nem publikus metódus> [paraméterek]
-
-  Az objP egy publikus metódust hív meg az objektum egy másik metódusából
-  Az objN egy nem publikus metódust hív meg az objektum egy másik metódusából
+1) Inicializálás
+   Ez a parancs újra létrehozza a bash-objektum környezetét és kilép.
+2) Általános használat:
+   Ha a bash-objektum környezete még nem lett létrehozva, akkor ez a parancs
+   létrehozza, majd az üzenetet átadja az objektum meghívott publikus
+   metódusának és kilép.
+3) Objektum létrehozása:
+   Ez a parancs létrehozza az objektumot.
+4) Objektum törlése:
+   Ez a parancs törli az objektumot.
+5) Metódus belső hívása:
+   Ez a parancs az aktuális objektum saját metódusát hívja megaz objektum
+   egy másik metódusából.
 
 Megjegyzések:
-  Ha az obj parancs nem találja az objektumot, hibaüzenettel tér vissza.
-  Ha az obj parancs nem találja az objektum metódusát, megpróbálja a default
-  publikus metódust végrehajtani.
-  Ha a default publikus metódus sem létezik, a parancs hibaüzenettel tér vissza.
+  a) Az obj parancs csak publikus metódust futtathat.
+  b) Az objI parancs publikus és privát metódusokat is futtathat.
+  c) Ha a parancs nem találja az objektumot, hibaüzenettel lép ki.
+  d) Ha a parancs nem találja meg az objektum metódusát, akkor megpróbálja
+     a default metódust futtatni.
+  e) Ha az alapértelmezett metódus sem létezik, a parancs hibaüzenettel lép ki.
+  f) A metódus nem közvetlenül futtatja a kódot, hanem meghív egy rutint,
+     amely tartalmazza a kódot.
 "
