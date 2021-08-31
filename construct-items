@@ -15,7 +15,7 @@
 # F) Object help
 # G) Add user method
 # H) Copy reference
-# I) Run objI in contructor
+# I) Run objI in constructor
 # J) Call basic-objects 
 ################################################################################
 [[ $(type -t objC_construct) != function ]] && exit  # prevents unwanted run
