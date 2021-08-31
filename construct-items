@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-# Script name: construct-items, Version 0.9.6
+# Script name: construct-items, Version 1.0
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
