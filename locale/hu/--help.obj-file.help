@@ -16,6 +16,7 @@ printf "
  Paraméterek nélkül az obj fájl nem indítja el az obj parancsot, csak
  a memóriába tölti. Ezután a felhasználói szkriptben az obj parancs első hívása
  létrehozza a bash-object környezetét.
- 
+
  Az obj fájl aktuális helye: \"${obj_HOME}\"
+
 "

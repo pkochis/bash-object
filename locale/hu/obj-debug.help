@@ -14,4 +14,5 @@ Methods:
   default               Megjeleníti a this, this_methods, this_public, this_data
                         tömböket és az összes belső változót.
   obj-public-methods    Megjeleníti az objektum összes nyilvános metódusát.
+
 "

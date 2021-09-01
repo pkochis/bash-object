@@ -51,4 +51,5 @@ Példák:
       objC_variable obj_folder -g = <keresési mappa> \\
       objC_variable obj_source_file -g = <szótárfájl> \\
       objC_init obj-add-local-dictionary
+
 "

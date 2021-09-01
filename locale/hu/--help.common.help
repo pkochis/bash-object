@@ -54,4 +54,5 @@ Figyelmeztetések:
  e) A default metódushoz hozzárendelhetünk bármilyen rutint. Ha nincs megadva
     metódus, vagy a rendszer nem találja azt, akkor hajtja végre. Default metódus
     hiányában hibaüzenetet ad.
+
 "

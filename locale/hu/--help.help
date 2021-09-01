@@ -47,4 +47,5 @@ Megjegyzések:
   e) Ha az alapértelmezett metódus sem létezik, a parancs hibaüzenettel lép ki.
   f) A metódus nem közvetlenül futtatja a kódot, hanem meghív egy rutint,
      amely tartalmazza a kódot.
+
 "

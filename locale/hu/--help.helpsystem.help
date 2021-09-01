@@ -46,4 +46,5 @@ Példa:
     \"$(objParentPath "$BASH_SOURCE")/--help.help\"
   A \"help\" objektum magyar \"helpsystem\" al-súgófájlja (ez a fájl):
     \"$BASH_SOURCE\"
+
 "

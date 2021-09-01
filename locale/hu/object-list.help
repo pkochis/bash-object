@@ -12,4 +12,5 @@ Az object-list objektum használata:
 Metódusok:
   --help                Megjeleníti ezt a súgót.
   default               Megjeleníti az összes már létrehozott objektumot.
+
 "
