@@ -47,4 +47,5 @@ Example:
     \"${obj_HOME}/locale/hu/--help.help\"
   The Hungarian \"helpsystem\" subhelp file of \"--help\" object:
     \"${obj_HOME}/locale/hu/--help.helpsystem.help\"
+
 "

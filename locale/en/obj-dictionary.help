@@ -52,4 +52,5 @@ Examples:
       objC_variable obj_folder -g = <search folder> \\
       objC_variable obj_source_file -g = <dictionary file> \\
       objC_init obj-add-local-dictionary
+
 "

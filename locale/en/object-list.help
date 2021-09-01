@@ -12,4 +12,5 @@ Usage of the object-list object:
 Methods:
   --help                Displays this help.
   default               Displays all already created objects.
+
 "

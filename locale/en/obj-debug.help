@@ -14,4 +14,5 @@ Methods:
   default               Displays the this, this_methods, this_public, this_data
                         arrays and all internal variables.
   obj-public-methods    Displays all public methods of the object.
+
 "

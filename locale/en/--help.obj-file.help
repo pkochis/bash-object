@@ -16,6 +16,7 @@ printf "
  Without aparameters, the obj file does not start the obj command,
  it just loads t into memory. Then the first call to the obj command in
  the user script creates the bash-object environment.
- 
+
  The current location of the obj file is \"${obj_HOME}\"
+
 "
