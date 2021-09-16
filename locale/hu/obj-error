@@ -6,11 +6,11 @@
 # author: pal@kochis.hu
 ################################################################################
 
-From: The %A1% object does not exist
-To: A(z) %A1% objektum nem létezik
+From: The %A1% object/class does not exist
+To: A(z) %A1% objektum/osztály nem létezik
 
-From: The %A1% public method in %A2% object does not exist
-To: A(z) %A2% objektum %A1% publikus metódusa nem létezik
+From: The %A1% public method in %A2% object/class does not exist
+To: A(z) %A2% objektum/osztály %A1% publikus metódusa nem létezik
 
-From: The %A1% method in %A2% object does not exist
-To: A(z) %A2% objektum %A1% metódusa nem létezik
+From: The %A1% method in %A2% object/class does not exist
+To: A(z) %A2% objektum/osztály %A1% metódusa nem létezik
