@@ -50,7 +50,8 @@ objRcreate() {
  if ((${objects["ID${this[1]}"]:-0} == 0)); then
   objects+=(["ID${this[1]}"]="$((++obj_C))") this=${obj_C} ref=${objects["ID$1"]}; shift  # create and switch to ID of new object/class
   for i in "${obj_meta[@]}"; do declare -gA obj_${i}${obj_C}; declare -n this_${i}=obj_${i}${obj_C}; done  # init and switch to new object/class
-  objC_construct : "$@" objC_end objC_  # develop the new object/class
+  [[ ${this[1]} == ::* ]] && objC_construct : "$@" objC_end objC_  # develop the new class
+  [[ ${this[1]} != ::* ]] && objC_construct : "$@" objC_end objC_  # develop the new object
  else
   objRerror "The %A1% object/class is already exists" "\"${this[1]}\""
  fi
