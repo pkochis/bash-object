@@ -12,7 +12,7 @@
 # C) Delete user method and variable
 # D) Object erase: deconstruct
 # E) Add user variable
-# F) Object help
+# F) Object/class help
 # G) Add user method
 # H) Copy reference
 # I) Run objI in constructor
@@ -80,7 +80,7 @@ objC_variable() {
  declare -p objV_${obj_C} &> /dev/nul && this_data+=([V$1]=${obj_C}) || ((obj_C--))  # check the new variable and register to object data
 }
 
-# F) Object help
+# F) Object/class help
 obj_construct_end+=(obj_help)
 objRhelp() { [[ -e ${obj_helpfile}.$1.help ]] && source "${obj_helpfile}.$1.help" || source "${obj_helpfile}.help"; }
 objC_obj_help() { local i h=""
@@ -120,7 +120,7 @@ objC_private() {
 # H) Copy reference
 objC_copyreference() {
  [[ ${FUNCNAME[1]} != objC_* ]] && return  # protect this function
- local i; for i in "${obj_meta[@]}"; do declare -n ref_${i}=obj_${i}$ref; done  # pick reference object
+ local i; for i in "${obj_meta[@]}"; do declare -n ref_${i}=obj_${i}$ref; done  # pick reference class
  for i in "${!ref_data[@]}"; do objC_variable "${i:1}" reference "${i:1}"; done # copy variables
  for i in "${!ref_methods[@]}"; do objC_private "${i:1}" reference "${i:1}"; done # copy methods
  for i in "${!ref_public[@]}"; do this_public+=(["$i"]=${ref_public["$i"]}); done  # copy public

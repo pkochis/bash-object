@@ -9,24 +9,24 @@
 #
 # A) Set environment
 # B) Message handlers
-# C) First (hidden) object: obj-check
-# D) Create object
+# C) Hidden object: obj-check
+# D) Create object/class
 # E) Call construct-items
 ################################################################################
 [[ $(type -t obj) != function ]] && exit  # prevents unwanted run
 
 # A) Set environment
 declare -g obj_C; ((obj_C < 10)) && obj_C=12; export obj_C  # init general upcounter
-declare -gA objects obj_routines  # init the registers of objects and routines
-declare -ga obj_meta=(public methods data)  # metadata for all objects
-declare -gA obj_methods0=() obj_public0=() obj_data0=()  # init the zero object
+declare -gA objects obj_routines  # init the registers of objects/classes and routines
+declare -ga obj_meta=(public methods data)  # metadata for all objects/classes
+declare -gA obj_methods0=() obj_public0=() obj_data0=()  # init the zero class
 declare -ga obj_construct_end=()  # init last processes for constructor
 
 # B) Message handlers
 objRerror() { local i c=0 et="$1"; shift; for i in "$@"; do ((c++)); et="${et//%A${c}%/$i}"; done; echo "$et"; }
 obj() {
- declare -a this=(${objects["ID${1}"]:-2} "${1}" "${2:-default}" "${2:-default}" "${2:-default}"); shift; shift  # get ID of object
- local i; for i in "${obj_meta[@]}"; do declare -n this_$i=obj_${i}$this; done  # load object
+ declare -a this=(${objects["ID${1}"]:-2} "${1}" "${2:-default}" "${2:-default}" "${2:-default}"); shift; shift  # get ID of object/class
+ local i; for i in "${obj_meta[@]}"; do declare -n this_$i=obj_${i}$this; done  # load object/class
  for i in "${!this_data[@]}"; do declare -n ${i:1}=objV_${this_data[$i]}; done  # attach variables
  objR${this_public["M${this[2]}"]:-check} "$@"
 }
@@ -41,20 +41,20 @@ objRcheckI() {
 }
 objRtryPublicDefault() { this[2]=default this[3]=default; objR${this_public[Mdefault]:-noPublicMethod} "${this[4]}" "$@"; }
 objRtryDefault() { this[3]=default; objR${this_method[Mdefault]:-noMethod} "${this[4]}" "$@"; }
-objRnoPublicMethod() { objRerror "The %A1% public method in %A2% object does not exist" "\"$1\"" "\"${this[1]}\""; }
-objRnoMethod() { objRerror "The %A1% method in %A2% object does not exist" "\"$1\"" "\"${this[1]}\""; }
+objRnoPublicMethod() { objRerror "The %A1% public method in %A2% object/class does not exist" "\"$1\"" "\"${this[1]}\""; }
+objRnoMethod() { objRerror "The %A1% method in %A2% object/class does not exist" "\"$1\"" "\"${this[1]}\""; }
 export -f objRerror obj objI objRcheck objRcheckI objRtryPublicDefault objRtryDefault objRnoPublicMethod objRnoMethod
 
-# C) First (hidden) object: obj-check
+# C) Hidden object: obj-check
 declare -gA obj_public2+=([Mdefault]=notObject ["Mobj-create"]=create) obj_methods2=([Mdefault]=notObject ["Mobj-create"]=create) obj_data2=()
-objRnotObject() { ((${#this[1]} > 0)) && objRerror "The %A1% object does not exist" "\"${this[1]}\"" || objRcheck; } 
+objRnotObject() { ((${#this[1]} > 0)) && objRerror "The %A1% object/class does not exist" "\"${this[1]}\"" || objRcheck; } 
 
-# D) Create object
+# D) Create object/class
 objRcreate() {
  (($this != 2)) && return; local i  # protect this function
- objects+=(["ID${this[1]}"]="$((++obj_C))"); this=${obj_C}  # create and switch to ID of new object
- for i in "${obj_meta[@]}"; do declare -gA obj_${i}${obj_C}; declare -n this_${i}=obj_${i}${obj_C}; done  # init and switch to new object
- objC_construct : "$@" objC_end objC_  # develop the new object
+ objects+=(["ID${this[1]}"]="$((++obj_C))"); this=${obj_C}  # create and switch to ID of new object/class
+ for i in "${obj_meta[@]}"; do declare -gA obj_${i}${obj_C}; declare -n this_${i}=obj_${i}${obj_C}; done  # init and switch to new object/class
+ objC_construct : "$@" objC_end objC_  # develop the new object/class
 }  # objRcreate
 
 objC_construct() {
@@ -66,7 +66,7 @@ objC_construct() {
 }
 objC_reference() {
  [[ ${FUNCNAME[1]} != objC_* ]] && return  # protect this function
- ref=${objects["ID$1"]:-0}  # set reference (default is the zero object)
+ ref=${objects["ID$1"]:-0}  # set reference (default is the zero class)
 }
 objC_end() {
  [[ ${FUNCNAME[1]} != objC_construct ]] && return; local i  # protect this function
