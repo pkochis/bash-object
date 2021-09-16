@@ -7,11 +7,10 @@
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 #
-# A) Set environment
+# A) Set environment, root class, zero, root and hidden object
 # B) Message handlers
-# C) Hidden object: obj-check
-# D) Create object/class
-# E) Call construct-items
+# C) Create object/class
+# D) Call construct-items
 ################################################################################
 [[ $(type -t obj) != function ]] && exit  # prevents unwanted run
 
@@ -43,11 +42,7 @@ objRnoMethod() { objRerror "The %A1% method in %A2% object/class does not exist"
 objRnotObject() { ((${#this[1]} != 0)) && objRerror "The %A1% object/class does not exist" "\"${this[1]}\"" || source "${obj_INIT}"; } 
 export -f objRerror obj objI objRcheck objRcheckI objRtryPublicDefault objRtryDefault objRnoPublicMethod objRnoMethod objRnotObject
 
-### # C) Hidden object: obj-check
-### declare -gA obj_public2+=([Mdefault]=notObject ["Mobj-create"]=create) obj_methods2=([Mdefault]=notObject ["Mobj-create"]=create) obj_data2=()
-### objRnotObject() { ((${#this[1]} > 0)) && objRerror "The %A1% object/class does not exist" "\"${this[1]}\"" || source "${obj_INIT}"; } 
-
-# D) Create object/class
+# C) Create object/class
 objRcreate() {
  (($this != 2)) && return; local ref i  # protect this function
  [[ ${objects["ID$1"]:-0} == 0 || $1 != ::* ]] && { objRerror "The %A1% is not a class" "\"$1\""; return; }
@@ -77,5 +72,5 @@ objC_end() {
  for i in "${obj_construct_end[@]}"; do objC_$i; done
 }
 
-# E) Call construct-items
+# D) Call construct-items
 source "${obj_HOME}/construct-items"
