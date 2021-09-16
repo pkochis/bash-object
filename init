@@ -21,45 +21,43 @@ declare -gA objects obj_routines  # init the registers of objects/classes and ro
 declare -ga obj_meta=(public methods data)  # metadata for all objects/classes
 declare -gA obj_methods0=() obj_public0=() obj_data0=()  # init the zero class
 declare -gA obj_methods1=() obj_public1=() obj_data1=(); objects+=([ID::]=1)  # init the root class
+declare -gA obj_methods2=([Mdefault]=create) obj_public2=([Mdefault]=create) obj_data2=(); objects+=(["IDobj-create"]=2)  # init the obj-create object
+declare -gA obj_methods3=([Mdefault]=notObject) obj_public3=([Mdefault]=notObject) obj_data3=()  # init the hidden object for missing objects
 declare -ga obj_construct_end=()  # init last processes for constructor
 
 # B) Message handlers
 objRerror() { local i c=0 et="$1"; shift; for i in "$@"; do ((c++)); et="${et//%A${c}%/$i}"; done; echo "$et"; }
 obj() {
- declare -a this=(${objects["ID${1}"]:-2} "${1}" "${2:-default}" "${2:-default}" "${2:-default}"); shift; shift  # get ID of object/class
+ declare -a this=(${objects["ID${1}"]:-3} "${1}" "${2:-default}" "${2:-default}" "${2:-default}"); shift; shift  # get ID of object/class
  local i; for i in "${obj_meta[@]}"; do declare -n this_$i=obj_${i}$this; done  # load object/class
  for i in "${!this_data[@]}"; do declare -n ${i:1}=objV_${this_data[$i]}; done  # attach variables
  objR${this_public["M${this[2]}"]:-check} "$@"
 }
 objI() { this[3]="${1:-default}" this[4]="${1:-default}"; shift; objR${this_methods["M${this[3]}"]:-checkI} "$@"; }
-objRcheck() {
- ((${#this[1]} * ${#objects[@]} > 0)) && { objRtryPublicDefault "$@"; return; }
- source "${obj_INIT}" && ((${#this[1]} > 0)) && obj "${this[1]}" "${this[2]}" "$@"
-}
-objRcheckI() {
- ((${#this[1]} * ${#objects[@]} > 0)) && { objRtryDefault "$@"; return; }
- source "${obj_INIT}" && ((${#this[1]} > 0)) && objI "${this[3]}" "$@"
-}
+objRcheck() { ((${#objects[@]} > 0)) && { objRtryPublicDefault "$@"; return; } || source "${obj_INIT}" && obj "${this[1]}" "${this[2]}" "$@"; }
+objRcheckI() { ((${#objects[@]} > 0)) && { objRtryDefault "$@"; return; } || source "${obj_INIT}" && objI "${this[3]}" "$@"; }
 objRtryPublicDefault() { this[2]=default this[3]=default; objR${this_public[Mdefault]:-noPublicMethod} "${this[4]}" "$@"; }
 objRtryDefault() { this[3]=default; objR${this_method[Mdefault]:-noMethod} "${this[4]}" "$@"; }
 objRnoPublicMethod() { objRerror "The %A1% public method in %A2% object/class does not exist" "\"$1\"" "\"${this[1]}\""; }
 objRnoMethod() { objRerror "The %A1% method in %A2% object/class does not exist" "\"$1\"" "\"${this[1]}\""; }
-export -f objRerror obj objI objRcheck objRcheckI objRtryPublicDefault objRtryDefault objRnoPublicMethod objRnoMethod
+objRnotObject() { ((${#this[1]} != 0)) && objRerror "The %A1% object/class does not exist" "\"${this[1]}\"" || source "${obj_INIT}"; } 
+export -f objRerror obj objI objRcheck objRcheckI objRtryPublicDefault objRtryDefault objRnoPublicMethod objRnoMethod objRnotObject
 
-# C) Hidden object: obj-check
-declare -gA obj_public2+=([Mdefault]=notObject ["Mobj-create"]=create) obj_methods2=([Mdefault]=notObject ["Mobj-create"]=create) obj_data2=()
-objRnotObject() { ((${#this[1]} > 0)) && objRerror "The %A1% object/class does not exist" "\"${this[1]}\"" || source "${obj_INIT}"; } 
+### # C) Hidden object: obj-check
+### declare -gA obj_public2+=([Mdefault]=notObject ["Mobj-create"]=create) obj_methods2=([Mdefault]=notObject ["Mobj-create"]=create) obj_data2=()
+### objRnotObject() { ((${#this[1]} > 0)) && objRerror "The %A1% object/class does not exist" "\"${this[1]}\"" || source "${obj_INIT}"; } 
 
 # D) Create object/class
 objRcreate() {
  (($this != 2)) && return; local ref i  # protect this function
- if [[ ${objects["ID$1"]:-0} -gt 0 && $1 == ::* ]]; then
-  [[ ${this[1]} == ::* && "$1" != "::" ]] && this[1]="$1${this[1]}"  # create new class name
+ [[ ${objects["ID$1"]:-0} == 0 || $1 != ::* ]] && { objRerror "The %A1% is not a class" "\"$1\""; return; }
+ [[ $2 == ::* && "$1" != "::" ]] && this[1]="$1$2" || this[1]="$2"; shift  # set new object/class name
+ if ((${objects["ID${this[1]}"]:-0} == 0)); then
   objects+=(["ID${this[1]}"]="$((++obj_C))") this=${obj_C} ref=${objects["ID$1"]}; shift  # create and switch to ID of new object/class
   for i in "${obj_meta[@]}"; do declare -gA obj_${i}${obj_C}; declare -n this_${i}=obj_${i}${obj_C}; done  # init and switch to new object/class
   objC_construct : "$@" objC_end objC_  # develop the new object/class
  else
-  objRerror "The %A1% is not a class" "\"$1\""
+  objRerror "The %A1% object/class is already exists" "\"${this[1]}\""
  fi
 }  # objRcreate
 
@@ -77,8 +75,6 @@ objC_reference() {
 objC_end() {
  [[ ${FUNCNAME[1]} != objC_construct ]] && return; local i  # protect this function
  for i in "${obj_construct_end[@]}"; do objC_$i; done
- 
- this_methods+=(["Mobj-create"]=create) this_public+=(["Mobj-create"]=create)  # allow reuse item of class name
 }
 
 # E) Call construct-items
