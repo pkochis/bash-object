@@ -47,7 +47,7 @@ export -f objRerror obj objI objRcheck objRcheckI objRtryPublicDefault objRtryDe
 
 # C) Hidden object: obj-check
 declare -gA obj_public2+=([Mdefault]=notObject ["Mobj-create"]=create) obj_methods2=([Mdefault]=notObject ["Mobj-create"]=create) obj_data2=()
-objRnotObject() { ((${#this[1]} > 0)) && objRerror "The %A1% object/class does not exist" "\"${this[1]}\"" || objRcheck; } 
+objRnotObject() { ((${#this[1]} > 0)) && objRerror "The %A1% object/class does not exist" "\"${this[1]}\"" || source "${obj_INIT}"; } 
 
 # D) Create object/class
 objRcreate() {
