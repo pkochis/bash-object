@@ -26,7 +26,7 @@ objRforceErase() { [[ "$2" != "--force" ]] && return; local o
 
 # B) Create obj-debug object
 objRforceErase obj-debug --force
-obj obj-debug obj-create objC_noerase \
+obj obj-create :: obj-debug objC_noerase \
  objC_public obj-public-methods '{ local i; for i in "${!this_public[@]}"; do [[ $i = *\ * ]] && echo \"${i:1}\" || echo ${i:1}; done; }' \
  objC_public default '{
   declare -p this
@@ -36,12 +36,12 @@ obj obj-debug obj-create objC_noerase \
 
 # C) Create object-list object
 objRforceErase object-list --force
-obj object-list obj-create objC_noerase \
+obj obj-create :: object-list objC_noerase \
  objC_public default '{ local i; for i in "${!objects[@]}"; do [[ $i = *\ * ]] && echo \"${i#ID}\" || echo ${i#ID}; done; }'
 
 # D) Create obj-dictionary object
 objRforceErase obj-dictionary --force
-obj obj-dictionary obj-create objC_noerase \
+obj obj-create :: obj-dictionary objC_noerase \
  objC_variable obj_folder -g = "${obj_HOME}" \
  objC_variable obj_source_file -g = obj-error \
  objC_variable obj_dictionary -gA \
@@ -66,11 +66,11 @@ objRerror() { local i c=0 et="$(obj obj-dictionary default "$1")"; shift; for i 
 
 # F) Create --help object
 objRforceErase "--help" --force
-obj "--help" obj-create objC_noerase objC_defaulthelp
+obj obj-create :: "--help" objC_noerase objC_defaulthelp
 
 # G) Create obj-backup-variables object
 objRforceErase obj-backup-variables --force
-obj obj-backup-variables obj-create objC_noerase \
+obj obj-create :: obj-backup-variables objC_noerase \
  objC_variable obj_backupdir -g = "" \
  objC_variable obj_variables -ga = '()' \
  objC_public obj-set-backupdir '{ cd "$1"; obj_backupdir="$PWD"; cd $OLDPWD; }' \
