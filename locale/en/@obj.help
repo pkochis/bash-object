@@ -8,7 +8,7 @@
 printf "
 Usage of the help:
   obj --help                Displays this text
-  obj --help obj-file       Help for obj file
+  obj --help file           Help for obj file
   obj --help create         Help for creating objects
   obj --help helpsystem     Help for creating helps
   obj --help common         Some predefined object, methods, routines, variables
