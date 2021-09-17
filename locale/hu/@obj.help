@@ -8,7 +8,7 @@
 printf "
 A súgó használata:
   obj --help                Megjeleníti ezt a szöveget
-  obj --help obj-file       Az obj file súgója
+  obj --help file           Az obj file súgója
   obj --help create         Súgó objektumok létrehozásához
   obj --help helpsystem     A súgó alrendszer súgója
   obj --help common         Néhány előre definiált objektum, metódus, rutin,
