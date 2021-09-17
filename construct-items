@@ -10,7 +10,6 @@
 # A) Common routine: objLocalisedFile
 # B) User routine handlers
 # C) Delete user method and variable
-# D) Object erase: deconstruct
 # E) Add user variable
 # F) Object/class help
 # G) Add user method
@@ -18,7 +17,7 @@
 # I) Run objI in constructor
 # J) Call basic-objects 
 ################################################################################
-[[ $(type -t objC_construct) != function ]] && exit  # prevents unwanted run
+[[ $(type -t objRcreate) != function ]] && exit  # prevents unwanted run
 
 # A) Common routine: objLocalisedFile
 objLocalisedFile() {
@@ -34,34 +33,18 @@ objR_RoutineRemove() { ((${1:-0} > 10 && --obj_routines["N$1"] < 1 )) && unset -
 
 # C) Delete method and variable
 objC_delmethod() {
- [[ ${FUNCNAME[1]} != objC_* || -z ${this_methods["M$1"]} ]] && return  # protect this function
+ [[ ${FUNCNAME[1]} != objC* || -z ${this_methods["M$1"]} ]] && return  # protect this function
  objR_RoutineRemove ${this_methods["M$1"]}; unset -v this_methods["M$1"] this_public["M$1"]  # remove method
 }
 objC_delvariable() {
- [[ ${FUNCNAME[1]} != objC_* ]] && return  # protect this function
+ [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
  unset -v objV_${this_data[V$1]} this_data[V$1]  # remove variable
 }
 
-# D) Object erase: deconstruct
-obj_construct_end+=(obj_erase)
-objRdeconstruct() { local i
- for i in "${this_methods[@]}"; do objR_RoutineRemove $i; done  # detach all method from routines
- for i in "${this_data[@]}"; do unset -v objV_$i; done  # remove all variables
- for i in "${obj_meta[@]}"; do unset -v obj_${i}$this; done; unset -v objects["ID${this[1]}"]  # delete object
-}
-objC_obj_erase() {
- [[ ${FUNCNAME[1]} != objC_end ]] && return  # protect this function
- [[ ${obj_construct_flag[obj-erase]} == no ]] && objC_delmethod obj-erase || \
-  this_methods+=(["Mobj-erase"]=deconstruct) this_public+=(["Mobj-erase"]=deconstruct)
-}
-objC_noerase() {
- [[ ${FUNCNAME[1]} != objC_construct ]] && return  # protect this function
- obj_construct_flag+=([obj-erase]=no)  # set flag
-}
 
 # F) Add variable
 objC_variable() {
- [[ ${FUNCNAME[1]} != objC_* ]] && return  # protect this function
+ [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
  ((++obj_C)); unset -v objV_${this_data[V$1]} this_data[V$1]  # increase upcounter and remove variable
  (($# == 2)) && declare $2 objV_${obj_C}  # only declare
  (($# == 4)) && {
@@ -81,18 +64,6 @@ objC_variable() {
 }
 
 # F) Object/class help
-obj_construct_end+=(obj_help)
-objRhelp() { [[ -e ${obj_helpfile}.$1.help ]] && source "${obj_helpfile}.$1.help" || source "${obj_helpfile}.help"; }
-objC_obj_help() { local i h=""
- [[ ${FUNCNAME[1]} != objC_end ]] && return  # protect this function
- for ((i=0; i<${#FUNCNAME}; i++)); do
-  [[ ${FUNCNAME[$i]} != @(source|main) ]] && continue
-  h="$(objLocalisedFile "$(objParentPath "${BASH_SOURCE[$i]}")" "${this[1]}.help")"; break
- done
- ((${#h} == 0)) && { objC_delmethod "--help"; objC_delvariable obj_helpfile; return; }
- this_methods+=(["M--help"]=help) this_public+=(["M--help"]=help); objC_variable obj_helpfile -g = "${h%.help}"
- [[ "${obj_construct_flag[obj-defaulthelp]}" == "yes" ]] && this_methods+=(["Mdefault"]=help) this_public+=(["Mdefault"]=help)
-}
 objC_defaulthelp() {
  [[ ${FUNCNAME[1]} != objC_construct ]] && return  # protect this function
  obj_construct_flag+=([obj-defaulthelp]=yes)  # set flag
@@ -100,11 +71,11 @@ objC_defaulthelp() {
 
 # G) Add user method
 objC_public() {
- [[ ${FUNCNAME[1]} != objC_* ]] && return  # protect this function
+ [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
  objC_private "$@"; [[ -n ${this_methods["M$1"]} ]] && this_public+=(["M$1"]=${this_methods["M$1"]})  # call private and set public
 }
 objC_private() {
- [[ ${FUNCNAME[1]} != objC_* ]] && return  # protect this function
+ [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
  unset -v this_methods["M$1"]  # reset public
  (($# == 2)) && {
   objC_delmethod "$1"  # remove old routine
@@ -119,7 +90,7 @@ objC_private() {
 
 # H) Copy reference
 objC_copyreference() {
- [[ ${FUNCNAME[1]} != objC_* ]] && return  # protect this function
+ [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
  local i; for i in "${obj_meta[@]}"; do declare -n ref_${i}=obj_${i}$ref; done  # pick reference class
  for i in "${!ref_data[@]}"; do objC_variable "${i:1}" reference "${i:1}"; done # copy variables
  for i in "${!ref_methods[@]}"; do objC_private "${i:1}" reference "${i:1}"; done # copy methods
@@ -128,7 +99,7 @@ objC_copyreference() {
 
 # I) Run objI in constructor
 objC_init() {
- [[ ${FUNCNAME[1]} != objC_* ]] && return  # protect this function
+ [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
  for i in "${!this_data[@]}"; do declare -n ${i:1}=objV_${this_data[$i]}; done; objI "$@"  # attach variables and run a method of the new object
 }
 

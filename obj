@@ -7,26 +7,26 @@
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 #
-# A) Common routine: objParent
+# A) Common routine: objRparentPath
 # B) Get obj's home directory
-# C) Loader
+# C) Loader: obj, objRrestart
 #
 # Reserved words: obj* this* default --help
 ################################################################################
 
 # A) Common routine: objParentPath
-objParentPath() { local i="${1:-.}"
+objRparentPath() { local i="${1:-.}"
  [[ -d $i ]] && { p="$PWD"; cd "$i"; cd ..; pwd; cd "$p"; } || {  # if input is a directory
   local p="${i%/*}"; [[ $p == $i ]] && p="."; [[ -z $p ]] && p="/"  # try get parent; if missing parent; if missing path
   cd "$p"; pwd; cd "$OLDPWD"  #  get and return with real name of parent
  }
-}; export -f objParentPath
+}; export -f objRparentPath
 
 # B) Get real name of obj's home directory
-[[ -z ${obj_HOME} ]] && obj_HOME="$(objParentPath "$BASH_SOURCE}")"; export obj_HOME obj_INIT="${obj_HOME}/init"
+[[ -z ${obj_HOME} ]] && obj_HOME="$(objRparentPath "$BASH_SOURCE}")"; export obj_HOME obj_INIT="${obj_HOME}/init"
 
 # C) Loader
-obj() { objRstart "$@"; }
-objRstart() { source "${obj_INIT}" && [[ -n $1 ]] && obj "$@"; }
-export -f obj objRstart
-(($# > 0)) && objRstart "$@"
+obj() { objRrestart "$@"; }
+objRrestart() { source "${obj_INIT}" && [[ -n $1 ]] && obj "$@"; }
+export -f obj objRrestart
+(($# > 0)) && objRrestart "$@"

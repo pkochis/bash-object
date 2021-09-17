@@ -7,71 +7,144 @@
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 #
-# A) Set environment, root class, zero, root and hidden object
-# B) Message handlers
-# C) Create object/class
-# D) Call construct-items
+# A) Set environment
+# B) Basic named routines
+# C) Message handlers
+# D) Create class
+# E) Create object
+# F) Call construct-items
 ################################################################################
 [[ $(type -t obj) != function ]] && exit  # prevents unwanted run
 
 # A) Set environment
 declare -g obj_C; ((obj_C < 10)) && obj_C=12; export obj_C  # init general upcounter
-declare -gA objects obj_routines  # init the registers of objects/classes and routines
+declare -gA objects obj_routines  # init the registers of objects/classes, routines
 declare -ga obj_meta=(public methods data)  # metadata for all objects/classes
-declare -gA obj_methods0=() obj_public0=() obj_data0=()  # init the zero class
-declare -gA obj_methods1=() obj_public1=() obj_data1=(); objects+=([ID::]=1)  # init the root class
-declare -gA obj_methods2=([Mdefault]=create) obj_public2=([Mdefault]=create) obj_data2=(); objects+=(["IDobj-create"]=2)  # init the obj-create object
-declare -gA obj_methods3=([Mdefault]=notObject) obj_public3=([Mdefault]=notObject) obj_data3=()  # init the hidden object for missing objects
+objects+=([ID@]=1 [IDobj]=2 [ID]=3 ["ID--help"]=5)
+declare -gA obj_methods0=() obj_public0=() obj_data0=()  # init the hidden zero object/class
+
+declare -gA OBJ_methods1=([A]=B) OBJ_public1=() OBJ_data1=([VV]="" [Va]="()" [VA]="()") OBJ_attr1=([VV]="-g" [Va]="-ga" [VA]="-gA") \
+ obj_methods1=(["Mobj-create"]=create) obj_public1=(["Mobj-create"]=create) obj_data1=()
+declare -gA obj_methods2=(["Mdefault"]=restart ["M--help"]=helper) obj_public2=(["Mdefault"]=restart ["M--help"]=helper) obj_data2=()
+declare -gA obj_methods3=(["Mdefault"]=restart ["M--help"]=s2objHelp) obj_public3=(["Mdefault"]=restart ["M--help"]=s2objHelp) obj_data3=()
+declare -gA obj_methods5=(["Mdefault"]=s2objHelp) obj_public5=(["Mdefault"]=s2objHelp) obj_data5=()
+### declare -gA obj_methods1=(["Mobj-create"]=constructor) obj_public1=(["Mobj-create"]=constructor) obj_data1=()  # init the hidden constructor object/class
+### declare -gA obj_methods2=() obj_public2=() obj_data2=()  # init the root class
+
+### declare -gA obj_methods2=([Mdefault]=create) obj_public2=([Mdefault]=create) obj_data2=()  # init the obj-create object
+### declare -gA obj_methods3=([Mdefault]=notObject) obj_public3=([Mdefault]=notObject) obj_data3=()  # init the hidden object for missing objects
 declare -ga obj_construct_end=()  # init last processes for constructor
 
-# B) Message handlers
-objRerror() { local i c=0 et="$1"; shift; for i in "$@"; do ((c++)); et="${et//%A${c}%/$i}"; done; echo "$et"; }
-obj() {
- declare -a this=(${objects["ID${1}"]:-3} "${1}" "${2:-default}" "${2:-default}" "${2:-default}"); shift; shift  # get ID of object/class
- local i; for i in "${obj_meta[@]}"; do declare -n this_$i=obj_${i}$this; done  # load object/class
- for i in "${!this_data[@]}"; do declare -n ${i:1}=objV_${this_data[$i]}; done  # attach variables
- objR${this_public["M${this[2]}"]:-check} "$@"
-}
-objI() { this[3]="${1:-default}" this[4]="${1:-default}"; shift; objR${this_methods["M${this[3]}"]:-checkI} "$@"; }
-objRcheck() { ((${#objects[@]} > 0)) && { objRtryPublicDefault "$@"; return; } || source "${obj_INIT}" && obj "${this[1]}" "${this[2]}" "$@"; }
-objRcheckI() { ((${#objects[@]} > 0)) && { objRtryDefault "$@"; return; } || source "${obj_INIT}" && objI "${this[3]}" "$@"; }
-objRtryPublicDefault() { this[2]=default this[3]=default; objR${this_public[Mdefault]:-noPublicMethod} "${this[4]}" "$@"; }
-objRtryDefault() { this[3]=default; objR${this_method[Mdefault]:-noMethod} "${this[4]}" "$@"; }
-objRnoPublicMethod() { objRerror "The %A1% public method in %A2% object/class does not exist" "\"$1\"" "\"${this[1]}\""; }
-objRnoMethod() { objRerror "The %A1% method in %A2% object/class does not exist" "\"$1\"" "\"${this[1]}\""; }
-objRnotObject() { ((${#this[1]} != 0)) && objRerror "The %A1% object/class does not exist" "\"${this[1]}\"" || source "${obj_INIT}"; } 
-export -f objRerror obj objI objRcheck objRcheckI objRtryPublicDefault objRtryDefault objRnoPublicMethod objRnoMethod objRnotObject
-
-# C) Create object/class
+# B) Basic named routines
 objRcreate() {
- (($this != 2)) && return; local ref i  # protect this function
- [[ ${objects["ID$1"]:-0} == 0 || $1 != ::* ]] && { objRerror "The %A1% is not a class" "\"$1\""; return; }
- [[ $2 == ::* && "$1" != "::" ]] && this[1]="$1$2" || this[1]="$2"; shift  # set new object/class name
- if ((${objects["ID${this[1]}"]:-0} == 0)); then
-  objects+=(["ID${this[1]}"]="$((++obj_C))") this=${obj_C} ref=${objects["ID$1"]}; shift  # create and switch to ID of new object/class
-  for i in "${obj_meta[@]}"; do declare -gA obj_${i}${obj_C}; declare -n this_${i}=obj_${i}${obj_C}; done  # init and switch to new object/class
-  [[ ${this[1]} == ::* ]] && objC_construct : "$@" objC_end objC_  # develop the new class
-  [[ ${this[1]} != ::* ]] && objC_construct : "$@" objC_end objC_  # develop the new object
+ [[ ${FUNCNAME[1]} != obj || $# < 1 ]] && return; local t tn ref  # protect this function
+ [[ $1 == @* && ${this[1]} != "@" ]] && tn="${this[1]}$1" || tn="$1"; shift  # construct object/class name
+ ((${objects["ID$tn"]:-0} > 0)) && { objError "The %A1% object/class is already exists" "\"$tn\""; return; }
+ t="$((++obj_C))" objects+=(["ID$tn"]=$t [P$t]=$this)  # create new object/class
+ declare -gA "obj_methods$t=()" "obj_public$t=()" "obj_data$t=()"  # init new object/class
+ declare -n this_methods=obj_methods$t this_public=obj_public$t this_data=obj_data$t  # load object/class
+ declare -n source_methods=OBJ_methods$this source_public=OBJ_public$this source_data=OBJ_data$this source_attr=OBJ_attr$this  # load source class
+ declare -a this=($t "$tn" "obj-create" "obj-create" "obj-create")  # switch to new object/class
+ if [[ $tn == @* ]]; then objCconstruct : "$@" objC_end objC_; else objOconstruct "$@"; fi  # call class/object contructor
+}
+# objRrestart() already defined in ${obj_HOME}/obj
+objRhelper() {
+ (($# > 0)) && local h="${objects[H$this]}.$1" || local h="${objects[H$this]}"  # construct help file name
+ [[ -e $h.help ]] && source "$h.help" || objError "The %A1% help for %A2% object/class does not exist" "\"$h\"" "\"${this[1]}\""
+}
+objRs2objHelp() { obj obj --help "$@"; }
+objRcheckPublicDefault() {
+ [[ ${FUNCNAME[1]} != obj ]] && return  # protect this function
+ if [[ -n ${this_public[Mdefault]} ]]; then
+  this[2]=default this[3]=default; objR${this_public[Mdefault]} "${this[4]}" "$@"  # runs the public default method
  else
-  objRerror "The %A1% object/class is already exists" "\"${this[1]}\""
+  objError "The %A1% public method in %A2% object/class does not exist" "\"${this[2]}\"" "\"${this[1]}\""  # if the public method is missing
  fi
-}  # objRcreate
+}
+objRcheckDefault() {
+ [[ ${FUNCNAME[1]} != objI ]] && return  # protect this function
+ if [[ -n ${this_methods[Mdefault]} ]]; then
+  this[3]=default; objR${this_methods[Mdefault]} "${this[4]}" "$@"  # runs the public default method
+ else
+  objError "The %A1% method in %A2% object/class does not exist" "\"${this[3]}\"" "\"${this[1]}\""  # if the public method is missing
+ fi
+}
+objRdeconstruct() {
+ for i in "${this_data[@]}"; do unset -v objV_${i:1}; done  # remove variables
+ unset -v this_methods this_public this_data objects[H$this] objects[P$this] objects["ID${this[1]}"]  # remove object
+}
 
-objC_construct() {
- [[ ${FUNCNAME[1]} != objRcreate ]] && return  # protect this function
- declare -A obj_construct_flag=(); ref=0; declare -a cline=()  # flags for objC_end; reference object; command-line helper
+# C) Message handlers
+objError() { local i c=0 et="$1"; shift; for i in "$@"; do ((c++)); et="${et//%A${c}%/$i}"; done; echo "$et"; }
+obj() {
+ declare -a this=(${objects["ID${1}"]:-0} "${1}" "${2:-default}" "${2:-default}" "${2:-default}"); shift; shift  # get ID of object/class
+ if ((this > 0)); then
+  declare -n this_methods=obj_methods$this this_public=obj_public$this this_data=obj_data$this  # load object/class
+  local i; for i in "${!this_data[@]}"; do declare -n ${i:1}=objV_${this_data[$i]}; done  # attach variables
+  objR${this_public["M${this[2]}"]:-checkPublicDefault} "$@"  # run a public method of the object/class
+ elif ((${#objects[@]} > 0)); then
+  objError "The %A1% object/class does not exist" "\"${this[1]}\""  # the object/class is missing
+ else
+  objRrestart "${this[1]}" "${this[2]}" "$@"  # the bash-object runs in subshell
+ fi
+}
+objI() {
+ ((${this:-0} < 1)) && return
+ this[3]="${1:-default}" this[4]="${1:-default}"; shift; objR${this_methods["M${this[3]}"]:-checkDefault} "$@"
+}
+export -f obj
+
+# D) Create class
+objCconstruct() {
+ [[ ${FUNCNAME[1]} != objRcreate ]] && return; local i j # protect this function
+ for i in methods public data attr; do
+  declare -gA "OBJ_$i$this=()"; declare -n source=source_$i target=OBJ_$i$this
+  for j in "${!source[@]}"; do target+=([$j]="${source[$j]}"); done
+ done
+
+#### old things
+ declare -A obj_construct_flag=(); declare -a cline=()  # flags for objC_end; reference object; command-line helper
  while (($# > 0)); do  # parse init command BEGIN
   [[ $1 == objC_* ]] && { "${cline[@]}"; cline=(); }; cline+=("$1"); shift  # create and run init routines in the init command
  done  # parse init command END
+
+# [[ "${obj_construct_flag[obj-defaulthelp]}" == "yes" ]] && this_methods+=(["Mdefault"]=help) this_public+=(["Mdefault"]=help)
+
+#### new things
+ j=""; for ((i=0; i<${#FUNCNAME}; i++)); do  # check help BEGIN
+  [[ ${FUNCNAME[$i]} != @(source|main) ]] && continue
+  j="$(objLocalisedFile "$(objRparentPath "${BASH_SOURCE[$i]}")" "${this[1]}.help")"; break
+ done  # check help END
+ ((${#j} > 0)) && objects+=([H$this]="${j%.help}") this_methods+=(["M--help"]=helper) this_public+=(["M--help"]=helper)  # add help method
+ this_methods+=(["Mobj-create"]=create) this_public+=(["Mobj-create"]=create)  # add create method
 }
+
+
+
+
 objC_reference() {
- [[ ${FUNCNAME[1]} != objC_* ]] && return  # protect this function
- ref=${objects["ID$1"]:-0}  # set reference (default is the zero class)
+ [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
+ ref=${objects["ID$1"]:-${objects["ID@"]}}  # set reference (default is the root class)
 }
 objC_end() {
- [[ ${FUNCNAME[1]} != objC_construct ]] && return; local i  # protect this function
+ [[ ${FUNCNAME[1]} != objC* ]] && return; local i  # protect this function
  for i in "${obj_construct_end[@]}"; do objC_$i; done
 }
 
-# D) Call construct-items
+# E) Create object
+objOconstruct() {
+ [[ ${FUNCNAME[1]} != objRcreate ]] && return; local i  # protect this function
+ for i in "${!source_methods[@]}"; do this_methods+=([$i]=${source_methods[$i]}); done  # copy methods
+ for i in "${!source_public[@]}"; do this_public+=([$i]=${source_public[$i]}); done  # copy public methods
+ for i in "${!source_data[@]}"; do declare ${source_attr[$i]} "objV_$((++obj_C))=${source_data[$i]}"; this_data+=([$i]=${obj_C}); done  # copy variables
+ for i in "$@"; do ((${this_data[V${i%%=*}]:-0} > 0)) && declare -g "objV_${this_data[V${i%%=*}]}=${i#*=}"; done  # set variables
+
+# run init
+
+ [[ -n ${objects[H${objects[P$this]}]} ]] && \
+  objects+=([H$this]="${objects[H${objects[P$this]}]}") this_methods+=(["M--help"]=helper) this_public+=(["M--help"]=helper)  # add help method
+ this_methods+=(["Mobj-erase"]=deconstruct) this_public+=(["Mobj-erase"]=deconstruct)  # add erase method
+}
+
+# F) Call construct-items
 source "${obj_HOME}/construct-items"
