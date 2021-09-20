@@ -1,95 +1,80 @@
 #!/usr/bin/env bash
 
 ################################################################################
-# Script name: basic-objects, Version 1.0
+# Script name: basic-classes, Version 1.0
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 #
-# A) Force erase object
-# B) Create obj-debug object
-# C) Create object-list object
-# D) Create obj-dictionary object
+# A) @obj-debug
+# C) @object-list
+# D) @obj-dictionary
 # E) Change error helper
-# F) Create --help object
-# G) Create obj-backup-variables object
+# F) @obj and --help
+# G) @obj-backup-variables
 ################################################################################
-[[ $(type -t objC_init) != function ]] && exit  # prevents unwanted load
+[[ $(type -t objCconstruct) != function ]] && exit  # prevents unwanted load
 
-# A) Force erase object
-objRforceErase() { [[ "$2" != "--force" ]] && return; local o
- o=${objects["ID$1"]}; ((${o:-0} < 12)) && return
- eval "obj_methods$o+=([\"Mobj-erase\"]=deconstruct) obj_public$o+=([\"Mobj-erase\"]=deconstruct)"  # add obj-erase public method
- obj "$1" obj-erase  # call deconstructor
-}
+# A) @obj-debug
+((${objects["ID@obj-debug"]:-0} == 0)) && obj @ obj-create @obj-debug \
+ objC_Public obj-debug '{ local i; declare -p this_details this_data; for i in "${!this_data[@]}"; do declare -p ${i:1}; done; }'
 
-# B) Create obj-debug object
-objRforceErase @obj-debug --force
-obj @ obj-create @obj-debug \
- objC_public obj-public-methods '{ local i; for i in "${!this_public[@]}"; do [[ $i = *\ * ]] && echo \"${i:1}\" || echo ${i:1}; done; }' \
- objC_public default '{
-  declare -p this
-  local i; for i in "${obj_meta[@]}"; do declare -p obj_${i}$this; done
-  for i in "${this_data[@]}"; do declare -p objV_$i; done
- }'
-
-# C) Create object-list object
-objRforceErase @object-list --force
-
-obj @ obj-create @object-list \
- objC_public default '{
+# C) @object-list
+((${objects["ID@object-list"]:-0} == 0)) && obj @ obj-create @object-list \
+ objC_Public obj-list '{
   local i; for i in "${!objects[@]}"; do [[ $i == @(ID|ID*\ *) ]] && echo \"${i#ID}\" || { [[ $i == ID* ]] && echo ${i#ID}; }; done
- }'
+ }' objC_Default obj-list
+((${objects["IDobject-list"]:-0} == 0)) && obj @object-list obj-create object-list
 
-
-# D) Create obj-dictionary object
-objRforceErase @obj-dictionary --force
-obj @ obj-create @obj-dictionary \
- objC_variable obj_folder -g = "${obj_HOME}" \
- objC_variable obj_source_file -g = obj-error \
- objC_variable obj_dictionary -gA \
- objC_public default '{ echo "${obj_dictionary["$1"]:-$1}"; }' \
- objC_private obj-add-dictionary '{
+# D) @obj-dictionary
+((${objects["ID@obj-dictionary"]:-0} == 0)) && obj @ obj-create @obj-dictionary \
+ objC_Variable -g obj_folder="" \
+ objC_Variable -g obj_source_file="" \
+ objC_Variable -gA 'obj_dictionary=()' \
+ objC_Public translate '{ echo "${obj_dictionary["$1"]:-$1}"; }' \
+ objC_Default translate \
+ objC_Private obj-add-dictionary '{
   local what=" "; [[ -e $1 ]] && {
    while IFS= read -r; do
     [[ $REPLY == From:\ * ]] && what="${REPLY#From: }"; [[ $REPLY == To:\ * ]] && { obj_dictionary+=(["$what"]="${REPLY#To: }"); what=" "; }
    done < "$1";
   } 
  }' \
- objC_private obj-add-local-dictionary '{
+ objC_Private obj-add-local-dictionary '{
   [[ -d ${obj_folder} ]] && {
    cd "${obj_folder}"; obj_folder="$PWD"; cd "$OLDPWD"
-   objI obj-add-dictionary "$(objLocalisedFile "${obj_folder}" "${obj_source_file}")"
+   objI obj-add-dictionary "$(objRlocalisedFile "${obj_folder}" "${obj_source_file}")"
   } 
  }' \
- objC_init obj-add-local-dictionary
+ objC_Init obj-add-local-dictionary
 
 # E) Change error helper
-objRerror() { local i c=0 et="$(obj @obj-dictionary default "$1")"; shift; for i in "$@"; do ((c++)); et="${et//%A${c}%/$i}"; done; echo "$et"; }
+((${objects["IDobj-error-messages"]:-0} == 0)) && obj @obj-dictionary obj-create obj-error-messages \
+ obj_folder="${obj_HOME}" obj_source_file=obj-error
+objError() { local i c=0 et="$(obj obj-error-messages translate "$1")"; shift; for i in "$@"; do ((c++)); et="${et//%A${c}%/$i}"; done; echo "$et"; }
 
-# F) Create --help object
-objRforceErase "@--help" --force
-obj @ obj-create "@--help" objC_defaulthelp
+# F) @obj and --help
+((${objects["ID@obj"]:-0} == 0)) && obj @ obj-create @obj objC_Default "--help"
+((${objects["ID--help"]:-0} == 0)) && obj @obj obj-create --help
 
-# G) Create obj-backup-variables object
-objRforceErase @obj-backup-variables --force
-obj @ obj-create @obj-backup-variables \
- objC_variable obj_backupdir -g = "" \
- objC_variable obj_variables -ga = '()' \
- objC_public obj-set-backupdir '{ cd "$1"; obj_backupdir="$PWD"; cd $OLDPWD; }' \
- objC_public obj-set-filter '{ local i
+# G) @obj-backup-variables
+((${objects["ID@obj-backup-variables"]:-0} == 0)) && obj @ obj-create @obj-backup-variables \
+ objC_Variable -g obj_backupdir="" \
+ objC_Variable -ga 'obj_variables=()' \
+ objC_Public obj-set-backupdir '{ cd "$1"; obj_backupdir="$PWD"; cd $OLDPWD; }' \
+ objC_Public obj-set-filter '{ local i
   obj_variables=(); [[ "$1" == "." ]] && for i in "${!this_data[@]}"; do obj_variables+=("${i:1}"); done || obj_variables=("$@")
  }' \
- objC_public obj-get-filter '{ echo "${obj_variables[@]}"; }' \
- objC_public obj-restore '{ local i j
+ objC_Public obj-get-filter '{ echo "${obj_variables[@]}"; }' \
+ objC_Public obj-restore '{ local i j
   [[ -e ${obj_backupdir}/${this[1]}.vbak ]] && while IFS= read -r; do
    for i in "${obj_variables[@]}"; do
     [[ $REPLY == $i=* ]] && for j in "${!this_data[@]}"; do [[ $REPLY == ${j:1}=* ]] && eval "$REPLY"; done
    done
   done < "${obj_backupdir}/${this[1]}.vbak"
  }' \
- objC_public obj-backup '{
+ objC_Public obj-backup '{
   [[ -d $obj_backupdir ]] && {
    local f="${obj_backupdir}/${this[1]}.vbak" i val; echo -n "" > "$f"
    for i in "${obj_variables[@]}"; do

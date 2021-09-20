@@ -1,107 +1,46 @@
 #!/usr/bin/env bash
 
 ################################################################################
-# Script name: Pclass-items, Version 1.0
+# Script name: class-items, Version 1.0
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 #
-# A) Common routine: objLocalisedFile
-# B) User routine handlers
-# C) Delete user method and variable
-# E) Add user variable
-# F) Object/class help
-# G) Add user method
-# H) Copy reference
-# I) Run objI in constructor
-# J) Call basic-objects 
+# A) Init and default routines
+# B) Delete routine or variable
+# C) Add public or private method
+# E) Add variable
 ################################################################################
-[[ $(type -t objRcreate) != function ]] && exit  # prevents unwanted run
+[[ $(type -t obj) != function ]] && exit  # prevents unwanted run
 
-# A) Common routine: objLocalisedFile
-objLocalisedFile() {
- local language="${3:-${LANG:-${LC_CTYPE:-en}}}" ret=""
- (($# > 1)) && { [[ -e $1/locale/en/$2 ]] && ret="$1/locale/en/$2"; [[ -e $1/locale/${language%%_*}/$2 ]] && ret="$1/locale/${language%%_*}/$2"; }
- echo "$ret"; [[ -n $ret ]]
-}; export -f objLocalisedFile
+# A) Init and default routines
+objC_Init() { [[ ${FUNCNAME[1]} == objCconstruct ]] && this_DETAILS+=([I]="$1"); }  # add a method name as init method for
+objC_NoInit() { [[ ${FUNCNAME[1]} == objCconstruct ]] && unset -v ${this_DETAILS[I]}; }  # delete a method name as init method
+objC_Default() { [[ ${FUNCNAME[1]} == objCconstruct ]] && this_DETAILS+=([D]="$1"); }  # add a method name as default method
+objC_NoDefault() { [[ ${FUNCNAME[1]} == objCconstruct ]] && unset -v ${this_DETAILS[D]}; }  # delete a method name as default method
 
-# B) User routine handlers
-objR_RoutineNew() { ((${1:-0} > 10)) && eval function objR$1 "$2" && ((++obj_routines["N$1"])); }
-objR_RoutineAdd() { ((${1:-0} > 10)) && ((++obj_routines["N$1"])); }
-objR_RoutineRemove() { ((${1:-0} > 10 && --obj_routines["N$1"] < 1 )) && unset -v obj_routines["N$1"] && unset -f objR$1; }
+# B) Delete routine or variable
+objC_DelMethod() { [[ ${FUNCNAME[1]} == objCconstruct ]] && unset -v ${this_DETAILS["P$1"]} ${this_DETAILS["M$1"]}; }  # remove a method
+objC_DelVariable() { [[ ${FUNCNAME[1]} == objCconstruct ]] && unset -v ${this_DATA["V$1"]}; }  # remove a variable
 
-# C) Delete method and variable
-objC_delmethod() {
- [[ ${FUNCNAME[1]} != objC* || -z ${this_methods["M$1"]} ]] && return  # protect this function
- objR_RoutineRemove ${this_methods["M$1"]}; unset -v this_methods["M$1"] this_public["M$1"]  # remove method
+# C) Add public or private method
+objC_Public() { [[ ${FUNCNAME[1]} == objCconstruct ]] && objC_Private "$@" && this_DETAILS+=(["P$1"]=${this_DETAILS["M$1"]}); }  # add a public method
+objC_Private() {
+ [[ ${FUNCNAME[1]} != @(objCconstruct||objC_Public) ]] && return  # protect this function
+ case $# in
+  2) eval "function objR$((++obj_C)) $2"; [[ $(type -t objR${obj_C}) == function ]] && this_DETAILS+=(["M$1"]=${obj_C});;  # add a new method
+  3) declare -n ref=obj_DETAILS${objects["ID$2"]:-${objects[ID@]}}; [[ -n ${ref["M$3"]} ]] && this_DETAILS+=(["M$1"]=${ref["M$3"]});;  # add a method from a class
+  *) return 1;;
+ esac
+}  # add a public method
+
+# E) Add variable
+objC_Variable() {
+ [[ ${FUNCNAME[1]} != objCconstruct ]] && return  # protect this function
+ case $# in
+  2) this_DATA+=(["V${2%%=*}"]="$1 ${2#*=}");;  # add a new variable (without syntax checking)
+  3) declare -n ref=obj_DATA${objects["ID$1"]:-${objects[ID@]}}; [[ -n ${ref["V$2"]} ]] && this_DATA+=(["V$1"]=${ref["V$2"]});;  # add a variable from a class
+  *) return 1;;
+ esac
 }
-objC_delvariable() {
- [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
- unset -v objV_${this_data[V$1]} this_data[V$1]  # remove variable
-}
-
-
-# F) Add variable
-objC_variable() {
- [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
- ((++obj_C)); unset -v objV_${this_data[V$1]} this_data[V$1]  # increase upcounter and remove variable
- (($# == 2)) && declare $2 objV_${obj_C}  # only declare
- (($# == 4)) && {
-  [[ $1 != @(*a*|*A*) ]] && eval "declare $2 objV_${obj_C}=\"$4\""  # variable with value
-  [[ $1 == @(*a*|*A*) ]] && eval "declare $2 objV_${obj_C}=$4"  # array with value
- }
- (($# == 3)) && {
-  declare -n ref_data=obj_data$ref; local v=${ref_data[V$3]}  # check reference
-  local att val; val="$(declare -p objV_$v 2> /dev/null)" && {
-   att="${val#declare }" att="${att%% *}" att="${att/--/-}g"  # read attribute of variable
-   [[ $val != *=* ]] && eval "declare $att obj_v${obj_C}"  # only declared variable
-   [[ $val == *=* && $att != @(*a*|*A*) ]] && eval "declare $att objV_${obj_C}=\"${val#*=}\""  # variable with value
-   [[ $val == *=* && $att == @(*a*|*A*) ]] && eval "declare $att objV_${obj_C}=${val#*=}"  # array with value
-  }
- }
- declare -p objV_${obj_C} &> /dev/null && this_data+=([V$1]=${obj_C}) || ((obj_C--))  # check the new variable and register to object data
-}
-
-# F) Object/class help
-objC_defaulthelp() {
- [[ ${FUNCNAME[1]} != objC_Pclass ]] && return  # protect this function
- obj_Pclass_flag+=([obj-defaulthelp]=yes)  # set flag
-}
-
-# G) Add user method
-objC_public() {
- [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
- objC_private "$@"; [[ -n ${this_methods["M$1"]} ]] && this_public+=(["M$1"]=${this_methods["M$1"]})  # call private and set public
-}
-objC_private() {
- [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
- unset -v this_methods["M$1"]  # reset public
- (($# == 2)) && {
-  objC_delmethod "$1"  # remove old routine
-  objR_RoutineNew $((++obj_C)) "$2" && this_methods+=(["M$1"]=${obj_C})  # add new routine
- }
- (($# == 3)) && {
-  declare -n ref_methods=obj_methods$ref; local m=${ref_methods["M$3"]}  # check reference
-  [[ "${this_methods["M$1"]}"  == "$m" ]] && return; objC_delmethod "$1"  # remove old routine
-  [[ -n $m ]] && { objR_RoutineAdd $m; this_methods+=(["M$1"]=${ref_methods["M$3"]}); }  # add routine from reference
- }
-}
-
-# H) Copy reference
-objC_copyreference() {
- [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
- local i; for i in "${obj_meta[@]}"; do declare -n ref_${i}=obj_${i}$ref; done  # pick reference class
- for i in "${!ref_data[@]}"; do objC_variable "${i:1}" reference "${i:1}"; done # copy variables
- for i in "${!ref_methods[@]}"; do objC_private "${i:1}" reference "${i:1}"; done # copy methods
- for i in "${!ref_public[@]}"; do this_public+=(["$i"]=${ref_public["$i"]}); done  # copy public
-}
-
-# I) Run objI in Pclassor
-objC_init() {
- [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
- for i in "${!this_data[@]}"; do declare -n ${i:1}=objV_${this_data[$i]}; done; objI "$@"  # attach variables and run a method of the new object
-}
-
-# J) Call basic-objects 
-source "${obj_HOME}/basic-objects"
