@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ################################################################################
-# Script name: construct-items, Version 1.0
+# Script name: Pclass-items, Version 1.0
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -53,20 +53,20 @@ objC_variable() {
  }
  (($# == 3)) && {
   declare -n ref_data=obj_data$ref; local v=${ref_data[V$3]}  # check reference
-  local att val; val="$(declare -p objV_$v 2> /dev/nul)" && {
+  local att val; val="$(declare -p objV_$v 2> /dev/null)" && {
    att="${val#declare }" att="${att%% *}" att="${att/--/-}g"  # read attribute of variable
    [[ $val != *=* ]] && eval "declare $att obj_v${obj_C}"  # only declared variable
    [[ $val == *=* && $att != @(*a*|*A*) ]] && eval "declare $att objV_${obj_C}=\"${val#*=}\""  # variable with value
    [[ $val == *=* && $att == @(*a*|*A*) ]] && eval "declare $att objV_${obj_C}=${val#*=}"  # array with value
   }
  }
- declare -p objV_${obj_C} &> /dev/nul && this_data+=([V$1]=${obj_C}) || ((obj_C--))  # check the new variable and register to object data
+ declare -p objV_${obj_C} &> /dev/null && this_data+=([V$1]=${obj_C}) || ((obj_C--))  # check the new variable and register to object data
 }
 
 # F) Object/class help
 objC_defaulthelp() {
- [[ ${FUNCNAME[1]} != objC_construct ]] && return  # protect this function
- obj_construct_flag+=([obj-defaulthelp]=yes)  # set flag
+ [[ ${FUNCNAME[1]} != objC_Pclass ]] && return  # protect this function
+ obj_Pclass_flag+=([obj-defaulthelp]=yes)  # set flag
 }
 
 # G) Add user method
@@ -97,7 +97,7 @@ objC_copyreference() {
  for i in "${!ref_public[@]}"; do this_public+=(["$i"]=${ref_public["$i"]}); done  # copy public
 }
 
-# I) Run objI in constructor
+# I) Run objI in Pclassor
 objC_init() {
  [[ ${FUNCNAME[1]} != objC* ]] && return  # protect this function
  for i in "${!this_data[@]}"; do declare -n ${i:1}=objV_${this_data[$i]}; done; objI "$@"  # attach variables and run a method of the new object
