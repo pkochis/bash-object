@@ -17,3 +17,6 @@ To: The %A1% method in %A2% object/class does not exist
 
 From: The %A1% object/class is already exists
 To: The %A1% object/class is already exists
+
+From: The %A1% help for %A2% object/class does not exist
+To: The %A1% help for %A2% object/class does not exist
