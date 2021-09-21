@@ -1,5 +1,5 @@
 ################################################################################
-# Hungarian help file: --help.obj-file, Version 1.0
+# Hungarian help file: obj.file, Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -18,5 +18,4 @@ printf "
  létrehozza a bash-object környezetét.
 
  Az obj fájl aktuális helye: \"${obj_HOME}\"
-
 "

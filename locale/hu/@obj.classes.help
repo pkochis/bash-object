@@ -1,0 +1,32 @@
+################################################################################
+# Hungarian help file: obj.class, Version 1.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Osztály használata:
+  obj @<osztály> obj-create @<új osztály> [kifejezések...]        Öröklődés
+  obj @<osztály> obj-create <új objektum> [<változó>=<érték>...]  Példányosítás
+  obj @<osztály> --help [súgólap]                                 Súgó
+
+Megjegyzések:
+ a) A gyökér osztály a @ nevű osztály. Az obj-create metóduson kívül semmit
+    sem tartalmaz.
+ b) Az osztálynak az obj-create és a --help metódusokon kívül
+    nincsen más metódusa. Az obj-create metódus mindig létrejön automatikusan,
+    a --help csak akkor, ha az osztálynak van súgója.
+ c) Az osztály inaktívan tárolja azokat a metódusokat és változókat a kezdeti
+    értékeikkel együtt, amelyeket az objekum létrehozásakor (példányosítás)
+    bemásol az objektumba.
+ d) Öröklődéskor az osztály a benne tárolt inaktív metódusokat és változókat
+    átmásolja az új osztályba, majd a kifejezések szerint módosítja azokat.
+    Végül létrehozza az új osztály számára a --help és az obj-create metódust.
+ e) Az osztály az öröklődés végrehajtása után nem módosítható.
+ f) az osztály nem törölhető.
+ g) A példányosítás létrehozza az osztályból az objektumot, beállítja a változók
+    kezdeti értékét és végrehajtja az inicializálásra kijelölt publikus,
+    vagy privát metódust. Lásd az obj --help objects súgólapot.
+ h) A kifejezések súgója elérhető az obj --help create súgólapon. 
+"

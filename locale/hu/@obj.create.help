@@ -1,68 +1,56 @@
 ################################################################################
-# Hungarian help file: --help.create, Version 1.0
+# Hungarian help file: obj.create, Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
 printf "
-Az obj-create metódus hozza létre az objektumot. Csak erre használható.
-Ha az objektum létrejött, törlődik.
+Az öröklődés:
+ obj @<osztály> obj-create @<új osztály> [kifejezés]...
 
-Használat: obj <új objektum> obj-create [KAPCSOLÓ [paraméterek] ...]
+A kifejezések alakja: <kulcsszó> [paraméterek]
 
-Általános kapcsolók:
-  objC_copyreference          Az összes metódust és változót az aktuális
-                              értékeikkel együtt átmásolja referenciaobjektumból
-                              az új objektumba.
-  objC_defaulthelp            Beállítja a default metódust a --help metódusra,
-                              ha az létrejött.
-  objC_init <parancs>         Ugyanaz, mint az objI parancs, de az objektum
-                              létrehozásakor használható.
-  objC_noerase                Nem hozza létre az obj-erase metódust.
-  objC_reference <objektum>   Beállítja a referencia objektumot.
-
-Kapcsolók metódusokhoz és változókhoz:
-  objC_delmethod <metódus>       Egy metódust eltávolít az új objektumból.
-  objC_delvariable <változó>     Egy változót vagy tömböt távolít el
-                                 az új objektumból.
-  objC_private <paraméterek>     Egy privát metódust állít be az új objektumhoz.
-  objC_public <paraméterek>      Egy publikus metódust állít be
-                                 az új objektumhoz.       
-  objC_variable <paraméterek>    Egy változót vagy tömböt állít be
-                                 az új objektumhoz.
+Kulcsszavak:
+ objC_Default <publikus metódus>  A publikus metódust alapértelmezettnek jelöli
+ objC_NoDefault                   Nem jelöl metódust alapértelmezettnek
+ objC_Init <metódus>              A metódust a példányosítás végén végrehajtja
+ objC_NoInit                      Nem hajt végre inicializáló metódust
+ objC_DelMethod <metódus>         A metódust törli
+ objC_DelVariable <változó>       A változót törli
+ objC_Public <minta>              Publikus metódust hoz létre
+ objC_Private <minta>             Privát metódust hoz létre
+ objC_Variable <minta>            Új változót hoz létre, vagy egy meglévő
+                                  értékét módosítja
 
 Megjegyzések:
- a) Új metódus létrehozása új kóddal:
-      objC_private <metódus> '{ <kód>; }'
-      objC_public  <metódus> '{ <kód>; }'
- b) Meglévő kód használata új metódushoz:
-      objC_private <metódus> reference <referencia metódus>
-      objC_public  <metódus> reference <referencia metódus>
- c) Új változó létrehozása:
-      objC_variable <változó> <attribútum> [= <érték>]
- d) Új tömb vagy asszociatív tömb létrehozása:
-      objC_variable <tömb> <attribútum> [= '(<tömbelemek>)']
- e) Egy változó, tömb, vagy asszociatív tömb másolása a referenciából:
-      objC_variable <változó> reference <referencia változó>
- f) A referencia lehet egy másik objektum vagy akár az új objektum is.
- g) Az obj-create metódus a kapcsolókat és a paramétereket balról jobbra
-    haladva, lépésről lépésre dolgozza fel.
- h) Névkonfliktus esetén a régi értékek felülíródnak.   
- i) A változók (és a tömbök) függetlenek egymástól, nincs kapcsolat közöttük.
-    Bármilyen kapcsolat csak a metódusokon keresztül valósítható meg.
- j) Minden változónak egyedi, rejtett neve van. Az általunk adott név csak
-    ezekre a nevekre való hivatkozás.
- k) Az általunk megadott változóneveknek a bash változókra vonatkozó
-    névhasználati konvencióit kell követniük.
- l) Ugyanaz a kód egyidejúleg több nyilvános és privát metódushoz is
-    tartozhat, akár egy másik objektumhoz is.
- m) Ha egy metódust leválasztunk egy objektumról, a kódja nem törlődik,
-    csak akkor, ha azt már nem használja egyetlen objektum egyetlen
-    metódusa sem.
- n) A metódusok és objektumok nevei - néhány kivételtől eltekintve -
+ a) A kifejezések az öröklődéskor kerülnek kiértékelésre, azután, hogy
+    az osztály a benne tárolt inaktív metódusokat és változókat átmásolta
+    az új osztályba. A kifejezések csak az öröklődés során használhatóak.
+ b) A kifejezések módosítják az új osztályban tárolt inaktív metódusokat és
+    változókat, de az osztály saját, aktív metódusaira nincsenek hatással.
+ c) A kifejezésekkel a példányosítás során létrejövő objektumok viselkedését
+    tudjuk beállítani.
+ d) Minden kifejezés csak egy metódusra, vagy változóra hat. Újabb metódushoz,
+    vagy változóhoz új kifejezést kell írni.
+ e) Minden kulcsszó "objC_"-vel kezdődik.
+ f) Az objC_Default által beállított metódust keresi az obj parancs,
+    ha nem talál az üzenetben publikus metódust.
+ g) Metódus létrehozásakor (vagy felülírásakor) kétféle minta használható:
+    1) Új metódus létrehozásához: <metódus> '{ kód; }'
+    2) Meglévő metódus átmásolásához: <metódus> @<osztály> <metódus>
+ h) Változó létrehozásakor (vagy felülírásakor) kétféle minta használható:
+    1) <attribútum> <változó>=<érték>
+    2) Meglévő változó átmásolásához: <változó> @<osztály> <változó>
+ i) A <változó>=<érték> kifejezést egyben kell átadni a konstruktornak, így:
+      <változó>='<érték>'              vagy  <változó>=\"<érték>\"
+      '<tömb>=(<listaelem>...)'        vagy  \"<tömb>=(<listaelem>...)\"
+      '<tömb>=([<index>]=<érték>...)'  vagy  \"<tömb>=([<index>]=<érték>...)\"
+ j) Metódusok és változók névkonfliktusai esetén a régebbi információk
+    felülíródnak.   
+ k) A változóneveknek a bash változókra vonatkozó névhasználati konvencióit
+    kell követniük.
+ l) A metódusok és objektumok nevei - néhány kivételtől eltekintve -
     tartalmazhatnak speciális karaktereket. A szóközöket védjük
     idézőjelekkel, vagy visszaperjellel!
- o) Az alapértelmezett referencia az üres objektum.
-
 "

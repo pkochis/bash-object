@@ -1,5 +1,5 @@
 ################################################################################
-# Hungarian help file: --help, Version 1.0
+# Hungarian help file: obj, Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -7,45 +7,38 @@
 ################################################################################
 printf "
 A súgó használata:
-  obj --help                Megjeleníti ezt a szöveget
-  obj --help file           Az obj file súgója
-  obj --help create         Súgó objektumok létrehozásához
-  obj --help helpsystem     A súgó alrendszer súgója
-  obj --help common         Néhány előre definiált objektum, metódus, rutin,
-                            változó
-  obj object-list           Megjeleníti az összes már létrehozott objektumot
-  obj <objektum> --help     Az objektum súgója (ha létrejött)
+  obj --help                     Megjeleníti ezt a szöveget
+  obj --help file                Az obj file súgója
+  obj --help classes             Súgó osztályok használatához
+  obj --help objects             Súgó objektumok használatához
+  obj --help create              Súgó az osztályok öröklődéséhez
+  obj --help helpsystem          A súgó alrendszer súgója
+  obj --help common              Előre definiált osztályok, metódusok, változók
+  obj object-list                Megjeleníti az összes már létrehozott osztályt
+                                 és objektumot
+  obj <objektum|osztály> --help  Az objektum vagy osztály súgója (ha létezik)
 
-Az obj és objI parancsok használata:
-  obj                                                    1) Inicializálás
-  objI                                                   1) Inicializálás
-  obj <objektum> <publikus metódus> [paraméterek]        2) Általános használat
-  obj <objektum> obj-create <paraméterek>                3) Objektum létrehozása
-  obj <objektum> obj-erase                               4) Objektum törlése
-  objI <metódus> [paraméterek]                           5) Metódus belső hívása
+Az obj parancs használata:
+  obj                                                 Inicializálás
+  obj @<osztály> <publikus metódus> [paraméterek]     Üzenet az osztálynak
+  obj <objektum> <publikus metódus> [paraméterek]     Üzenet az objektumnak
 
-1) Inicializálás
-   Ez a parancs újra létrehozza a bash-objektum környezetét és kilép.
-2) Általános használat:
-   Ha a bash-objektum környezete még nem lett létrehozva, akkor ez a parancs
-   létrehozza, majd az üzenetet átadja az objektum meghívott publikus
-   metódusának és kilép.
-3) Objektum létrehozása:
-   Ez a parancs létrehozza az objektumot.
-4) Objektum törlése:
-   Ez a parancs törli az objektumot.
-5) Metódus belső hívása:
-   Ez a parancs az aktuális objektum saját metódusát hívja megaz objektum
-   egy másik metódusából.
+  Megjegyzések:
+  a) Az inicializálás újra létrehozza a bash-objektum környezetét és kilép.
+  b) Ha a bash-objektum környezete még nem lett létrehozva, akkor az obj
+     létrehozza a környezetet, majd az üzenetet átadja az objektum meghívott
+     publikus metódusának és kilép.
+  c) Az obj parancs csak publikus metódust hív meg.
+  d) Ha az obj nem találja az objektum metódusát, akkor megpróbálja
+     az alapértelmezettnek megjelölt publikus metódust meghívni.
+  e) Ha nem létezik (a) megjelölt metódus, az obj hibaüzenettel lép ki.
 
-Megjegyzések:
-  a) Az obj parancs csak publikus metódust futtathat.
-  b) Az objI parancs publikus és privát metódusokat is futtathat.
-  c) Ha a parancs nem találja az objektumot, hibaüzenettel lép ki.
-  d) Ha a parancs nem találja meg az objektum metódusát, akkor megpróbálja
-     a default metódust futtatni.
-  e) Ha az alapértelmezett metódus sem létezik, a parancs hibaüzenettel lép ki.
-  f) A metódus nem közvetlenül futtatja a kódot, hanem meghív egy rutint,
-     amely tartalmazza a kódot.
+Az objI parancs használata:
+  objI <metódus> [paraméterek]                        Metódus belső hívása
 
+  Megjegyzések:
+  a) Az objI parancs az aktuális objektum saját metódusát hívja meg
+     az objektum egy másik metódusából.
+  b) Az objI parancs nyilvános és privát metódusokat is meghívhat.
+  c) Ha az objI nem találja az objektum metódusát, hibaüzenettel kilép.
 "

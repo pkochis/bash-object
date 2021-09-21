@@ -1,0 +1,34 @@
+################################################################################
+# Hungarian help file: obj.objects, Version 1.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Objektum használata:
+  obj @<osztály> obj-create <új objektum> [<változó>=<érték>...]    Létrehozás
+  obj <objektum> <metódus> [paraméterek]                            Üzenet
+  obj <objektum> --help [súgólap]                                   Súgó
+  obj <objektum> obj-erase                                          Törlés
+
+Megjegyzések:
+a) A létrehozás az osztályban definiált metódusokat és változókat bemásolja
+   az új objektumba a kezdeti értékükkel együtt.
+b) A változók kezdeti értékei a <változó>=<érték> paraméterekkel
+   megváltoztathatóak. Új változót azonban nem tudunk létrehozni.
+c) A <változó>=<érték> kifejezést egyben kell átadni a konstruktornak, így:
+     <változó>='<érték>'               vagy   <változó>=\"<érték>\"
+     '<tömb>=(<listaelem>...)'         vagy   \"<tömb>=(<listaelem>...)\"
+     '<tömb>=([<index>]=<érték>...)'   vagy   \"<tömb>=([<index>]=<érték>...)\"
+d) Ha az osztályban kijelöltünk egy (publikus, vagy privát) metódust
+   init metódusnak, akkor a létrehozás végén az init metódus lefut.
+e) Ha nem létező objektumnak küldünk üzenetet, akkor hibaüzenetet kapunk.
+f) Ha az obj nem találja az objektum metódusát, akkor megpróbálja
+   az alapértelmezettnek megjelölt publikus metódust meghívni. Ha ilyen nincs,
+   az obj hibaüzenettel lép ki.
+g) Az objektumnak nincs saját súgója, a --help metódus a létrehozó osztály
+   súgóját (és súgólapjait) jeleníti meg. A --help metódus automatikusan
+   létrejön, ha a létrehozó osztálynak van súgója.
+f) Az obj-erase metódus automatikusan létrejön.
+"

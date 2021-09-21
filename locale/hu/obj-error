@@ -17,3 +17,6 @@ To: A(z) %A2% objektum/osztály %A1% metódusa nem létezik
 
 From: The %A1% object/class is already exists
 To: A(z) %A1% objektum/osztály már létezik
+
+From: The %A1% help for %A2% object/class does not exist
+To: A(z) %A2% objektum/osztály %A1% súgója nem létezik
