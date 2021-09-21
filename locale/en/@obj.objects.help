@@ -1,0 +1,35 @@
+################################################################################
+# English help file: obj.objects, Version 1.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Using an object:
+  obj @<class> obj-create <new object> [<variable>=<value>...]   Create object
+  obj <object> <method> [parameters]                             Message
+  obj <object> --help [pages]                                    Help
+  obj <object> obj-erase                                         Delete object
+
+Comments:
+a) Creation copies in the methods and variables defined in the class into
+   the new object with their initial values.
+b) The initial values of the variables with the <variable>=<value> parameters
+   can be changed. However, no new variable can be created.
+c) The <variable>=<value> must be passed to the constructor in one expression,
+   so:
+     <variable='<value>'                or   <variable>=\"<value>\"
+     '<array>=(<listitem>...)'          or   \"<array>=(<listitem>...)\"
+     '<block>=([<index>]=<value>...)'   or   \"<block>=([<index>]=<value>...)\"
+d) If a method (public or private) is defined in the class init method,
+   then the init method is run at the end of creation.
+e) If a message is sent to a non-existent object, an error message is returned.
+f) If obj cannot find the method of the object, it tries to call the public
+   method marked as default. If there is none, the obj exits with
+   an error message.
+g) The object does not have its own helper, the --help method displays
+   the help (and help pages) of the constructor. The --help method will
+   automatically generated if the creating class has a helper.
+f) The obj-erase method is created automatically.
+"

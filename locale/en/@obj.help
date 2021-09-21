@@ -1,5 +1,5 @@
 ################################################################################
-# English help file: --help, Version 1.0
+# English help file: obj, Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -7,45 +7,37 @@
 ################################################################################
 printf "
 Usage of the help:
-  obj --help                Displays this text
-  obj --help file           Help for obj file
-  obj --help create         Help for creating objects
-  obj --help helpsystem     Help for creating helps
-  obj --help common         Some predefined object, methods, routines, variables
-  obj object-list           Displays a list of existing objects
-  obj <object> --help       Help for the object (if created)
+  obj --help                   Displays this text
+  obj --help file              Help for obj file
+  obj --help classes           Help for using classes
+  obj --help objects           Help for using objects
+  obj --help create            Help for inheritance of classes
+  obj --help helpsystem        Help for creating helps
+  obj --help common            Predefined clsses, methods, variables
+  obj object-list              Displays a list of existing objects and classes
+  obj <object|class> --help    Help for the object or class (if created)
 
-Usage of the obj and objI commands:
-  obj                                              1) Init
-  objI                                             1) Init
-  obj <object> <public method> [parameters]        2) General use
-  obj <object> obj-create parameters               3) Creates object
-  obj <object> obj-erase                           4) Deletes object
-  objI <method> [parameters]                       5) Call a method internally
+Usage of the obj command:
+  obj                                           Init
+  obj @<class> <public method> [parameters]     Message for class
+  obj <object> <public method> [parameters]     Message for object
 
-1) Init:
-   This commands re-create the environment of bash-object and exits.
-2) General use:
-   If the bash-object environment has not yet been created, this command will
-   create it, then passes the message to the called public method of the object
-   and exits.
-3) Create object:
-   This command creates the object.
-4) Delete object:
-   This command deletes the object.
-5) Call a method internally:
-   This command calls an own method of the current object
-   from another method of the object.
+  Comments:
+  a) Initialization recreates the bash object's environment and exits.
+  b) If the environment of the bash object has not yet been created,
+     the obj creates the environment and then passes the message
+     to the called public method and exits.
+  c) The obj command calls only a public method.
+  d) If obj cannot find the object's method, it tries to call
+     the public method marked as default.
+  e) If no method marked exists, obj exits with an error message.
 
-Notes:
-  a) The obj command can run only public method.
-  b) The objI command can run both public and private methods.
-  c) If the command does not find the object, it returns an error message.
-  d) If the command does not find the method of the object, it tries
-     run the default method.
-  e) If even the default method does not exist, the command
-     returns an error message.
-  f) The method does not run the code directly, but calls a routine
-     containing the code.
+Usage of objI command:
+  objI <method> [parameters]                    Call a method internally
 
+  Comments:
+  a) The objI command calls the current object's own method
+     from another method of the object.
+  b) The objI command can call both public and private methods.
+  c) If objI cannot find the object's method, it exits with an error message.
 "

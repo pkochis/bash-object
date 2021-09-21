@@ -1,63 +1,56 @@
 ################################################################################
-# English help file: --help.create, Version 1.0
+# English help file: obj.create, Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
 printf "
-The obj-create method creates the object. It can only be used for this.
-Once the object is created, it is deleted.
+Inheritance:
+ obj @<class> obj-create @<new class> [expression]...
 
-Usage: obj <new object> obj-create [SWITCH [parameters] ...]
+Expression format: <keyword> [parameters]
 
-General switches:
-  objC_copyreference        Copies all methods and variables with their current
-                            values from the reference object to te new one.
-  objC_defaulthelp          Sets the default method to --help if exists.
-  objC_init <command>       Same as the objI command, but it can be used when
-                            creating an object.
-  objC_noerase              Does not create obj-erase method.
-  objC_reference <object>   Sets the reference object.
-
-Switches for methods and variables:
-  objC_delmethod <method>        Removes one method from the new object.
-  objC_delvariable <variable>    Removes one variable or array from
-                                 the new object.
-  objC_private <parameters>      Sets one private method to the new object.
-  objC_public <parameters>       Sets one public method to the new object.       
-  objC_variable <parameters>     Sets one variable or array to the new object.
+Keywords:
+ objC_Default <public method>  Marks a public method as default
+ objC_NoDefault                Does not mark a method as default
+ objC_Init <method>            Executes the method at the end of construction
+ objC_NoInit                   Does not execute an initializing method
+ objC_DelMethod <metode>       Deletes the method
+ objC_DelVariable <variable>   Deletes the variable
+ objC_Public <pattern>         Creates a public method
+ objC_Private <pattern>        Creates a private method
+ objC_Variable <pattern>       Creates a new variable or an existing variable
+                               modifies the value of an existing variable
 
 Notes:
- a) Creates new method with new code:
-      objC_private <method> '{ <code>; }'
-      objC_public  <method> '{ <code>; }'
- b) Using existing code for new method:
-      objC_private <method> reference <reference method>
-      objC_public  <method> reference <reference method>
- c) Creates new variable:
-      objC_variable <variable> <attribute> [= <value>]
- d) Creates new array or associative array:
-      objC_variable <array> <attribute> [= '(<items>)']
- e) Copies one variable or array or associative array from reference:
-      objC_variable <variable> reference <reference variable>
- f) The reference can be an another object or the new one yet.
- g) The obj-create method processes the switches and parameters
-    from left to right, step by step.
- h) In case of name conflict, the old values are overwritten.   
- i) The variables (and arrays) are independent of each other, there is
-    no relationship between them. Any relationship can only be
-    implemented through methods.
- j) Each variable has a unique, hidden name. The name we give is only
-    is a reference to these names.
- k) The names of the variables we give must follow the naming conventions
+ a) Expressions are evaluated at inheritance time, after the class has copied
+    the inactive methods and variables stored in it. Expressions are only used
+    during inheritance.
+ b) The expressions modify the inactive methods and variables stored
+    in the new class, but do not affect the class's own active methods.
+ c) Expressions are used to set the behaviour of objects after construction.
+ d) Each expression affects only one method or variable. For a new method,
+    or variable, a new expression must be written.
+ e) Each keyword starts with "objC_".
+ f) The method set by objC_Default is searched for by the obj command,
+    if no public method is found in the message.
+ g) When creating (or overwriting) a method, two patterns may be used:
+    1) To create a new method: <method> '{ code; }'
+    2) To copy an existing method: <method> @<class> <method>
+ h) When creating (or overwriting) a variable, two types of patterns
+    can be used:
+    1) <attribute> <variable>=<value>
+    2) To copy an existing variable: <variable> @<class> <variable>
+ i) The <variable>=<value> expression must be passed to the constructor as a single
+    expression, so:
+      <variable>='<value>'              or  <variable>='<value>'
+      '<array>=(<list item>...)'        or  '<array>=(<list item>...)\'
+      '<array>=([<index>]=<value>...)'  or  \"<array>=([<index>]=<value>...)\"
+ j) In case of name conflicts of methods and variables, the older information
+    are overwritten.   
+ k) The names of the variables must follow the naming conventions
     for bash variables.
- l) The same code can belong to several public and private methods
-    at the same time, even in a different object.
- m) If a method is detached from an object, its code is not deleted,
-    only if it is no longer used by any method of any object.
- n) With some exceptions, method and object names may contain special
+ l) With some exceptions, method and object names may contain special
     characters. Spaces should be protected by quotation marks or backslashes.
- o) The default reference is the empty object.
-
 "

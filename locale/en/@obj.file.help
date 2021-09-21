@@ -1,5 +1,5 @@
 ################################################################################
-# English help file: --help.obj-file, Version 1.0
+# English help file: obj.file, Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -18,5 +18,4 @@ printf "
  the user script creates the bash-object environment.
 
  The current location of the obj file is \"${obj_HOME}\"
-
 "

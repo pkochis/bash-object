@@ -1,0 +1,31 @@
+################################################################################
+# English help file: obj.class, Version 1.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+printf "
+Use of class:
+  obj @<class> obj-create @<new class> [expressions...]          Inheritance
+  obj @<class> obj-create <new object> [<variable>=<value>...]   Construction
+  obj @<class> --help [page]                                     Help
+
+Notes:
+ a) The root class is the class named @. It contains nothing except
+    the obj-create method.
+ b) The class has no methods other than obj-create and --help. The obj-create
+    method is always created automatically, the --help is only created
+    if the class has a help.
+ c) The class stores inactively methods and variables with their initial values
+    that it copies into the object when the object is created (constructed).
+ d) On inheritance, the class copies the inactive methods and variables
+    to the new class and modifies them according to the expressions. Finally,
+    it creates the --help and obj-create methods for the new class.
+ e) The class cannot be modified after inheritance.
+ f) The class cannot be deleted.  
+ g) The construction creates the object from the class, sets the initial value
+    of the variables and executes the public or private method that is designated
+    for initialization. See the obj --help objects help page.
+ h) Expression help is available at the obj --help create help page. 
+"
