@@ -7,7 +7,7 @@
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 #
-# A) Manage init and default routines
+# A) Manage init and default methods
 # B) Delete routine or variable
 # C) Add public or private method
 # E) Add variable
