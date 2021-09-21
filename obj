@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ################################################################################
-# Script name: obj, Version 1.0
+# Script name: obj, Version 1.5
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -11,7 +11,7 @@
 # B) Get obj's home directory
 # C) Loader: obj, objRrestart
 #
-# Reserved words: obj* this* default --help
+# Reserved words: obj* OBJ* this* THIS* --help
 ################################################################################
 
 # A) Common routine: objParentPath
