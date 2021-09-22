@@ -37,7 +37,7 @@ Privát metódusok:
 Init metódus: obj-add-local-dictionary
 
 Változók:
-  obj-folder         A keresési mappa
+  obj_folder         A keresési mappa
   obj_source_file    A szótárfájl neve
   obj_dictionary     A betöltött szótár
 
