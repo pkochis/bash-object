@@ -1,37 +1,58 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# English help file: obj-backup-variables.help, Version 1.0
+# English help file: @obj@backup-variables.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
+
+[[ ${this[1]} != @* ]] && printf "
+Object: ${this[1]}
+Class:  ${this_details[parent]}
+
+Usage: obj ${this[1]} [<public method> [<sentence>]]
+"
+
+[[ ${this[1]} == @* ]] && printf "
+Class: ${this[1]}
+
+Use the objects in the class:
+  obj <object> [<public method> [<sentence>]]
+"
+
 printf "
-Usage of the obj-backup-variables object:
-  obj obj-backup-variables <method> [<parameters>]
+Public methods:
+  --help            Displays this text.
+  obj-erase         Deletes the object.
+  obj-backup        Saves the variables of the object to a file.
+  obj-restore       Restores the saved variables of the object.
 
-Methods:
-  --help                         Displays this help.
-  obj-backup                     Save variables to backup file.
-  obj-restore                    Restore variables from backup file.
-  obj-set-backupdir <folder>     Specify the backup folder.
-  obj-set-filter <variable>...   Specify the filter of variables.
-  obj-get-filter                 Read the filter of variables.
+Default method: obj-restore
 
-Internal variables:
-  obj_backupdir
-  obj_variables
+Variable:
+  obj_backupfile    Name of the backup file
 
 Notes:
-  a) The backup file name is: <object>.vbak
-  b) Enable all variables for backup:
-     obj obj-backup-variables obj-set-filter .
-     (Method with one dot.)
-  c) Disable all variables for backup:
-     obj obj-backup-variables obj-set-filter
-     (Method without parameters.)
-  d) If a variable in the filter list is not definied in the object,
-     it will be ignored.
-  e) If a variable in the backup file is not definied in the object,
-     it will be ignored.
+  a) If no backup file name was specified at the time of construction,
+     it will be set the first time obj-backup or obj-restore is used.
+     The obj-backup method will also create the file.
+  b) Once a file name has been created, it cannot be overwritten,
+     only by modifying and restoring the backup file.
+  b) The generated filename is an absolute pathname. 
+  c) The generated filename will be the following:
+       \"<current directory>/<object>.bak\"
+  d) If one of the variables in the backup file is not defined
+     in the object, obj-restore will ignore it.
 
+Example:
+  Object constructor:
+"
+
+[[ ${this[1]} != @* ]] && printf " obj ${this_details[parent]} obj-create important \\"
+[[ ${this[1]} == @* ]] && printf " obj ${this[1]} obj-create important \\"
+
+printf "
+    objC_Variable obj_backupfile=\"${HOME}/all-importants.bak\"
 "

@@ -1,11 +1,13 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# English help file: @obj.classes, Version 1.5
+# English help file: @obj.classes.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
-printf "
+[[ "${this[1]}" == "--help" ]] && printf "
 Use of class:
   obj @<class> obj-create @<new class> [expressions...]          Inheritance
   obj @<class> obj-create <new object> [<variable>=<value>...]   Construction

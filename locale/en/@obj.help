@@ -1,11 +1,13 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# English help file: obj, Version 1.5
+# English help file: @obj.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
-printf "
+[[ "${this[1]}" == "--help" ]] && printf "
 Usage of the help:
   obj --help                   Displays this text
   obj --help file              Help for obj file
@@ -13,7 +15,7 @@ Usage of the help:
   obj --help objects           Help for using objects
   obj --help create            Help for inheritance of classes
   obj --help helpsystem        Help for creating helps
-  obj --help common            Predefined clsses, methods, variables
+  obj --help details           A few important details
   obj object-list              Displays a list of existing objects and classes
   obj <object|class> --help    Help for the object or class (if created)
 
@@ -41,3 +43,18 @@ Usage of objI command:
   b) The objI command can call both public and private methods.
   c) If objI cannot find the object's method, it exits with an error message.
 "
+
+[[ ${this[1]} == @* ]] && printf "
+Class: ${this[1]}
+
+Use the objects in the class:
+  obj <object> [<public method> [<sentence>]]
+
+Public methods:
+  --help            Displays this text.
+  obj-erase         Deletes the object.
+
+Default method: --help
+"
+
+[[ "${this[1]}" == "--help" || ${this[1]} == @* ]]

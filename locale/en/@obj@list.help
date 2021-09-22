@@ -1,16 +1,32 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# English help file: object-list.help, Version 1.0
+# English help file: @obj@list.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
+
+[[ ${this[1]} != @* ]] && printf "
+Object: ${this[1]}
+Class:  ${this_details[parent]}
+
+Usage: obj ${this[1]} [<public method>]
+"
+
+[[ ${this[1]} == @* ]] && printf "
+Class: ${this[1]}
+
+Use the objects in the class:
+  obj <object> [<public method>]
+"
+
 printf "
-Usage of the object-list object:
-  obj object-list [<method>]
+Public methods:
+  --help            Displays this text.
+  obj-erase         Deletes the object.
+  obj-list          Displays all objects already created.
 
-Methods:
-  --help                Displays this help.
-  default               Displays all already created objects.
-
+Default method: obj-list
 "

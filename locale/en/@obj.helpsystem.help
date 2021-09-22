@@ -1,51 +1,53 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# English help file: --help.helpsystem, Version 1.0
+# English help file: @obj.helpsystem.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
-printf "
-Usage: obj <object> --help [subhelp]
+[[ "${this[1]}" == "--help" ]] && printf "
+Usage: obj --help [page]
+  or:  obj <object> --help [page]
+  or:  obj <class> --help [page]
 
-Displays the help text or a text of subhelp.
+Displays the help text or a help page.
 
- When creating an object, the constructor adds the --help method to the object
- if a localised help file exists for the object. If the object is created
- in command line, or the help file does not exist, the --help method is
- not created.
+ When creating a class, the constructor adds to the class the --help method
+ if a language help file exists for the object. If the class is created at
+ the command line, or the help file does not exist, the --help method
+ is not generated.
+
+ When creating an object, the constructor adds the --help method if the parent
+ class includes a language help file.
 
 Notes:
- a) The --help method is created or deleted by the constructor. Our job is
-    to write the help files and place them in the appropriate folder.
- b) The help file should be in the language directories under the "locale"
-    folder. The "locale" folder is in the same folder in which the script that
-    created the object.
- c) If the constructor does not find the help file in the system language,
-    it will look for it in the "en" language library.
- d) The name of the help file is the name of the object name and
-    the extension is \".help\".
- e) The name of the sub-help file is the name of the sub-help with
-    a dot appended to the name of the object, and the extension is \".help\".
- f) The subhelp file must be in the same folder where is the help file.
- g) The help file is a script, the advised format is the following:
+ a) The --help method is automatically created or deleted by the constructor.
+    All we have to do is write the help files and place them in the appropriate
+    folder.
+ b) The help file must be in the language directories under the \"locale\" folder.
+    The \"locale\" folder is in the same folder as the class generator script.
+ c) If the class constructor cannot find the help file in the system language,
+    it will look for it in the \"en\" language directory.
+ d) The help file name with extension: @<class>.help
+ e) The help file name with extension: @<class>.<page>.help
+ f) The help page file must be in the same folder as the help file.
+ g) The help file and the help page are a script, the suggested format is
+    as follows:
     printf \"
-     help text
+     help file
     \"
- h) If the help file exists, and the \"objC_defaulthelp\" option is used
-    when creating the object, the default method will execute the --help
-    method routine.
 
 Example:
-  The \"--help\" object location:
+  The \"@obj\" class location:
     \"${obj_HOME}\"
-  The English help file of \"--help\" object:
-    \"$(objParentPath "$BASH_SOURCE")/--help.help\"
-  The English \"helpsystem\" subhelp file of \"--help\" object (this file):
+  The English help file of \"@obj\" class:
+    \"$(objParentPath "$BASH_SOURCE")/@obj.help\"
+  The English \"helpsystem\" help page file of \"@obj\" class (this file):
     \"$BASH_SOURCE\"
-  The Hungarian help file of \"--help\" object:
-    \"${obj_HOME}/locale/hu/--help.help\"
-  The Hungarian \"helpsystem\" subhelp file of \"--help\" object:
-    \"${obj_HOME}/locale/hu/--help.helpsystem.help\"
-
+  The Hungarian help file of \"@obj\" object:
+    \"${obj_HOME}/locale/hu/@obj.help\"
+  The Hungarian \"helpsystem\" help page file of \"@obj\" class:
+    \"${obj_HOME}/locale/hu/@obj.helpsystem.help\"
 "

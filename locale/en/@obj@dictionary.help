@@ -1,25 +1,45 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# English help file: obj-dictionary.help, Version 1.0
+# English help file: @obj@dictionary.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
-printf "
-Usage of the obj-dictionary object:
-  obj obj-dictionary --help                    Displays this help.
-  obj obj-dictionary [default] [<sentence>]    Displays the translated text.
 
-Translates the (English) sentence into a stored text.
+[[ ${this[1]} != @* ]] && printf "
+Object: ${this[1]}
+Class:  ${this_details[parent]}
+
+Usage: obj ${this[1]} [<public method> [<sentence>]]
+"
+
+[[ ${this[1]} == @* ]] && printf "
+Class: ${this[1]}
+
+Use the objects in the class:
+  obj <object> [<public method> [<sentence>]]
+"
+
+printf "
+Public methods:
+  --help            Displays this text.
+  obj-erase         Deletes the object.
+  translate         Displays the translated sentence.
+
+Default method: translate
 
 Private methods:
-  obj-add-dictionary
-  obj-add-local-dictionary
+  obj-add-dictionary         Loads the dictionary file.
+  obj-add-local-dictionary   Looks for the dictionary file.
 
-Internal variables:
-  obj_folder              The search folder
-  obj_source_file         The dictionary file name
-  obj_dictionary          Array for texts
+Init method: obj-add-local-dictionary
+
+Variables:
+  obj-folder         The search folder
+  obj_source_file    The dictionary file name
+  obj_dictionary     The loaded dictionary
 
 Notes:
   a) The values of the obj_folder and obj_source_file variables in the object
@@ -28,7 +48,7 @@ Notes:
      and loaded.
   c) The object first looks up the dictionary file in the system language,
      then in English. The dictionary file must be in the language directories
-     under the "locale" folder. The "locale" folder is in the search folder.
+     under the \"locale\" folder. The \"locale\" folder is in the search folder.
   d) The object ignores all lines in the file that are not begins with
      \"From: \" or \"To: \". Lines starting with \"From: \" contain
      the sentences to translate. Lines starting with \"To: \" contain
@@ -38,19 +58,20 @@ Notes:
 
 Examples:
   a) Full pathes of dictionary files:
-     ${obj_HOME}/locale/hu/obj-error
-     ${obj_HOME}/locale/en/obj-error
+      ${obj_HOME}/locale/hu/obj-error
+      ${obj_HOME}/locale/en/obj-error
   b) Dictionary file:
-     From: This should be translated
-     To: To this text
-     From: This is another sentence.
-     To: This is translated to this other text.
-  c) Contructor command:
-     obj <dictionary name> obj-create \\
-      objC_reference obj-dictionary \\
-      objC_copyreference \\
-      objC_variable obj_folder -g = <search folder> \\
-      objC_variable obj_source_file -g = <dictionary file> \\
-      objC_init obj-add-local-dictionary
+      From: This needs to be translated
+      To: To this text
+      From: This is an another sentence.
+      To: This is the another text.
+  c) Object constructor command:
+"
 
+[[ ${this[1]} != @* ]] && printf "      obj ${this_details[parent]} obj-create obj-error-messages \\"
+[[ ${this[1]} == @* ]] && printf "      obj ${this[1]} obj-create obj-error-messages \\"
+
+printf "
+      objC_Variable obj_folder=\"${obj_HOME}\" \\
+      objC_Variable obj_source_file=obj-error
 "

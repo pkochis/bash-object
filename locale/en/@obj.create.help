@@ -1,11 +1,13 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# English help file: @obj.create, Version 1.5
+# English help file: @obj.create.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
-printf "
+[[ "${this[1]}" == "--help" ]] && printf "
 Inheritance:
  obj @<class> obj-create @<new class> [expression]...
 
@@ -32,7 +34,7 @@ Notes:
  c) Expressions are used to set the behaviour of objects after construction.
  d) Each expression affects only one method or variable. For a new method,
     or variable, a new expression must be written.
- e) Each keyword starts with "objC_".
+ e) Each keyword starts with \"objC_\".
  f) The method set by objC_Default is searched for by the obj command,
     if no public method is found in the message.
  g) When creating (or overwriting) a method, two patterns may be used:

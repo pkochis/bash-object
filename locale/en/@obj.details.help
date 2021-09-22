@@ -1,56 +1,46 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# English help file: --help.common, Version 1.0
+# English help file: @obj.details.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
-printf "
-Objects:
-  --help                 Displays general helps for bash-object.
-  obj-backup-variables   Proto object for backup and restore internal variables.
-  obj-debug              Proto object for display some info of the object.
-  obj-dictionary         Translates a sentence to a stored text.
-  object-list            Displays all already created objects.
+[[ "${this[1]}" == "--help" ]] && printf "
+The files needed to run \"bash-object\":
+  obj             Creates the functions and variables needed for loading.
+  init            Loads the \"bash-object\" system into memory.
+  class-items     Routines for inheriting classes
+  obj-classes     Classes derived from the @obj class.
 
-Methods:
-  --help                 Displays help and subhelps for the object.
-                         Constructor generates it if exists help file.
-  default                If the obj (or objI) command does not find the
-                         specified method, it will run this method if defined.
-  obj-create             Creates object. After creation it is disappeared.
-  obj-erase              Deletes object.
-  obj-public-methods     Displays all public methods of the object.
+The main folders of \"bash-object\":
+  ${obj_HOME}             Main folder of the \"bash-object\" system.
+  ${obj_HOME}/locale      The location of the language folders of the system
+  ${obj_HOME}/locale/en   English language folder of the system
+  ${obj_HOME}/locale/hu   Hungarian language folder of the system
 
-Routines:
-  objLocalisedFile <folder> <file> [<language>]
-                         It searches the localised file in the specified
-                         language, then in system language, finally in English.
-                         It returns with the path or error code.
-                         The file path is <folder>/locale/<language>/<file>
-  objParentPath <file or folder>
-                         If input is exists it returns a parent path of input.  
+Some \"bash-object\" variables that are useful in methods:
+  \${obj_HOME}               Main folder of the \"bash-object\" system 
+  \${this[1]}                Name of the current object
+  \${this[2]}                Name of the public method (set by obj)
+  \${this[3]}                Name of the current method (set by obj and objI)
+  \${this_details[H]}        Help file
+  \${this_details[parent]}   Name of the parent class
 
-Variables:
-  this[0]                For internal use
-  this[1]                The name of the object
-  this[2]                The name of the public method is called by obj command
-  this[3]                The name of the method is called by objI command
-  this[4]                For internal use
+Some useful routines for \"bash-object\":
+  objRparentPath [<folder or file>]    Returns the absolute path of
+                                       the parent directory.
+  objRlocalisedFile <folder> <file>    Returns the absolute path to
+                                       the language file.
 
-Warnings:
- a) The this variables are managed by the system. They are read by the routines.
-    They indicate which method of which object the routine is currently serving.
-    Do not overwrite!
- b) Words starting with obj are built-in objects, methods, routines, variables
-    of the system and are reserved for future development. Do not create elements
-    with these names to avoid confusion!
- c) The use of objects, methods and variables with empty names may lead
-    to unpredictable operation.
- d) The --help method is created or deleted by the constructor. Our job is
-    to write the help files and place them in the appropriate folder.
- e) You can assign any routine to the default method. If no method is specified,
-    or if the system cannot find it, the default method will be executed.
-    If there is no default method, an error message is returned.
-
+Notes:
+ a) If objRparentPath does not find the specified folder or file,
+    it returns the absolute path of the parent directory
+    of the current directory.
+ b) objRlocalisedFile first searches for the file in the system language,
+    then in English. The file must be in the language directories under
+    the \"locale\" folder. The \"locale\" folder is in the search folder.
+    If the file is not in the English language directory,
+    it will return an error.
 "
