@@ -36,7 +36,7 @@ Notes:
  g) The help file and the help page are a script, the suggested format is
     as follows:
     printf \"
-     help file
+     help text
     \"
 
 Example:

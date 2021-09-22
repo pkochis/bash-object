@@ -28,5 +28,5 @@ Public methods:
   obj-erase         Deletes the object.
   obj-info          Displays informations of the object.
 
-Default method: obj-list
+Default method: obj-info
 "

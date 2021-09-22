@@ -37,7 +37,7 @@ Private methods:
 Init method: obj-add-local-dictionary
 
 Variables:
-  obj-folder         The search folder
+  obj_folder         The search folder
   obj_source_file    The dictionary file name
   obj_dictionary     The loaded dictionary
 
