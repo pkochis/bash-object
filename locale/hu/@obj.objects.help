@@ -1,11 +1,13 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# Hungarian help file: obj.objects, Version 1.5
+# Hungarian help file: @obj.objects.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
-printf "
+[[ "${this[1]}" == "--help" ]] && printf "
 Objektum használata:
   obj @<osztály> obj-create <új objektum> [<változó>=<érték>...]    Létrehozás
   obj <objektum> <metódus> [paraméterek]                            Üzenet

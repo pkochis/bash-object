@@ -1,50 +1,52 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# Hungarian help file: --help.helpsystem, Version 1.0
+# Hungarian help file: @obj.helpsystem.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
-printf "
-Használat: obj <objektum> --help [al-súgó]
+[[ "${this[1]}" == "--help" ]] && printf "
+Használat: obj --help [súgólap]
+  vagy:    obj <objektum> --help [súgólap]
+  vagy:    obj <osztály> --help [súgólap]
 
-Megjeleníti a súgószöveget vagy egy al-súgószöveget.
+Megjeleníti a súgószöveget vagy egy súgólapot.
 
- Objektum létrehozásakor a konstruktor hozzáadja az objektumhoz a --help
- metódust, ha létezik az objektumhoz nyelvi súgófájl. Ha az objektumot
+ Osztály létrehozásakor a konstruktor hozzáadja az osztályhoz a --help
+ metódust, ha létezik az objektumhoz nyelvi súgófájl. Ha az osztályt
  parancssorban hozzuk létre, vagy a súgófájl nem létezik, a --help metódus
  nem jön létre.
 
+ Objektum létrehozásakor a konstruktor hozzáadja az objektumhoz a --help
+ metódust, ha tartozik a szülő osztályhoz nyelvi súgófájl.
+
 Megjegyzések:
- a) A --help metódust a konstruktor hozza létre, vagy törli. A mi dolgunk
-    a súgófájlok megírása és a megfelelő mappába helyezése csupán.
- b) A súgófájlnak a "locale" mappa alatti nyelvi könyvtárakban kell lennie.
-    A "locale" mappa ugyanabban a mappában van, amelyben az objektumot
-    létrehozó szkript van.
- c) Ha a konstruktor nem találja a súgófájlt a rendszer nyelvén,
-    az "en" nyelvi könyvtárban fogja keresni.
- d) A súgófájl neve az objektum neve, a kiterjesztése \".help\".
- e) Az al-súgó fájl neve az objektum nevéhez ponttal hozzáfűzve az al-súgó
-    neve, a kiterjesztése: \".help\".
- f) Az al-súgófájlnak ugyanabban a mappában kell lennie, ahol a súgófájl van.
- g) A súgófájl egy szkript, a javasolt formátum a következő:
+ a) A --help metódust a konstruktor automatikusan hozza létre, vagy törli.
+    A mi dolgunk csupán a súgófájlok megírása és a megfelelő mappába helyezése.
+ b) A súgófájlnak a \"locale\" mappa alatti nyelvi könyvtárakban kell lennie.
+    A \"locale\" mappa ugyanabban a mappában van, amelyben az osztályt létrehozó
+    szkript van.
+ c) Ha az osztály konstruktor nem találja a súgófájlt a rendszer nyelvén,
+    az \"en\" nyelvi könyvtárban fogja keresni.
+ d) A súgófájl neve kiterjesztéssel: @<osztály>.help
+ e) A súgólap fájl neve kiterjesztéssel: @<osztály>.<lap>.help
+ f) Az súgólapnak ugyanabban a mappában kell lennie, ahol a súgófájl van.
+ g) A súgófájl és a súgólap egy szkript, a javasolt formátum a következő:
     printf \"
      súgószöveg
     \"
- h) Ha a súgófájl létezik, és az objektum létrehozása során használjuk
-    az \"objC_defaulthelp\" kapcsolót, a default metódus a --help metódus
-    rutinját fogja végrehajtani.
 
 Példa:
-  A \"--help\" objektum helye:
-    \"${obj_HOME}\"
-  A \"help\" objektum angol súgófájlja:
-    \"${obj_HOME}/locale/en/--help.help\"
-  A \"help\" objektum angol \"helpsystem\" al-súgófájlja:
-    \"${obj_HOME}/locale/en/--help.helpsystem.help\"
-  A \"help\" objektum magyar súgófájlja:
-    \"$(objParentPath "$BASH_SOURCE")/--help.help\"
-  A \"help\" objektum magyar \"helpsystem\" al-súgófájlja (ez a fájl):
-    \"$BASH_SOURCE\"
-
+  Az \"@obj\" osztály helye:
+     \"${obj_HOME}\"
+  Az \"@obj\" osztály angol súgófájlja:
+     \"${obj_HOME}/locale/en/@obj.help\"
+  Az \"@obj\" osztály angol \"helpsystem\" súgólapja:
+     \"${obj_HOME}/locale/en/@obj.helpsystem.help\"
+  Az \"@obj\" osztály magyar súgófájlja:
+     \"$(objRparentPath "$BASH_SOURCE")/@obj.help\"
+  Az \"@obj\" osztály magyar \"helpsystem\" súgólapja (ez a fájl):
+     \"$BASH_SOURCE\"
 "

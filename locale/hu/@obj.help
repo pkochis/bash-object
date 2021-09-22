@@ -1,11 +1,13 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# Hungarian help file: obj, Version 1.5
+# Hungarian help file: @obj.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
-printf "
+[[ "${this[1]}" == "--help" ]] && printf "
 A súgó használata:
   obj --help                     Megjeleníti ezt a szöveget
   obj --help file                Az obj file súgója
@@ -13,7 +15,7 @@ A súgó használata:
   obj --help objects             Súgó objektumok használatához
   obj --help create              Súgó az osztályok öröklődéséhez
   obj --help helpsystem          A súgó alrendszer súgója
-  obj --help common              Előre definiált osztályok, metódusok, változók
+  obj --help details             Néhány fontos részlet
   obj object-list                Megjeleníti az összes már létrehozott osztályt
                                  és objektumot
   obj <objektum|osztály> --help  Az objektum vagy osztály súgója (ha létezik)
@@ -34,7 +36,7 @@ Az obj parancs használata:
   e) Ha nem létezik (a) megjelölt metódus, az obj hibaüzenettel lép ki.
 
 Az objI parancs használata:
-  objI <metódus> [paraméterek]                        Metódus belső hívása
+  objI <metódus> [paraméterek]        Metódus belső hívása
 
   Megjegyzések:
   a) Az objI parancs az aktuális objektum saját metódusát hívja meg
@@ -42,3 +44,19 @@ Az objI parancs használata:
   b) Az objI parancs nyilvános és privát metódusokat is meghívhat.
   c) Ha az objI nem találja az objektum metódusát, hibaüzenettel kilép.
 "
+
+[[ ${this[1]} == @* ]] && printf "
+Osztály: ${this[1]}
+
+Az osztályba tartozó objektumok használata:
+  obj <objektum> [<publikus metódus>]
+
+Publikus metódusok:
+  --help            Megjeleníti ezt a súgót.
+  obj-erase         Törli az objektumot
+  obj-info          Információt ad az objektum adatairól
+
+Alapértelmezett metódus: --help
+"
+
+[[ "${this[1]}" == "--help" || ${this[1]} == @* ]]

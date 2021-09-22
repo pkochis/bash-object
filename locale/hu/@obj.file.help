@@ -1,11 +1,13 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# Hungarian help file: obj.file, Version 1.5
+# Hungarian help file: @obj.file.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
-printf "
+[[ "${this[1]}" == "--help" ]] && printf "
  Az obj fájl az obj_HOME változót arra a könyvtárra állítja be, ahonnan
  betöltődött, majd a memóriába helyezi az obj parancsot és kilép.
 

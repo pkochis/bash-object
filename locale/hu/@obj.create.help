@@ -1,11 +1,13 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# Hungarian help file: obj.create, Version 1.5
+# Hungarian help file: @obj.create.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
-printf "
+[[ "${this[1]}" == "--help" ]] && printf "
 Az öröklődés:
  obj @<osztály> obj-create @<új osztály> [kifejezés]...
 
@@ -33,7 +35,7 @@ Megjegyzések:
     tudjuk beállítani.
  d) Minden kifejezés csak egy metódusra, vagy változóra hat. Újabb metódushoz,
     vagy változóhoz új kifejezést kell írni.
- e) Minden kulcsszó "objC_"-vel kezdődik.
+ e) Minden kulcsszó \"objC_\"-vel kezdődik.
  f) Az objC_Default által beállított metódust keresi az obj parancs,
     ha nem talál az üzenetben publikus metódust.
  g) Metódus létrehozásakor (vagy felülírásakor) kétféle minta használható:

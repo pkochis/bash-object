@@ -1,16 +1,32 @@
+#!/usr/bin/env bash
+
 ################################################################################
-# Hungarian help file: object-list.help, Version 1.0
+# Hungarian help file: @obj@list.help  Version 1.5
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
 # author: pal@kochis.hu
 ################################################################################
+
+[[ ${this[1]} != @* ]] && printf "
+Objektum: ${this[1]}
+Osztály:  ${this_details[parent]}
+
+Használat: obj ${this[1]} [<publikus metódus>]
+"
+
+[[ ${this[1]} == @* ]] && printf "
+Osztály: ${this[1]}
+
+Az osztályba tartozó objektumok használata:
+  obj <objektum> [<publikus metódus>]
+"
+
 printf "
-Az object-list objektum használata:
-  obj object-list [<metódus>]
+Publikus metódusok:
+  --help            Megjeleníti ezt a súgót.
+  obj-erase         Törli az objektumot
+  obj-list          Megjeleníti az összes már létrehozott objektumot.
 
-Metódusok:
-  --help                Megjeleníti ezt a súgót.
-  default               Megjeleníti az összes már létrehozott objektumot.
-
+Alapértelmezett metódus: obj-list
 "
