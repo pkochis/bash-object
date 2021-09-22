@@ -12,12 +12,12 @@
 # C) Basic named routines
 # D) Create class
 # E) Create object
-# F) Call basic-classes
+# F) @obj class and --help object; call the creator script for @obj classes
 ################################################################################
 [[ $(type -t obj) != function || ! -e ${obj_HOME}/class-items ]] && exit  # prevents unwanted run
 
 # A) Set environment
-source ${obj_HOME}/class-items
+source ${obj_HOME}/class-items  # include the details of class creation
 declare -g obj_C; ((obj_C < 10)) && obj_C=12; export obj_C  # init general upcounter
 declare -gA objects; objects+=([ID@]=1 [ID]=2)  # init the registers of objects/classes; register root class and reset object
 declare -gA obj_DETAILS1=() obj_DATA1=() obj_details1=(["Pobj-create"]=create ["Mobj-create"]=create) obj_data1=()  # root class
@@ -56,6 +56,8 @@ objRcreate() {
  [[ ${this[1]} == @* && ${THIS[1]} != "@" ]] && this[1]="${THIS[1]}${this[1]}"  # construct class/object name
  ((${objects["ID${this[1]}"]:-0} > 0)) && { objError "The %A1% object/class is already exists" "\"${this[1]}\""; return; }
  this=$((++obj_C)); objects+=(["ID${this[1]}"]=$this)  # create new class/object
+ declare -gA "obj_details$this=()" "obj_data$this=()"  # init new class/object
+ declare -n this_details=obj_details$this this_data=obj_data$this; this_details+=([parent]="${THIS[1]}")  # load new class/object
  if [[ ${this[1]} == @* ]]; then objCconstruct : "$@" objC_; else objOconstruct "$@"; fi  # call class/object contructor
 }
 objRdeconstruct() {
@@ -76,8 +78,8 @@ objRlocalisedFile() {
 # D) Create class
 objCconstruct() {
  [[ ${FUNCNAME[1]} != objRcreate ]] && return; local i j=""; declare -a cline=() # protect this function
- declare -gA "obj_details$this=()" "obj_data$this=()" "obj_DETAILS$this=()" "obj_DATA$this=()"  # init new class
- declare -n this_details=obj_details$this this_data=obj_data$this this_DETAILS=obj_DETAILS$this this_DATA=obj_DATA$this  # load new class
+ declare -gA "obj_DETAILS$this=()" "obj_DATA$this=()"  # init new class
+ declare -n this_DETAILS=obj_DETAILS$this this_DATA=obj_DATA$this  # load new class
  for i in "${!THIS_DETAILS[@]}"; do this_DETAILS+=([$i]="${THIS_DETAILS[$i]}"); done  # copy methods, public methods
  for i in "${!THIS_DATA[@]}"; do this_DATA+=([$i]="${THIS_DATA[$i]}"); done  # copy variables
  for i in "$@"; do [[ $i == objC_* ]] && { "${cline[@]}"; cline=(); }; cline+=("$i"); done  # run the class modify routines
@@ -92,8 +94,6 @@ objCconstruct() {
 # E) Create object
 objOconstruct() {
  [[ ${FUNCNAME[1]} != objRcreate ]] && return; local i  # protect this function
- declare -gA "obj_details$this=()" "obj_data$this=()"  # init new object
- declare -n this_details=obj_details$this this_data=obj_data$this  # load new object
  for i in "${!THIS_DETAILS[@]}"; do this_details+=([$i]="${THIS_DETAILS[$i]}"); done  # copy methods, public methods and helpfile
  for i in "${!THIS_DATA[@]}"; do  # create variables BEGIN
   eval "declare ${THIS_DATA[${i}]%% *} objV_$((++obj_C))=${THIS_DATA[${i}]#* }"; this_data+=([$i]=${obj_C})
@@ -105,5 +105,6 @@ objOconstruct() {
  this_details+=(["Mobj-erase"]=deconstruct ["Pobj-erase"]=deconstruct)  # add erase method
 }
 
-# F) Call basic classes
-source "${obj_HOME}/basic-classes"
+((${objects["ID@obj"]:-0} == 0)) && obj @ obj-create @obj objC_Default "--help"
+((${objects["ID--help"]:-0} == 0)) && obj @obj obj-create --help
+source "${obj_HOME}/obj-classes"

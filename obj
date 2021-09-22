@@ -15,7 +15,8 @@
 ################################################################################
 
 # A) Common routine: objParentPath
-objRparentPath() { local i="${1:-.}"
+objRparentPath() {
+ [[ -e $1 ]] && local i="$1" || local i="."; local p
  [[ -d $i ]] && { p="$PWD"; cd "$i"; cd ..; pwd; cd "$p"; } || {  # if input is a directory
   local p="${i%/*}"; [[ $p == $i ]] && p="."; [[ -z $p ]] && p="/"  # try get parent; if missing parent; if missing path
   cd "$p"; pwd; cd "$OLDPWD"  #  get and return with real name of parent
@@ -23,7 +24,7 @@ objRparentPath() { local i="${1:-.}"
 }; export -f objRparentPath
 
 # B) Get real name of obj's home directory
-[[ -z ${obj_HOME} ]] && obj_HOME="$(objRparentPath "$BASH_SOURCE}")"; export obj_HOME obj_INIT="${obj_HOME}/init"
+[[ -z ${obj_HOME} ]] && obj_HOME="$(objRparentPath "$BASH_SOURCE")"; export obj_HOME obj_INIT="${obj_HOME}/init"
 
 # C) Loader
 obj() { objRrestart "$@"; }
