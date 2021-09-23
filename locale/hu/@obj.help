@@ -40,7 +40,7 @@ Az objI parancs használata:
   Megjegyzések:
   a) Az objI parancs az aktuális objektum saját metódusát hívja meg
      az objektum egy másik metódusából.
-  b) Az objI parancs nyilvános és privát metódusokat is meghívhat.
+  b) Az objI parancs publikus és privát metódust is meghívhat.
   c) Ha az objI nem találja az objektum metódusát, hibaüzenettel kilép.
 "
 
