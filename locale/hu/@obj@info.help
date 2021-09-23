@@ -26,7 +26,8 @@ printf "
 Publikus metódusok:
   --help            Megjeleníti ezt a súgót.
   obj-erase         Törli az objektumot
-  obj-info          Információt ad az objektum adatairól
+  info              Megjeleníti a már létrehozott objektumokat és osztályokat.
+  info <objebtum>   Információt ad az objektum adatairól
 
-Alapértelmezett metódus: obj-info
+Alapértelmezett metódus: info
 "
