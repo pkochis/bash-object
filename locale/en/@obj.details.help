@@ -33,14 +33,20 @@ Some useful routines for \"bash-object\":
                                        the parent directory.
   objRlocalisedFile <folder> <file>    Returns the absolute path to
                                        the language file.
+  objRlocalisedObjFile <.extension>    Returns the absolute path to
+                                       the language file with
+                                       the specified extension.
 
 Notes:
  a) If objRparentPath does not find the specified folder or file,
     it returns the absolute path of the parent directory
     of the current directory.
- b) objRlocalisedFile first searches for the file in the system language,
-    then in English. The file must be in the language directories under
-    the \"locale\" folder. The \"locale\" folder is in the search folder.
-    If the file is not in the English language directory,
-    it will return an error.
+ b) objRlocalisedFile and objRlocalisedObjFile first search for the file
+    in the system language, then in English. The file must be in
+    the language directories under the \"locale\" folder. The \"locale\"
+    folder is in the search folder. If the file is not iven in the English
+    language directory, it will return an error.
+ c) The objRlocalisedObjFile search folder is set to the parent directory
+    of the script defining the current object, and the filename is set
+    to the name of the object extended by the extension.
 "
