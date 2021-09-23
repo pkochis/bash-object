@@ -70,17 +70,12 @@ objRrunHelp() {
 }
 objRlocalisedFile() {
  local language="${3:-${LANG:-${LC_CTYPE:-en}}}" ret=""
- (($# > 1)) && { [[ -e $1/locale/en/$2 ]] && ret="$1/locale/en/$2"; [[ -e $1/locale/${language%%_*}/$2 ]] && ret="$1/locale/${language%%_*}/$2"; }
- echo "$ret"; [[ -n $ret ]]
+ (($# > 1)) && {
+  [[ -e $1/locale/en/$2 ]] && ret="$1/locale/en/$2"
+  [[ -e $1/locale/${language%%_*}/$2 ]] && ret="$1/locale/${language%%_*}/$2"
+  }
+ [[ -n $ret ]] && cd "${ret%/*}" && echo "${PWD}/${ret##*/}"; cd "$OLDPWD"
 }
-objRlocalisedObjFile() { local i
- for ((i=0; i<${#FUNCNAME[@]}; i++)); do  # check help BEGIN
-  [[ ${FUNCNAME[$i]} != @(source|main) ]] && continue
-  echo "$(objRlocalisedFile "$(objRparentPath "${BASH_SOURCE[$i]}")" "${this[1]}.$1")"; return 0
- done  # check help END
- return 1
-}
-# objRrestart() already defined in ${obj_HOME}/obj
 
 # D) Create class
 objCconstruct() {
@@ -90,7 +85,8 @@ objCconstruct() {
  for i in "${!THIS_DETAILS[@]}"; do this_DETAILS+=([$i]="${THIS_DETAILS[$i]}"); done  # copy methods, public methods
  for i in "${!THIS_DATA[@]}"; do this_DATA+=([$i]="${THIS_DATA[$i]}"); done  # copy variables
  for i in "$@"; do [[ $i == objC_* ]] && { "${cline[@]}"; cline=(); }; cline+=("$i"); done  # run the class modify routines
- j="$(objRlocalisedObjFile help)" && this_details+=([H]="${j%.help}" ["M--help"]=runHelp ["P--help"]=runHelp)  # add help
+ j="$(objRlocalisedFile "$(objRcallerScript)" "${this[1]}.help")"
+ [[ -f $j ]] && this_details+=([H]="${j%.help}" ["M--help"]=runHelp ["P--help"]=runHelp)  # add help
  this_details+=(["Mobj-create"]=create ["Pobj-create"]=create)  # add create method
 }
 

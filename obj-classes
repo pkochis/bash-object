@@ -35,40 +35,31 @@
 
 # C) @obj@dictionary and obj-error-messages
 ((${objects["ID@obj@dictionary"]:-0} == 0)) && obj @obj obj-create @dictionary \
- objC_Variable -g obj_folder="" \
- objC_Variable -g obj_source_file="" \
  objC_Variable -gA 'obj_dictionary=()' \
  objC_Public translate '{ echo "${obj_dictionary["$1"]:-$1}"; }' \
  objC_Default translate \
- objC_Private obj-add-dictionary '{
-  local what=" "; [[ -e $1 ]] && {
+ objC_Private obj-add-local-dictionary '{
+  local f="$(objRlocalisedFile "$(objRcallerScript)" "${this[1]}.dict")" what=" "; [[ -f $f ]] && {
    while IFS= read -r; do
     [[ $REPLY == From:\ * ]] && what="${REPLY#From: }"; [[ $REPLY == To:\ * ]] && { obj_dictionary+=(["$what"]="${REPLY#To: }"); what=" "; }
-   done < "$1";
-  } 
- }' \
- objC_Private obj-add-local-dictionary '{
-  [[ -d ${obj_folder} ]] && {
-   cd "${obj_folder}"; obj_folder="$PWD"; cd "$OLDPWD"
-   objI obj-add-dictionary "$(objRlocalisedFile "${obj_folder}" "${obj_source_file}")"
+   done < "$f";
   } 
  }' \
  objC_Init obj-add-local-dictionary
-((${objects["IDobj-error-messages"]:-0} == 0)) && obj @obj@dictionary obj-create obj-error-messages \
- obj_folder="${obj_HOME}" obj_source_file=obj-error.dict
- 
+((${objects["IDobj-error"]:-0} == 0)) && obj @obj@dictionary obj-create obj-error
+
 # D) Change error helper
-objError() { local i c=0 et="$(obj obj-error-messages translate "$1")"; shift; for i in "$@"; do ((c++)); et="${et//%A${c}%/$i}"; done; echo "$et"; }
+objError() { local i c=0 et="$(obj obj-error translate "$1")"; shift; for i in "$@"; do ((c++)); et="${et//%A${c}%/$i}"; done; echo "$et"; }
 
 # E) @obj@backup-variables
 ((${objects["ID@obj@backup-variables"]:-0} == 0)) && obj @obj obj-create @backup-variables \
  objC_Variable -g obj_backupfile="" \
- objC_Public obj-restore '{ local i; : ${obj_backupfile:="${PWD}/${this[1]}.bak"}
+ objC_Public obj-restore '{ local i; : ${obj_backupfile:="$(objRcallerScript)/${this[1]}.bak"}
   [[ -e ${obj_backupfile} ]] && while IFS= read -r; do
    for i in "${!this_data[@]}"; do [[ $REPLY == ${i:1}=* ]] && eval "$REPLY"; done
   done < "${obj_backupfile}"
  }' \
- objC_Public obj-backup '{ local i w; : ${obj_backupfile:="${PWD}/${this[1]}.bak"}
+ objC_Public obj-backup '{ local i w;
   echo -n "" > "${obj_backupfile}"
   for i in "${!this_data[@]}"; do w="$(declare -p objV_${this_data[$i]})"; echo "${i:1}=${w#*=}" >> "${obj_backupfile}"; done  
  }' \
