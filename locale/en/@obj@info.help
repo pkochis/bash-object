@@ -26,7 +26,8 @@ printf "
 Public methods:
   --help            Displays this text.
   obj-erase         Deletes the object.
-  obj-info          Displays informations of the object.
+  info              Displays all objects and classes already created.
+  info <object>     Displays informations of the object.
 
-Default method: obj-info
+Default method: info
 "
