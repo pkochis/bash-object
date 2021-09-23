@@ -15,7 +15,7 @@ The files needed to run \"bash-object\":
   obj-classes     Classes derived from the @obj class.
 
 The main folders of \"bash-object\":
-  ${obj_HOME}             Main folder of the \"bash-object\" system.
+  ${obj_HOME}             Main folder of the \"bash-object\" system
   ${obj_HOME}/locale      The location of the language folders of the system
   ${obj_HOME}/locale/en   English language folder of the system
   ${obj_HOME}/locale/hu   Hungarian language folder of the system
@@ -29,24 +29,23 @@ Some \"bash-object\" variables that are useful in methods:
   \${this_details[parent]}   Name of the parent class
 
 Some useful routines for \"bash-object\":
-  objRparentPath [<folder or file>]    Returns the absolute path of
-                                       the parent directory.
-  objRlocalisedFile <folder> <file>    Returns the absolute path to
-                                       the language file.
-  objRlocalisedObjFile <.extension>    Returns the absolute path to
-                                       the language file with
-                                       the specified extension.
+  objRcallerScript                    Returns the folder of the calling script
+  objRlocalisedFile <folder> <file>   Returns the path to the language file
 
 Notes:
- a) If objRparentPath does not find the specified folder or file,
-    it returns the absolute path of the parent directory
-    of the current directory.
- b) objRlocalisedFile and objRlocalisedObjFile first search for the file
-    in the system language, then in English. The file must be in
-    the language directories under the \"locale\" folder. The \"locale\"
-    folder is in the search folder. If the file is not iven in the English
-    language directory, it will return an error.
- c) The objRlocalisedObjFile search folder is set to the parent directory
-    of the script defining the current object, and the filename is set
-    to the name of the object extended by the extension.
-"
+ a) objRcallerScript returns an error when called from the command line.
+ b) If the language file exists in the system language, objRlocalisedFile
+    returns with it. If it does not exist, but the English language file
+    does exist, it returns that. Otherwise it returns with an error.
+ c) The location of language files is in folders in the \"locale\"
+    directory under <folder>.
+
+Examples:
+ a) The English error message file for the \"bash-object\" system:
+      ${obj_HOME}/locale/en/obj-error.dict
+ b) The error message file for the \"bash-object\" system in English:
+      ${obj_HOME}/locale/en/obj-error.dict
+ c) The \"bash-object\" system error message file in the system language:
+      "
+local d="$(objRcallerScript)"; objRlocalisedFile "${d}/../.." obj-error.dict
+test true

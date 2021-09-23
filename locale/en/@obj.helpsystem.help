@@ -26,10 +26,10 @@ Notes:
  a) The --help method is automatically created or deleted by the constructor.
     All we have to do is write the help files and place them in the appropriate
     folder.
- b) The help file must be in the language directories under the \"locale\" folder.
-    The \"locale\" folder is in the same folder as the class generator script.
- c) If the class constructor cannot find the help file in the system language,
-    it will look for it in the \"en\" language directory.
+ b) If the help file exists in the system language, the constructor sets it.
+    If it does not exist, but the English help file exists, it will be set.
+ c) The location of language files is in folders in the \"locale\"
+    directory under <folder>.
  d) The help file name with extension: @<class>.help
  e) The help file name with extension: @<class>.<page>.help
  f) The help page file must be in the same folder as the help file.

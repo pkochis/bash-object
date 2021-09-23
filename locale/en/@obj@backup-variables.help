@@ -29,30 +29,21 @@ Public methods:
   obj-backup        Saves the variables of the object to a file.
   obj-restore       Restores the saved variables of the object.
 
-Default method: obj-restore
+Default method:     obj-restore
+Init method:        obj-restore
 
 Variable:
   obj_backupfile    Name of the backup file
 
 Notes:
-  a) If no backup file name was specified at the time of construction,
-     it will be set the first time obj-backup or obj-restore is used.
-     The obj-backup method will also create the file.
-  b) Once a file name has been created, it cannot be overwritten,
-     only by modifying and restoring the backup file.
-  b) The generated filename is an absolute pathname. 
-  c) The generated filename will be the following:
-       \"<current directory>/<object>.bak\"
-  d) If one of the variables in the backup file is not defined
-     in the object, obj-restore will ignore it.
-
-Example:
-  Object constructor:
-"
-
-[[ ${this[1]} != @* ]] && printf " obj ${this_details[parent]} obj-create important \\"
-[[ ${this[1]} == @* ]] && printf " obj ${this[1]} obj-create important \\"
-
-printf "
-    objC_Variable obj_backupfile=\"${HOME}/all-importants.bak\"
+ a) If the backup file name was not specified at the time of
+    the construction, the constructor will generate it.
+ b) The generated filename:
+       <script folder>/<object>.bak
+    The script folder is the directory of the script that
+    creates the object.
+ c) The backup file name can only be overwritten by modifying
+    and restoring the backup file.
+ d) If one of the variables in the backup file is not defined
+    in the object, obj-restore will ignore it.
 "

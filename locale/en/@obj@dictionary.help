@@ -28,50 +28,37 @@ Public methods:
   obj-erase         Deletes the object.
   translate         Displays the translated sentence.
 
-Default method: translate
-
 Private methods:
-  obj-add-dictionary         Loads the dictionary file.
-  obj-add-local-dictionary   Looks for the dictionary file.
+  obj-add-local-dictionary   Loads the dictionary file.
 
-Init method: obj-add-local-dictionary
+Default method:  translate
+Init method:     obj-add-local-dictionary
 
-Variables:
-  obj_folder         The search folder
-  obj_source_file    The dictionary file name
+Variable:
   obj_dictionary     The loaded dictionary
 
 Notes:
-  a) The values of the obj_folder and obj_source_file variables in the object
-     are set when the object is created.
-  b) As soon as the object is created, the dictionary file is searched
-     and loaded.
-  c) The object first looks up the dictionary file in the system language,
-     then in English. The dictionary file must be in the language directories
-     under the \"locale\" folder. The \"locale\" folder is in the search folder.
-  d) The object ignores all lines in the file that are not begins with
-     \"From: \" or \"To: \". Lines starting with \"From: \" contain
-     the sentences to translate. Lines starting with \"To: \" contain
-     the texts after translate.
-  e) This object is used by the system, it is advisable to create another
-     one and set the internal variables when creating it.
+ a) As soon as the object is created, the dictionary file is searched
+    and loaded. The dictionary file name is: <object>.dict
+ b) If the dictionary file exists in the system language, the object loads it.
+    If it does not exist, but the dictionary file exists in English,
+    it loads it.
+ c) The location of the dictionary files is in the \"locale\" directory
+    under <folder>.
+ c) The object ignores all lines in the file that are not begins with
+    \"From: \" or \"To: \". Lines starting with \"From: \" contain
+    the sentences to translate. Lines starting with \"To: \" contain
+    the texts after translate.
 
 Examples:
-  a) Full pathes of dictionary files:
+ a) The script that creates the object:
+      ${obj_HOME}/obj-classes
+    Full pathes of dictionary files:
       ${obj_HOME}/locale/hu/obj-error
       ${obj_HOME}/locale/en/obj-error
-  b) Dictionary file:
+ b) Dictionary file:
       From: This needs to be translated
       To: To this text
       From: This is an another sentence.
       To: This is the another text.
-  c) Object constructor command:
-"
-
-[[ ${this[1]} != @* ]] && printf "      obj ${this_details[parent]} obj-create obj-error-messages \\"
-[[ ${this[1]} == @* ]] && printf "      obj ${this[1]} obj-create obj-error-messages \\"
-
-printf "
-      objC_Variable obj_folder=\"${obj_HOME}\" \\
-      objC_Variable obj_source_file=obj-error
 "
