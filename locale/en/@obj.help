@@ -16,7 +16,7 @@ Usage of the help:
   obj --help create            Help for inheritance of classes
   obj --help helpsystem        Help for creating helps
   obj --help details           A few important details
-  obj object-list              Displays a list of existing objects and classes
+  obj obj-info                 Displays a list of existing objects and classes
   obj <object|class> --help    Help for the object or class (if created)
 
 Usage of the obj command:
