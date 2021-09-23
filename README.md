@@ -3,6 +3,7 @@ The goal is to create and use objects in bash. The elements of a bash-object are
 
 ## Features
 The system implements classes and objects. Classes are organized in a tree structure, but a class can inherit properties from other branches of the tree. An automatic help system and language handler are built into the system.
+
 The package includes some classes and objects to aid development.
 
 ## Version
