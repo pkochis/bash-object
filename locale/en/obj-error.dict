@@ -1,0 +1,22 @@
+################################################################################
+# English dictionary file: obj-error  Version 1.5
+# This file is made for the "bash-object" project.
+# https://github.com/pkochis/bash-object
+# "bash-object" scripts are licensed under the GNU General Public License v3.0
+# author: pal@kochis.hu
+################################################################################
+
+From: The %A1% object/class does not exist
+To: The %A1% object/class does not exist
+
+From: The %A1% public method in %A2% object/class does not exist
+To: The %A1% public method in %A2% object/class does not exist
+
+From: The %A1% method in %A2% object/class does not exist
+To: The %A1% method in %A2% object/class does not exist
+
+From: The %A1% object/class is already exists
+To: The %A1% object/class is already exists
+
+From: The %A1% help for %A2% object/class does not exist
+To: The %A1% help for %A2% object/class does not exist
