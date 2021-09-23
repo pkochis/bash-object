@@ -33,12 +33,17 @@ A \"bash-object\" néhány hasznos rutinja:
                                         adja vissza.
   objRlocalisedFile <mappa> <fájl>      A nyelvi fájl abszolút elérési útját
                                         adja vissza.
+  objRlocalisedObjFile <.kiterjesztés>  A megadott kiterjesztésű nyelvi fájl
+                                        abszolút elérési útját adja vissza.
 
 Megjegyzések:
  a) Ha az objRparentPath nem találja a megadott mappát, vagy fájlt, akkor
     az aktuális könyvtár szülőkönyvtárának abszolút útvonalát adja vissza.
- b) Az objRlocalisedFile először a rendszer nyelvén keresi meg a fájlt, majd
-    angol nyelven. A fájlnak a \"locale\" mappa alatti nyelvi könyvtárakban
-    kell lennie. A \"locale\" mappa a keresési mappában van. Ha a fájl az angol
-    nyelvi könyvtárban sincs, akkor hibával tér vissza.
+ b) Az objRlocalisedFile és az objRlocalisedObjFile először a rendszer nyelvén
+    keresi meg a fájlt, majd angol nyelven. A fájlnak a \"locale\" mappa alatti
+    nyelvi könyvtárakban kell lennie. A \"locale\" mappa a keresési mappában
+    van. Ha a fájl az angol nyelvi könyvtárban sincs, akkor hibával tér vissza.
+ c) Az objRlocalisedObjFile keresési mappának az aktuális objektumot definiáló
+    szkript szülőkönyvtárát állítja be, fájlnévnek pedig az objektum nevét
+    a kiterjesztéssel kibővítve.
 "
