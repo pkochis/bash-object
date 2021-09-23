@@ -16,8 +16,7 @@ A súgó használata:
   obj --help create              Súgó az osztályok öröklődéséhez
   obj --help helpsystem          A súgó alrendszer súgója
   obj --help details             Néhány fontos részlet
-  obj object-list                Megjeleníti az összes már létrehozott osztályt
-                                 és objektumot
+  obj obj-info                   Megjeleníti az osztályok és objektumok listáját
   obj <objektum|osztály> --help  Az objektum vagy osztály súgója (ha létezik)
 
 Az obj parancs használata:
