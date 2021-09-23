@@ -19,21 +19,27 @@
  objC_Public info '{ local i
   [[ -z $1 ]] && for i in "${!objects[@]}"; do [[ $i == @(ID|ID*\ *) ]] && echo \"${i#ID}\" || { [[ $i == ID* ]] && echo ${i#ID}; }; done
   [[ -n $1 && ${objects["ID$1"]:-0} -gt 0 ]] && {
-   o=${objects["ID$1"]}; declare -n d=obj_details${objects["ID$1"]} v=obj_data${objects["ID$1"]}
-   echo -e "\nObject: ${1}\nClass:  ${d[parent]}\nDefault method: ${d[D]}\nInit method:    ${d[I]}"
-   echo -en "Help file:      "; [[ -n ${d[H]} ]] && echo "${d[H]}.help" || echo ""
-   echo -e "\nPublic methods:"; for i in "${!d[@]}"; do [[ $i == P* ]] && echo " ${i:1} (objR${d[$i]})"; done
-   echo -e "\nPrivate methods:"; for i in "${!d[@]}"; do [[ $i == M* && -z ${d["P${i:1}"]} ]] && echo " ${i:1} (objR${d[$i]})"; done
-   echo -e "\nVariables:"; for i in "${!v[@]}"; do echo " ${i:1} (objV_${v[$i]})"; done
+   o=${objects["ID$1"]}; declare -n do=obj_details${objects["ID$1"]} vo=obj_data${objects["ID$1"]}
+   [[ $1 != @* ]] && {
+    echo -e "\nObject: ${1}\nClass:  ${do[parent]}\n"
+    echo -e " Default method: ${do[D]}\n Init method:     ${do[I]}"
+    echo -en " Help file:      "; [[ -n ${do[H]} ]] && echo "${do[H]}.help" || echo ""
+   }
+   [[ $1 == @* ]] && { echo -e "\nClass:  ${1}\nParent: ${do[parent]}"; }
+   echo -e "\n Public methods:"; for i in "${!do[@]}"; do [[ $i == P* ]] && echo "  ${i:1} (objR${do[$i]})"; done
+   [[ $1 != @* ]] && {
+    echo -e "\n Private methods:"; for i in "${!d[@]}"; do [[ $i == M* && -z ${d["P${i:1}"]} ]] && echo "  ${i:1} (objR${d[$i]})"; done
+    echo -e "\n Variables:"; for i in "${!vo[@]}"; do echo "  ${i:1} (objV_${vo[$i]})"; done
+   }
+   [[ $1 == @* ]] && {
+    echo -e "\n\nStored data for objects:"; declare -n dc=obj_DETAILS${objects["ID$1"]} vc=obj_DATA${objects["ID$1"]}
+    echo -e "\n Default method: ${dc[D]}\n Init method:    ${dc[I]}"
+    echo -en " Help file:      "; [[ -n ${do[H]} ]] && echo "${do[H]}.help" || echo ""
+    echo -e "\n Public methods:"; for i in "${!dc[@]}"; do [[ $i == P* ]] && echo "  ${i:1} (objR${dc[$i]})"; done
+    echo -e "\n Private methods:"; for i in "${!dc[@]}"; do [[ $i == M* && -z ${dc["P${i:1}"]} ]] && echo "  ${i:1} (objR${dc[$i]})"; done
+    echo -e "\n Variables:"; for i in "${!vc[@]}"; do echo "  ${vc[$i]%% *} ${i:1} ${vc[$i]#* }"; done
+   }
   }
- }' \
- objC_Public lobj-info '{ local i
-  echo -e "\nObject: ${this[1]}\nClass:  ${this_details[parent]}\n"
-  echo -e "Default method: ${this_details[D]}\nInit method:    ${this_details[I]}"
-  echo -en "Help file:      "; [[ -n ${this_details[H]} ]] && echo "${this_details[H]}.help" || echo ""
-  echo -e "\nPublic methods:"; for i in "${!this_details[@]}"; do [[ $i == P* ]] && echo " ${i:1} (objR${this_details[$i]})"; done
-  echo -e "\nPrivate methods:"; for i in "${!this_details[@]}"; do [[ $i == M* && $i != P* ]] && echo " ${i:1} (objR${this_details[$i]})"; done
-  echo -e "\nVariables:"; for i in "${!this_data[@]}"; do echo " ${i:1} (objV_${this_data[$i]})"; done
  }' objC_Default info
 ((${objects["IDobj-info"]:-0} == 0)) && obj @obj@info obj-create obj-info
 
