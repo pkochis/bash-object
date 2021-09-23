@@ -59,7 +59,7 @@ objError() { local i c=0 et="$(obj obj-error translate "$1")"; shift; for i in "
    for i in "${!this_data[@]}"; do [[ $REPLY == ${i:1}=* ]] && eval "$REPLY"; done
   done < "${obj_backupfile}"
  }' \
- objC_Public obj-backup '{ local i w;
+ objC_Public obj-backup '{ local i w; : ${obj_backupfile:="$(objRcallerScript)/${this[1]}.bak"}
   echo -n "" > "${obj_backupfile}"
   for i in "${!this_data[@]}"; do w="$(declare -p objV_${this_data[$i]})"; echo "${i:1}=${w#*=}" >> "${obj_backupfile}"; done  
  }' \

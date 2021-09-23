@@ -14,7 +14,7 @@
 # Reserved words: obj* OBJ* this* THIS* --help
 ################################################################################
 
-# A) Common routine: objParentPath
+# A) Common routine: objRcallerScript
 objRcallerScript() { local i p
  for ((i=0; i<${#FUNCNAME[@]}; i++)); do
   [[ ${FUNCNAME[$i]} != @(source|main) ]] && continue;
