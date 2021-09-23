@@ -29,30 +29,20 @@ Publikus metódusok:
   obj-backup        Fáljba menti az objektum változóit.
   obj-restore       Visszatölti az objektum elmentett változóit.
 
-Alapértelmezett metódus: obj-restore
+Alapértelmezett metódus:  obj-restore
+Inicializáló metódus:     obj-restore
 
 Változó:
   obj_backupfile    A backup fájl neve
 
 Megjegyzések:
-  a) Ha a példányosításkor nem adtuk meg a backup fájl nevét,
-     akkor az obj-backup, vagy az obj-restore első használatakor
-     beállítja. Az obj-backup létre is hozza a fájlt.
-  b) Az egyszer már létrejött fájlnevet nem tudjuk felülírni,
-     csak a backup fájl módosításával és visszatöltésével.
-  b) A generált fájlnév abszolút úvonal. 
-  c) A generált fájlnév a következő lesz:
-       \"<aktuális könyvtár>/<objektum>.bak\"
-  d) Ha a backup fájlban lévő valamelyik változó nincs definiálva
-     az objektumban, az obj-restore eldobja.
-
-Példa:
-  Objektum konstruktor:
-"
-
-[[ ${this[1]} != @* ]] && printf "    obj ${this_details[parent]} obj-create fontos \\"
-[[ ${this[1]} == @* ]] && printf "    obj ${this[1]} obj-create fontos \\"
-
-printf "
-    objC_Variable obj_backupfile=\"${HOME}/fontosak.bak\"
+ a) Ha a példányosításkor nem adtuk meg a backup fájl nevét,
+    akkor a konstruktor generálja azt.
+ b) A generált fájlnév:
+       <szkript mappa>/<objektum>.bak
+    A szkript mappa az objektumot létrehozó szkript könyvtára.
+ c) A backup fájl nevét csak a backup fájl módosításával
+    és visszatöltésével tudjuk felülírni.
+ d) Ha a backup fájlban lévő valamelyik változó nincs definiálva
+    az objektumban, az obj-restore eldobja.
 "

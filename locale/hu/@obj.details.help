@@ -29,21 +29,23 @@ Néhány \"bash-object\" változó, amelyek hasznosak a metódusokban:
   \${this_details[parent]}   A szülő osztály neve
 
 A \"bash-object\" néhány hasznos rutinja:
-  objRparentPath [<mappa vagy fájl>]    A szülő könyvtár abszolút elérési útját
-                                        adja vissza.
-  objRlocalisedFile <mappa> <fájl>      A nyelvi fájl abszolút elérési útját
-                                        adja vissza.
-  objRlocalisedObjFile <.kiterjesztés>  A megadott kiterjesztésű nyelvi fájl
-                                        abszolút elérési útját adja vissza.
+  objRcallerScript                   A hívó szkript könyvtárát adja vissza
+  objRlocalisedFile <mappa> <fájl>   A nyelvi fájl útvonalát adja vissza
 
 Megjegyzések:
- a) Ha az objRparentPath nem találja a megadott mappát, vagy fájlt, akkor
-    az aktuális könyvtár szülőkönyvtárának abszolút útvonalát adja vissza.
- b) Az objRlocalisedFile és az objRlocalisedObjFile először a rendszer nyelvén
-    keresi meg a fájlt, majd angol nyelven. A fájlnak a \"locale\" mappa alatti
-    nyelvi könyvtárakban kell lennie. A \"locale\" mappa a keresési mappában
-    van. Ha a fájl az angol nyelvi könyvtárban sincs, akkor hibával tér vissza.
- c) Az objRlocalisedObjFile keresési mappának az aktuális objektumot definiáló
-    szkript szülőkönyvtárát állítja be, fájlnévnek pedig az objektum nevét
-    a kiterjesztéssel kibővítve.
-"
+ a) Az objRcallerScript hibával tér vissza, ha parancssorból hívják meg.
+ b) Ha a nyelvi fájl létezik a rendszer nyelvén, az objRlocalisedFile azzal
+    tér vissza. Ha ez nincs, de az angol nyelvi fájl létezik, akkor azt adja
+    vissza. Egyébként hibával tér vissza.
+ c) A nyelvi fájlok helye a <mappa> alatti \"locale\" könyvtárban lévő
+    mappákban van.
+
+Példák:
+ a) A \"bash-object\" rendszer angol nyelvű hibaüzenet fájlja:
+      ${obj_HOME}/locale/en/obj-error.dict
+ b) A \"bash-object\" rendszer hibaüzenet fájlja magyarul:
+      ${obj_HOME}/locale/hu/obj-error.dict
+ c) A \"bash-object\" rendszer hibaüzenet fájlja a rendszer nyelvén:
+      "
+local d="$(objRcallerScript)"; objRlocalisedFile "${d}/../.." obj-error.dict
+test true

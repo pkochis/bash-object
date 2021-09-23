@@ -28,47 +28,36 @@ Publikus metódusok:
   obj-erase         Törli az objektumot.
   translate         Megjeleníti a lefordított mondatot.
 
-Alapértelmezett metódus: translate
+Privát metódus:
+  obj-add-local-dictionary   Betölti a szótárfájlt.
 
-Privát metódusok:
-  obj-add-dictionary         Betölti a szótárfájlt.
-  obj-add-local-dictionary   Megkeresei a szótárfájlt.
+Alapértelmezett metódus:  translate
+Init metódus:             obj-add-local-dictionary
 
-Init metódus: obj-add-local-dictionary
-
-Változók:
-  obj_folder         A keresési mappa
-  obj_source_file    A szótárfájl neve
+Változó:
   obj_dictionary     A betöltött szótár
 
 Megjegyzések:
-  a) Az obj_folder és az obj_source_file változók értékei az objektum
-     létrehozásakor adhatóak meg.
-  b) Amint létrejön az objektum, megkeresi a szótárfájlt és betölti.
-  c) Az objektum először a rendszer nyelvén keresi meg a szótárfájlt, majd
-     angol nyelven. A szótárfájlnak a \"locale\" mappa alatti nyelvi
-     könyvtárakban kell lennie. A \"locale\" mappa a keresési mappában van.
-  d) Az objektum figyelmen kívül hagyja a fájl minden olyan sorát, amely nem
-     a \"From: \" vagy \"To: \" szöveggel kezdődik. A \"From: \" kezdetű sorok
-     a fordítandó mondatokat tartalmazzák. A \"To: \" kezdetű sorok a fordítás
-     utáni szövegeket tartalmazzák.
+ a) Amint létrejön az objektum, megkeresi a szótárfájlt és betölti.
+    A szótárfájl neve: <objektum>.dict
+ b) Ha a szótárfájl létezik a rendszer nyelvén, az objektum azt tölti be.
+    Ha ez nincs, de az angol nyelvú szótárfájl létezik, akkor azt tölti be.
+ c) A szótárfájlok helye a <mappa> alatti \"locale\" könyvtárban lévő
+    mappákban van.
+ d) Az objektum figyelmen kívül hagyja a fájl minden olyan sorát, amely nem
+    a \"From: \" vagy \"To: \" szöveggel kezdődik. A \"From: \" kezdetű sorok
+    a fordítandó mondatokat tartalmazzák. A \"To: \" kezdetű sorok a fordítás
+    utáni szövegeket tartalmazzák.
 
 Példák:
-  a) Szótár fájlok teljes útvonala:
-      ${obj_HOME}/locale/hu/obj-error
-      ${obj_HOME}/locale/en/obj-error
-  b) Egy szótár fájl:
+ a) Az objektumot létrehozó szkript:
+      ${obj_HOME}/obj-classes
+    Szótár fájlok teljes útvonala:
+      ${obj_HOME}/locale/hu/obj-error.dict
+      ${obj_HOME}/locale/en/obj-error.dict
+ b) Egy szótár fájl:
       From: Ezt kell lefordítani
       To: Erre a szövegre
       From: Ez egy másik mondat.
       To: Ez erre lesz fordítva.
-  c) Objektum konstruktor parancs:
-"
-
-[[ ${this[1]} != @* ]] && printf "      obj ${this_details[parent]} obj-create obj-error-messages \\"
-[[ ${this[1]} == @* ]] && printf "      obj ${this[1]} obj-create obj-error-messages \\"
-
-printf "
-      objC_Variable obj_folder=\"${obj_HOME}\" \\
-      objC_Variable obj_source_file=obj-error
 "

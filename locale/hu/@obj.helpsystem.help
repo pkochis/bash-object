@@ -25,11 +25,10 @@ Megjeleníti a súgószöveget vagy egy súgólapot.
 Megjegyzések:
  a) A --help metódust a konstruktor automatikusan hozza létre, vagy törli.
     A mi dolgunk csupán a súgófájlok megírása és a megfelelő mappába helyezése.
- b) A súgófájlnak a \"locale\" mappa alatti nyelvi könyvtárakban kell lennie.
-    A \"locale\" mappa ugyanabban a mappában van, amelyben az osztályt létrehozó
-    szkript van.
- c) Ha az osztály konstruktor nem találja a súgófájlt a rendszer nyelvén,
-    az \"en\" nyelvi könyvtárban fogja keresni.
+ b) Ha súgófájl létezik a rendszer nyelvén, a konstruktor azt állítja be.
+    Ha ez nincs, de az angol nyelvi súgófájl létezik, akkor azt állítja be.
+ c) A nyelvi fájlok helye a <mappa> alatti \"locale\" könyvtárban lévő
+    mappákban van.
  d) A súgófájl neve kiterjesztéssel: @<osztály>.help
  e) A súgólap fájl neve kiterjesztéssel: @<osztály>.<lap>.help
  f) Az súgólapnak ugyanabban a mappában kell lennie, ahol a súgófájl van.
