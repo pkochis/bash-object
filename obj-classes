@@ -55,7 +55,7 @@
  }' \
  objC_Init obj-add-local-dictionary
 ((${objects["IDobj-error-messages"]:-0} == 0)) && obj @obj@dictionary obj-create obj-error-messages \
- obj_folder="${obj_HOME}" obj_source_file=obj-error
+ obj_folder="${obj_HOME}" obj_source_file=obj-error.dict
  
 # D) Change error helper
 objError() { local i c=0 et="$(obj obj-error-messages translate "$1")"; shift; for i in "$@"; do ((c++)); et="${et//%A${c}%/$i}"; done; echo "$et"; }
