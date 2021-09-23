@@ -27,7 +27,7 @@ Publikus metódusok:
   --help            Megjeleníti ezt a súgót.
   obj-erase         Törli az objektumot
   info              Megjeleníti a már létrehozott objektumokat és osztályokat.
-  info <objebtum>   Információt ad az objektum adatairól
+  info <objektum>   Információt ad az objektum adatairól
 
 Alapértelmezett metódus: info
 "
