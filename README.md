@@ -6,7 +6,7 @@ The system implements classes and objects. Classes are organized in a tree struc
 The package includes some classes and objects to aid development.
 
 ## Version
-The current stable version is 1.0 (2021-08-31)
+The current stable version is 1.5 (2021-09-23)
 
 ## Usage
 You can load the obj command into memory: in the **.bashrc** file, type the following line:  
