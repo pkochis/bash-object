@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ################################################################################
-# Hungarian help file: @obj.objects.help  Version 1.5
+# Hungarian help file: @obj.objects.help  Version 1.5.0.1
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -9,20 +9,23 @@
 ################################################################################
 [[ "${this[1]}" == "--help" ]] && printf "
 Objektum használata:
-  obj @<osztály> obj-create <új objektum> [<változó>=<érték>...]    Létrehozás
-  obj <objektum> <metódus> [paraméterek]                            Üzenet
-  obj <objektum> --help [súgólap]                                   Súgó
-  obj <objektum> obj-erase                                          Törlés
+  obj @<osztály> obj-create <új objektum> [<változó>[+]=<érték>...]  Létrehozás
+  obj <objektum> <metódus> [paraméterek]                             Üzenet
+  obj <objektum> --help [súgólap]                                    Súgó
+  obj <objektum> obj-erase                                           Törlés
 
 Megjegyzések:
 a) A létrehozás az osztályban definiált metódusokat és változókat bemásolja
    az új objektumba a kezdeti értékükkel együtt.
-b) A változók kezdeti értékei a <változó>=<érték> paraméterekkel
-   megváltoztathatóak. Új változót azonban nem tudunk létrehozni.
-c) A <változó>=<érték> kifejezést egyben kell átadni a konstruktornak, így:
+b) A változók kezdeti értékei a <változó>=<érték> vagy a <változó>+=<érték>
+   paraméterekkel megváltoztathatóak. Új változót azonban nem tudunk létrehozni.
+c) A <változó>[+]=<érték> kifejezést egyben kell átadni a konstruktornak, így:
      <változó>='<érték>'               vagy   <változó>=\"<érték>\"
      '<tömb>=(<listaelem>...)'         vagy   \"<tömb>=(<listaelem>...)\"
      '<tömb>=([<index>]=<érték>...)'   vagy   \"<tömb>=([<index>]=<érték>...)\"
+     <változó>+='<érték>'              vagy   <változó>+=\"<érték>\"
+     '<tömb>+=(<listaelem>...)'        vagy   \"<tömb>+=(<listaelem>...)\"
+     '<tömb>+=([<index>]=<érték>...)'  vagy   \"<tömb>+=([<index>]=<érték>...)\"
 d) Ha az osztályban kijelöltünk egy (publikus, vagy privát) metódust
    init metódusnak, akkor a létrehozás végén az init metódus lefut.
 e) Ha nem létező objektumnak küldünk üzenetet, akkor hibaüzenetet kapunk.

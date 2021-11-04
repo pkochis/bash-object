@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ################################################################################
-# Hungarian help file: @obj@dictionary.help  Version 1.5
+# Hungarian help file: @obj@dictionary.help  Version 1.5.0.1
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
