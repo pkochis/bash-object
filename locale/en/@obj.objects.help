@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ################################################################################
-# English help file: @obj.objects.help  Version 1.5
+# English help file: @obj.objects.help  Version 1.5.0.1
 # This file is made for the "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -9,21 +9,25 @@
 ################################################################################
 [[ "${this[1]}" == "--help" ]] && printf "
 Using an object:
-  obj @<class> obj-create <new object> [<variable>=<value>...]   Create object
-  obj <object> <method> [parameters]                             Message
-  obj <object> --help [pages]                                    Help
-  obj <object> obj-erase                                         Delete object
+  obj @<class> obj-create <new object> [<variable>[+]=<value>...]  Create object
+  obj <object> <method> [parameters]                               Message
+  obj <object> --help [pages]                                      Help
+  obj <object> obj-erase                                           Delete object
 
 Comments:
 a) Creation copies in the methods and variables defined in the class into
    the new object with their initial values.
-b) The initial values of the variables with the <variable>=<value> parameters
-   can be changed. However, no new variable can be created.
-c) The <variable>=<value> must be passed to the constructor in one expression,
+b) The initial values of the variables with the <variable>=<value> or the
+   <variable>+=<value>parameters can be changed. However, new variable
+   cannot be created.
+c) The <variable>[+]=<value> must be passed to the constructor in one expression,
    so:
      <variable='<value>'                or   <variable>=\"<value>\"
      '<array>=(<listitem>...)'          or   \"<array>=(<listitem>...)\"
      '<block>=([<index>]=<value>...)'   or   \"<block>=([<index>]=<value>...)\"
+     <variable+='<value>'               or   <variable>+=\"<value>\"
+     '<array>+=(<listitem>...)'         or   \"<array>+=(<listitem>...)\"
+     '<block>+=([<index>]=<value>...)'  or   \"<block>+=([<index>]=<value>...)\"
 d) If a method (public or private) is defined in the class init method,
    then the init method is run at the end of creation.
 e) If a message is sent to a non-existent object, an error message is returned.
