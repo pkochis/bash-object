@@ -2,7 +2,7 @@
 The goal is to create and use objects in bash. The elements of a bash-object are written in bash. Therefore you can use them everywhere, even in cygwin.
 
 ## Features
-- The system implements classes and objects
+- Classes and objects are implemented
 - Classes are organized in a tree structure
 - A class can inherit properties from other branches of the tree
 - Automatic help system
