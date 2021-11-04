@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ################################################################################
-# Script name: init  Version 1.5
+# Script name: init  Version 1.5.0.1
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -92,13 +92,15 @@ objCconstruct() {
 
 # E) Create object
 objOconstruct() {
- [[ ${FUNCNAME[1]} != objRcreate ]] && return; local i  # protect this function
+ [[ ${FUNCNAME[1]} != objRcreate ]] && return; local i v  # protect this function
  for i in "${!THIS_DETAILS[@]}"; do this_details+=([$i]="${THIS_DETAILS[$i]}"); done  # copy methods, public methods and helpfile
  for i in "${!THIS_DATA[@]}"; do  # create variables BEGIN
   eval "declare ${THIS_DATA[${i}]%% *} objV_$((++obj_C))=${THIS_DATA[${i}]#* }"; this_data+=([$i]=${obj_C})
  done  # create variables END
  for i in "${!this_data[@]}"; do declare -n ${i:1}=objV_${this_data[$i]}; done  # attach variables
- for i in "$@"; do declare -g objV_${this_data[V${i%%=*}]:-0}=${i#*=}; unset -v objV_0; done  # set variables
+ for i in "$@"; do v="${i%%=*}"  # set variables BEGIN
+  [[ $v == *\+ ]] && declare -g "objV_${this_data[V${v%%+}]:-0}+=${i#*=}" || declare -g "objV_${this_data[V${v}]:-0}=${i#*=}"; unset -v objV_0
+ done  # set variables END
  [[ -n ${THIS_DETAILS[I]} ]] && objI "${THIS_DETAILS[I]}"  # run init method
  [[ -e ${THIS_details[H]}.help ]] && { this_details+=([H]="${THIS_details[H]}"); this_details+=(["M--help"]=runHelp ["P--help"]=runHelp); }  # add help method
  this_details+=(["Mobj-erase"]=deconstruct ["Pobj-erase"]=deconstruct)  # add erase method

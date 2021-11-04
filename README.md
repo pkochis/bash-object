@@ -11,7 +11,7 @@ The goal is to create and use objects in bash. The elements of a bash-object are
 The package includes some classes and objects to aid development.
 
 ## Version
-The current stable version is 1.5 (2021-09-23)
+The current stable version is 1.5.0.1 (2021-10-04)
 
 To work, bash version 4.x.x (or above) is required.
 

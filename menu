@@ -1,0 +1,38 @@
+#!/bin/bash
+
+obj @ obj-create @menu \
+ objC_Variable -g "start_page=" \
+ objC_Variable -gA menu_pages='()' \
+ objC_Variable -ga menu_order='()' \
+ objC_Private call-menu '{
+  local i
+  while ((${#menu_order[@]} > 0)); do
+   obj "${menu_order[-1]}" page-exec
+   i="$(obj "${menu_order[-1]}" get-back)"
+   [[ $i == :quit ]] && break
+   [[ $i == :back ]] && { unset -v menu_order[-1]; menu_order=("${menu_order[@]}"); continue; }
+   [[ -z ${menu_pages["F$i"]} ]] && { menu_order+=("${menu_pages["F$i"]}"); continue; }
+   [[ -f $i ]] && {
+    source "$i" $((++objC))
+    menu_pages+=(["F$i"]=obj-menu-${obj_C}) menu_order+=(obj-menu-${obj_C})
+    continue
+   }
+  done
+  for i in "${menu_pages[@]}"; do obj "$i" obj-delete; done
+ }' \
+ objC_Public start-menu '{
+ 
+ 
+  [[ -f ${start_page} ]] && {
+ set -x
+   source "${start_page}" $((++objC))
+ set +x
+read;  menu_pages+=(["F${start_page}"]=obj-menu-${obj_C}) menu_order+=(obj-menu-${obj_C})
+  }
+  objI call-menu
+ 
+ 
+  
+ }' \
+ objC_Init start-menu
+

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ################################################################################
-# Script name: class-items  Version 1.5
+# Script name: class-items  Version 1.5.0.1
 # This script is a part of "bash-object" project.
 # https://github.com/pkochis/bash-object
 # "bash-object" scripts are licensed under the GNU General Public License v3.0
@@ -39,7 +39,7 @@ objC_Private() {
 objC_Variable() {
  [[ ${FUNCNAME[1]} != objCconstruct ]] && return  # protect this function
  case $# in
-  2) this_DATA+=(["V${2%%=*}"]="$1 ${2#*=}");;  # add a new variable (without syntax checking)
+  2) [[ $2 == *\=* ]] && this_DATA+=(["V${2%%=*}"]="$1 ${2#*=}") || this_DATA+=(["V${2%%=*}"]="$1");;  # add a new variable (without syntax checking)
   3) declare -n ref=obj_DATA${objects["ID$2"]:-${objects[ID@]}}; [[ -n ${ref["V$3"]} ]] && this_DATA+=(["V$1"]=${ref["V$3"]});;  # add a variable from a class
   *) return 1;;
  esac
