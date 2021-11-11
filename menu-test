@@ -1,6 +1,6 @@
 #!/bin/bash
 
-##### motor
+##### motorka
 echo motor
 
 obj @ obj-create @menu \
