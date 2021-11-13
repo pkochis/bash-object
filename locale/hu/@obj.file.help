@@ -13,7 +13,7 @@
 
  Az obj parancs a memóriában marad, ha az obj fájlt a következőképpen
  töltjük be a \".bashrc\" fájlból:
-   \"<fájl helye>/obj\"
+   source \"<fájl helye>/obj\"
 
  Paraméterek nélkül az obj fájl nem indítja el az obj parancsot, csak
  a memóriába tölti. Ezután a felhasználói szkriptben az obj parancs első hívása
