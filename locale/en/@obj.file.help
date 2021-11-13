@@ -13,7 +13,7 @@
 
  The obj command remains in memory if the obj file is loaded from \".bashrc\"
  as follows:
-   \"<file location>/obj\"
+   \"source <file location>/obj\"
 
  Without aparameters, the obj file does not start the obj command,
  it just loads t into memory. Then the first call to the obj command in
