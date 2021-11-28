@@ -1,0 +1,37 @@
+#!/bin/bash
+
+##### motorka
+echo motor
+
+obj @ obj-create @menu \
+ objC_Public run '{
+  while true; do
+   echo -e "$text"
+   while read -s -n1 -r; do objI ${keys[K${REPLY^^}]:-"obj-menu-nul"}; done
+  done
+ }' \
+ objC_Private obj-menu-nul '{ : ; }' \
+ objC_Variable -gA keys \
+ objC_Variable -g text
+
+##### osztály
+echo osztály
+
+obj @menu obj-create @menu-a \
+ objC_Private whatami '{ echo "Vagyok: \"N\" ${this[1]} objektum ${this[2]} metódus ${this[3]} rutin"; }'
+ 
+obj @menu obj-create @menu-b \
+ objC_Private whatami '{ echo "Vagyok: \"N\" ${this[1]} objektum ${this[2]} metódus ${this[3]} rutin"; }'
+ 
+# obj: this-re help
+# onj: változó definiálást átnézni += -t hozzáadni
+
+##### objektum
+echo objektum
+obj @menu@menu-a obj-create pagea1 text='page a1 vagyok' 'keys=([KN]=whatami)'
+obj @menu@menu-b obj-create pageb1 text='page b1 vagyok' 'keys=([KN]=whatami)'
+
+##### egzekútor
+
+obj pageb1 run
+# obj obj-info
